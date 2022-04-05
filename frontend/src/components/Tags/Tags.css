@@ -1,0 +1,35 @@
+.heading-body {
+  max-width: 632px !important;
+  font-size: 15px;
+}
+.tags-search-input {
+  margin: 0;
+  padding: 0.6em 0.7em;
+  border: 1px solid hsl(210, 8%, 75%);
+  border-radius: 3px;
+  background-color: white;
+  color: hsl(210, 8%, 5%);
+  font-size: 13px;
+}
+
+.tag-content-wrapper {
+  padding: 12px !important;
+  border: 1px solid hsl(210, 8%, 85%);
+  border-radius: 3px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+}
+
+.tag-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: hsl(210,8%,25%);
+  font-size: 13px;
+}
+
+.tag-meta-data {
+    font-size: 12px !important;
+    color: hsl(210,8%,55%);
+}
