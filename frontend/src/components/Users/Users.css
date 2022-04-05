@@ -1,0 +1,21 @@
+.users-name {
+  font-size: 15px;
+  color: rgb(0, 116, 204);
+}
+
+.users-location {
+  font-size: 12px;
+  color: hsl(210, 8%, 45%);
+}
+
+.users-reputation {
+  font-weight: bold;
+  font-size: 12px;
+  color: hsl(210,8%,45%);
+}
+
+.user-content-wrapper {
+    padding: 5px 6px 7px 7px !important;
+    margin-right: 12px;
+    margin-bottom: 12px;
+  }
