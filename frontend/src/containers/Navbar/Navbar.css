@@ -1,0 +1,58 @@
+.navbar {
+  height: 50px;
+  border-top-width: 3px;
+  border-top-color: rgb(244, 130, 37);
+  border-top-style: solid;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  background-color: rgb(248, 249, 249);
+  border-bottom-color: rgb(35, 38, 41);
+  padding-left: 88px;
+  padding-right: 88px;
+}
+
+.nav-btn {
+  display: inline-block;
+  padding: 0.8em;
+  background-color: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.15384615;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  align-self: center;
+  padding-top: 8px;
+  border-radius: 3px;
+  padding-bottom: 8px;
+  border: 1px solid transparent;
+}
+
+.nav-login-btn {
+  color: hsl(205, 47%, 42%);
+  background-color: hsl(205, 46%, 92%);
+  border-color: hsl(205, 41%, 63%);
+}
+
+.nav-signup-btn {
+  color: hsl(0, 0%, 100%);
+  background-color: hsl(206, 100%, 52%);
+}
+
+.navbar-search-input {
+  border-color: hsl(210, 8%, 75%);
+  background-color: white;
+  color: hsl(210, 8%, 25%);
+  display: block;
+  width: -webkit-fill-available !important;
+  line-height: 1.15384615;
+}
+
+.navbar-search {
+  flex-shrink: 10000;
+  flex-grow: 1;
+}
+
