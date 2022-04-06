@@ -7,7 +7,7 @@ function App() {
       <div className="d-flex justify-content-between">
         <h1 className="fs-headline1">All Questions</h1>
         <div className="ml12 aside-cta flex--item print:d-none">
-          <a href="/" className="ask-btn">
+          <a href="/askQuestion" className="ask-btn">
             Ask Question
           </a>
         </div>
