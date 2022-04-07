@@ -6,6 +6,7 @@ const questionSchema = new mongoose.Schema(
     tags: { type: String, required: true },
     questionbody: { type: String, required: true },
     userToken: { type: String, required: true },
+    isBookmarked: { type: Boolean },
   },
   {
     versionKey: false,

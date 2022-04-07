@@ -6,21 +6,45 @@ const addquestion = async (req, res) => {
   tags = req.body.tags;
   questionbody = req.body.questionbody;
   console.log(userToken, title, tags, questionbody);
-  //item = {userTok:"2",title:title,tags:tags,questionbody:questionbody}
-  QuestionModel.updateOne(
+  Question.updateOne(
     { userToken: "2" },
-    { $set: { title: title, tags: tags, questionbody: questionbody } },
-    function (err, res) {
-      if (err) throw err;
-      else {
-        console.log("1 document updated", res);
+    { $set: { title: title, tags: tags, questionbody: questionbody, isBookmarked: "false"} },
+    function (err, result) {
+      if (err){
+        res.send({
+          "response_code": 500,
+          "response_message": "Backend error",
+    
+        })
       }
-
-      //   db.close();
+      else {
+        res.send({
+          "response_code": 200,
+          "response_message": "Success",
+          "data":result
+        })
+      }
     }
   );
+};
+const bookmarkquestion = async (req, res) => {
+  isBookmarked = req.body.isBookmarked;
+  title = req.body.title;
+ 
+  Question.updateOne({title:title},{ $set:{isBookmarked:isBookmarked}}, function(err, result) {
+    if (err) throw err;
+    console.log("updated bookmark");
+    res.send(
+      {
+        "response_code": 200,
+        "response_message": "Success",
+        "data":result
+      });
+   
+  });
 };
 
 module.exports = {
   addquestion,
+  bookmarkquestion,
 };
