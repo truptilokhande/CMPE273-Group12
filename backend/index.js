@@ -1,79 +1,67 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const session = require('express-session')
+const express = require("express");
 const app = express();
-const routes = require('./routes');
-require('dotenv').config();
-const AWS = require("aws-sdk");
-const fileupload = require('express-fileupload');
-const mongoose = require('mongoose');
-const  QuestionModel = require("./models/questionModel");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const frontendURL = require("./config.json").frontEnd;
+const mongoose = require("mongoose");
 
-const mongoose_uri = 'mongodb+srv://rootuser:rootuser@stackoverflow.ujcbz.mongodb.net/StackOverFlow?retryWrites=true&w=majority'
-const connectionParams = {
-  useUnifiedTopology: true,
-  useNewUrlParser: true
-}
-mongoose.connect(mongoose_uri,connectionParams).then(()=>{
-  console.info("MongoDB connected")
- 
+const questionRoutes = require("./routes/question.routes")
 
-})
-.catch((e) => {
-  console.log("error connection to mongo")
-})
+//set up cors
+app.use(cors({ origin: frontendURL, credentials: true }));
 
-const port = process.env.NODE_LOCAL_PORT || 8082;
+// setting up env file
+require("dotenv").config();
 
-//For BodyParser
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
+// setting up body parser
 app.use(bodyParser.json());
-app.use(express.static(__dirname + '/public'));
-app.use(cors());
-
-app.use(fileupload());
-
-app.use(session({
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true
-})); // session secret
-
-app.use('/api', routes);
+app.use(cookieParser());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 
-
-app.post("/addquestion", (req, res) => {
-
- userToken = req.body.userToken
- title = req.body.title 
- tags = req.body.tags
- questionbody = req.body.questionbody
- console.log(userToken,title,tags,questionbody)
- //item = {userTok:"2",title:title,tags:tags,questionbody:questionbody}
- QuestionModel.updateOne({userToken:"2"},{$set:{title:title,tags:tags,questionbody:questionbody}}, function(err, res) {
-  if (err) throw err;
-  else{
-    console.log("1 document updated",res);
+//Allow Access Control
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", frontendURL);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,OPTIONS,POST,PUT,DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+  );
+  res.setHeader("Cache-Control", "no-cache");
+  if (req.method === "OPTIONS") {
+    res.end();
   }
-  
-//   db.close();
-
-});
- 
+  next();
 });
 
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+// connecting to mongodb
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.info("MongoDB connected");
+  })
+  .catch((e) => {
+    console.log("error connection to mongo");
+  });
+
+// starting the server
+app.listen("3001", () => {
+  console.log("server is running!");
 });
 
+app.use(questionRoutes);
 
-
-
-
-module.exports = app;
+// module.exports = app;
