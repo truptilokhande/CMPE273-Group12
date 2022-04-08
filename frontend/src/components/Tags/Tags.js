@@ -46,7 +46,7 @@ function Tags() {
             <div className="tag-content-wrapper">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="">
-                  <a href="/" className="tag">
+                  <a href="/tagOverview" className="tag">
                     javascript
                   </a>
                 </div>
