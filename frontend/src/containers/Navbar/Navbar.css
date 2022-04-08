@@ -56,3 +56,10 @@
   flex-grow: 1;
 }
 
+.user-details {
+  font-size: 13px;
+}
+
+.iconInbox path {
+  fill: #232629;
+}
