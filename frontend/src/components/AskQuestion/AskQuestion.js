@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
