@@ -1,0 +1,7 @@
+.grid {
+  box-sizing: border-box;
+  
+  margin: -12px;
+  display: flex;
+  color: #242729;
+}

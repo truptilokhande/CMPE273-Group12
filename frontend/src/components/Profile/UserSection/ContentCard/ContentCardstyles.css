@@ -1,0 +1,89 @@
+.content-card {
+  box-sizing: border-box;
+  border: #242729;
+ 
+  margin: 2px;
+  margin-top: 10px;
+  flex: 1 auto !important;
+}
+  .content-grid {
+    margin: 2px;
+    display: flex;
+    flex-direction: col;
+    border-style: block;
+    border-radius: 10px;
+    border:thin solid;
+    height:fit-content;
+    border-color:#acb2b8;
+
+    width:fit-content;
+    
+  }
+    .info-cell {
+      margin: 8px;
+     
+      padding-right: 16px !important;
+      flex: 1 auto;
+      color: #242729;
+      flex-direction: row;
+    }
+      .info {
+        display: flex;
+        flex-direction: row !important;
+        margin-left: 10px;
+      }
+        .details {
+          margin-top: 4px;
+          margin-bottom: 4px;
+        }
+        .reach{
+          display: flex;
+          flex-direction:column;
+          margin-left: 20px;
+        }
+          h2 {
+            word-break: break-all !important;
+            color: #060707 !important;
+            font-size: 27px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+          }
+        
+
+        .date {
+          margin-top: 16px;
+          margin-bottom: 4px;
+          color: #acb2b8 !important;
+          font-size: 15px;
+        }
+    
+
+    .stats-cell {
+      margin: 8px;
+      padding-right: 24px !important;
+    }
+      .count-sec {
+        color: #3c4146 !important;
+        margin-bottom: 16px !important;
+      }
+        .counts {
+          margin: -6px;
+          display: flex;
+        }
+          .cells {
+            margin: 6px;
+          }
+            .column-grid {
+              display: flex;
+              flex-direction: column;
+            }
+              .head {
+                font-weight: 700 !important;
+                font-size: 17px;
+                text-align: center;
+              }
+              .foot {
+                font-size: 13px;
+              }
+            

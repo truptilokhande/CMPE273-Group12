@@ -1,0 +1,26 @@
+.badgeCard {
+	border-style: solid;
+	border-radius: 10px;
+	border-color: #acb2b8;
+	height: 150px;
+	margin: 20px;
+	width: 150px;
+}
+.badge-page {
+	border-style: solid;
+	border-radius: 10px;
+	border-color: #acb2b8;
+	margin-left: 20px;
+	height: 200px;
+	width: 700px;
+}
+.tag1 {
+	border-style: none;
+	border-radius: 20px;
+	margin: 2px;
+	width: fit-content;
+}
+.tags {
+	display: flex;
+	flex-direction: column;
+}
