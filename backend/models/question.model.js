@@ -16,7 +16,6 @@ const questionSchema = new mongoose.Schema(
     waitingForApproval: { type: Boolean, required: false },
   },
   {
-    timestamps: true,
     versionKey: false,
     timestamps: true,
   }
