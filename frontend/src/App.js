@@ -12,6 +12,7 @@ import TagOverview from "./components/TagOverview/TagOverview";
 import SearchPage from "./components/SearchPage/SearchPage";
 import SignUp from "./components/SignUp/SignUp";
 import SignIn from "./components/SignIn/SignIn";
+import EditQuestion from "./components/EditQuestion/EditQuestion";
 // import Footer from './containers/Footer/Footer';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />
+            <Route path="/edit-question" exact element={<EditQuestion />} />
           </Routes>
         </div>
       </main>
