@@ -111,7 +111,13 @@ function QuestionOverview() {
           </div>
         </div>
 
-        <div className="question-overview-user-profile d-flex justify-content-end">
+        <div className="question-overview-user-profile d-flex justify-content-between">
+          <div className="ml-4">
+            <a className="edit-question" href="/edit-question">
+              edit question
+            </a>
+          </div>
+
           <div className="user-info-wrapper">
             <div className="user-info">
               <div className="user-action-time">

@@ -110,6 +110,18 @@
   border: 1px solid transparent;
 }
 
+.add-comment-link:hover, .edit-question:hover {
+  color: hsl(206, 100%, 52%);
+}
+
+.edit-question {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: hsl(210, 8%, 45%);
+}
+
 .comment-wrapper textarea {
   height: 150px;
 }
@@ -142,5 +154,5 @@ ul.comments-list .comment > * {
 }
 
 .correct-answer svg path {
-    fill: #47A868 !important;
+  fill: #47a868 !important;
 }
