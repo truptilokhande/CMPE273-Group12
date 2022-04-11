@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Resume URL Shortener application backend",
+  "description": "stackoverflow clone application",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
