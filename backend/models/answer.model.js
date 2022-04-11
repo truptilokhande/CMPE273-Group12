@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
-const questionDb = require("./question.model");
+const commentSchema = require("./commentModel");
 
-var schema = new mongoose.Schema(
+const answerSchema = new mongoose.Schema(
   {
     userId: {
-      // type: mongoose.Schema.Types.ObjectId, ref: userDb
-      type: Number,
+      type: mongoose.Types.ObjectId,
       required: true,
     },
-    questionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: questionDb,
-    },
     answerBody: { type: String, required: true },
+    comments: [commentSchema.schema],
+    votes: { type: Number, required: false },
+    markedAsRight: { type: Boolean, required: false },
   },
   {
     timestamps: true,
@@ -20,6 +18,6 @@ var schema = new mongoose.Schema(
   }
 );
 
-const Answer = mongoose.model("Answer", schema);
+const Answer = mongoose.model("Answer", answerSchema);
 
 module.exports = Answer;

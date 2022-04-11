@@ -1,19 +1,24 @@
 const mongoose = require("mongoose");
+const answerSchema = require("./answerModel");
+const commentSchema = require("./commentModel");
+const tagSchema = require("./TagModel");
 
 const questionSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    tags: { type: String, required: true },
     questionbody: { type: String, required: true },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
+    userId: { type: mongoose.Types.ObjectId, required: true },
+    votes: { type: Number, required: false },
+    views: { type: Number, required: false },
+    tags: [tagSchema.schema],
+    answers: [answerSchema.schema],
+    comments: [commentSchema.schema],
+    waitingForApproval: { type: Boolean, required: false },
   },
   {
     timestamps: true,
     versionKey: false,
+    timestamps: true,
   }
 );
 
