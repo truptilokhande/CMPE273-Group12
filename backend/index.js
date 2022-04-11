@@ -3,19 +3,19 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const frontendURL = require("./config.json").frontEnd;
+//const frontendURL = require("./config.json").frontEnd;
+const config = require("./config/config.json");
 const mongoose = require("mongoose");
 const connectDB = require("./database/connection");
 
 const questionRoutes = require("./routes/question.routes");
 const answerRoutes = require("./routes/answer.routes");
+const userRoutes = require("./routes/user.routes");
 
 //set up cors
-app.use(cors({ origin: frontendURL, credentials: true }));
+app.use(cors({ origin: config.frontEndUrl, credentials: true }));
 
-// setting up env file
-require("dotenv").config();
-const PORT = process.env.PORT || 4001;
+const PORT = config.PORT || 4001;
 
 // setting up body parser
 app.use(bodyParser.json());
@@ -28,7 +28,7 @@ app.use(
 
 //Allow Access Control
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", frontendURL);
+  res.setHeader("Access-Control-Allow-Origin", config.frontEndUrl);
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -49,8 +49,12 @@ app.use(function (req, res, next) {
 connectDB();
 
 //Routes
-app.use(questionRoutes);
-app.use("/api/v1/", answerRoutes);
+// app.use(questionRoutes);
+// app.use("/api/v1/", answerRoutes);
+
+app.use("/api/question/", questionRoutes);
+app.use("/api/answer/", answerRoutes);
+app.use("/api/user/", userRoutes);
 
 // starting the server
 app.listen(PORT, () => {

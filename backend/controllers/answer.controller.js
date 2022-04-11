@@ -1,5 +1,5 @@
 const express = require("express");
-const answersDb = require("../models/answerModel");
+const answersDb = require("../models/answer.model");
 
 exports.addAnswer = (req, res) => {
   console.log("handling add answer ");

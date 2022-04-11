@@ -1,4 +1,4 @@
-const Question = require("../models/questionModel");
+const QuestionModel = require("../models/question.model");
 
 const addquestion = async (req, res) => {
   userToken = req.body.userToken;

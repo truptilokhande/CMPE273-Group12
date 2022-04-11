@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const questionDb = require("./questionModel");
+const questionDb = require("./question.model");
 
 var schema = new mongoose.Schema(
   {
