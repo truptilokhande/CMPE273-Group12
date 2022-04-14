@@ -5,15 +5,34 @@ const tagSchema = require("./TagModel");
 
 const questionSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    questionbody: { type: String, required: true },
-    userId: { type: mongoose.Types.ObjectId, required: true },
-    votes: { type: Number, required: false },
-    views: { type: Number, required: false },
+    title: {
+      type: String,
+      required: true,
+    },
+    questionbody: { 
+      type: String, 
+      required: true,
+    },
+    userId: { 
+      type: mongoose.Types.ObjectId, 
+      required: true,
+    },
+    votes: { 
+      type: Number, 
+      required: false,
+      default: 0,
+    },
+    views: {
+      type: Number, 
+      required: false,
+      default: 0,
+    },
     tags: [tagSchema.schema],
-    answers: [answerSchema.schema],
     comments: [commentSchema.schema],
-    waitingForApproval: { type: Boolean, required: false },
+    waitingForApproval: { 
+      type: Boolean,
+      required: false,
+    },
   },
   {
     versionKey: false,

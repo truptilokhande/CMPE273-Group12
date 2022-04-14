@@ -7,10 +7,25 @@ const answerSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       required: true,
     },
-    answerBody: { type: String, required: true },
+    questionId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
+    answerBody: { 
+      type: String, 
+      required: true,
+    },
     comments: [commentSchema.schema],
-    votes: { type: Number, required: false },
-    markedAsRight: { type: Boolean, required: false },
+    votes: { 
+      type: Number, 
+      required: false,
+      default: 0,
+    },
+    markedAsRight: { 
+      type: Boolean, 
+      required: false,
+      default: false,
+    },
   },
   {
     timestamps: true,
