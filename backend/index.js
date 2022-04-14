@@ -8,7 +8,7 @@ const config = require("./config/config.json");
 const mongoose = require("mongoose");
 const connectDB = require("./database/connection");
 
-//const questionRoutes = require("./routes/question.routes");
+
 const answerRoutes = require("./routes/answer.routes");
 const userRoutes = require("./routes/user.routes");
 const tagRoutes = require("./routes/tag.routes");
@@ -53,7 +53,7 @@ connectDB();
 // app.use(questionRoutes);
 // app.use("/api/v1/", answerRoutes);
 
-//app.use("/api/question/", questionRoutes);
+
 app.use("/api/answer/", answerRoutes);
 app.use("/api/user/", userRoutes);
 app.use("/api/tag/", tagRoutes);
