@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-const answerSchema = require("./answerModel");
 const commentSchema = require("./commentModel");
-const tagSchema = require("./TagModel");
 
 const questionSchema = new mongoose.Schema(
   {
@@ -27,7 +25,7 @@ const questionSchema = new mongoose.Schema(
       required: false,
       default: 0,
     },
-    tags: [tagSchema.schema],
+    tags: [String],
     comments: [commentSchema.schema],
     waitingForApproval: { 
       type: Boolean,
