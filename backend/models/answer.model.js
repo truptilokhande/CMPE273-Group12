@@ -9,20 +9,20 @@ const answerSchema = new mongoose.Schema(
     },
     questionId: {
       type: mongoose.Types.ObjectId,
-      required: true,
+      required: false,
     },
-    answerBody: { 
-      type: String, 
+    answerBody: {
+      type: String,
       required: true,
     },
     comments: [commentSchema.schema],
-    votes: { 
-      type: Number, 
+    votes: {
+      type: Number,
       required: false,
       default: 0,
     },
-    markedAsRight: { 
-      type: Boolean, 
+    markedAsRight: {
+      type: Boolean,
       required: false,
       default: false,
     },
