@@ -14,6 +14,34 @@ const userSchema = mongoose.Schema(
       type: String, 
       required: true 
     },
+    profilepicture:{
+      type:String,
+      required:true
+    },
+    lastLoginDate:{
+      type:Date,
+      required: true
+    },
+    about:{ 
+      type: String, 
+      required: true 
+    },
+    reputation:{
+      type: Number,
+      required: true
+    },
+    location: { 
+      type: String,
+      required: true 
+    },
+    tags:{
+     type:[tagSchema.schema],
+      
+    },
+    bookmarks:{
+      type:[[Number]]
+    },
+    
   },
   {
     timestamps: true,
