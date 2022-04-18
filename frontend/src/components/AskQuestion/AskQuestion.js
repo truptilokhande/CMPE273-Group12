@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
+import ReactTags from "react-tag-autocomplete";
 
 function AskQuestion() {
-  const modules = {
+  const quillOptions = {
     toolbar: [
       //   [{ 'header': [1, 2, false] }],
       ["bold", "italic", "underline"],
@@ -13,6 +14,33 @@ function AskQuestion() {
       ["clean"],
     ],
   };
+
+  const reactTags = useRef();
+  const [tags, setTags] = useState([]);
+  const [questionBody, setQuestionBody] = useState();
+  console.log(questionBody);
+  const [suggestions] = useState([
+    { id: 1, name: "Apples" },
+    { id: 2, name: "Pears" },
+    { id: 3, name: "Bananas" },
+    { id: 4, name: "Mangos" },
+    { id: 5, name: "Lemons" },
+    { id: 6, name: "Apricots" },
+  ]);
+
+  const onDelete = useCallback(
+    (tagIndex) => {
+      setTags(tags.filter((_, i) => i !== tagIndex));
+    },
+    [tags]
+  );
+
+  const onAddition = useCallback(
+    (newTag) => {
+      setTags([...tags, newTag]);
+    },
+    [tags]
+  );
 
   return (
     <>
@@ -36,9 +64,6 @@ function AskQuestion() {
               maxlength="300"
               placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
               className="ask-question-input"
-              value=""
-              data-min-length="15"
-              data-max-length="150"
             />
           </div>
           {/* <div className="flex--item s-input-message js-stacks-validation-message">
@@ -61,7 +86,10 @@ function AskQuestion() {
           <div className="d-flex position-relative">
             <ReactQuill
               placeholder={"Write something awesome..."}
-              modules={modules}
+              modules={quillOptions}
+              onChange={(val) => {
+                setQuestionBody(val);
+              }}
             />
           </div>
         </div>
@@ -77,16 +105,20 @@ function AskQuestion() {
             </div>
           </div>
           <div className="d-flex position-relative">
-            <input
+            {/* <input
               id="title"
               name="title"
               type="text"
               maxlength="300"
               placeholder="e.g. (python css excel)"
               className="ask-question-input"
-              value=""
-              data-min-length="15"
-              data-max-length="150"
+            /> */}
+            <ReactTags
+              ref={reactTags}
+              tags={tags}
+              suggestions={suggestions}
+              onDelete={onDelete}
+              onAddition={onAddition}
             />
           </div>
         </div>
