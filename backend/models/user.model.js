@@ -1,5 +1,17 @@
 const mongoose = require("mongoose");
 
+
+const userTagSchema = new mongoose.Schema({
+  tagName: {
+    type: String,
+    required: true,
+  },
+  tagCount: {
+    type: Number,
+    required: true,
+  },
+});
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -50,14 +62,4 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const userTagSchema = new mongoose.Schema({
-  tagName: {
-    type: String,
-    required: true,
-  },
-  tagCount: {
-    type: Number,
-    required: true,
-  },
-});
 module.exports = mongoose.model("User", userSchema);
