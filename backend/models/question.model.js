@@ -1,33 +1,50 @@
 const mongoose = require("mongoose");
 const commentSchema = require("./commentModel");
 
+const questionTagSchema = new mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    _id: false,
+  },
+  {
+    timestamps: false,
+  }
+);
+
 const questionSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
     },
-    questionbody: { 
-      type: String, 
+    questionbody: {
+      type: String,
       required: true,
     },
-    userId: { 
-      type: mongoose.Types.ObjectId, 
+    userId: {
+      type: mongoose.Types.ObjectId,
       required: true,
     },
-    votes: { 
-      type: Number, 
+    votes: {
+      type: Number,
       required: false,
       default: 0,
     },
     views: {
-      type: Number, 
+      type: Number,
       required: false,
       default: 0,
     },
-    tags: [String],
+    tags: [questionTagSchema],
     comments: [commentSchema.schema],
-    waitingForApproval: { 
+    waitingForApproval: {
       type: Boolean,
       required: false,
     },

@@ -1,12 +1,14 @@
 const { Router } = require("express");
 const router = Router();
 const userController = require("../controllers/user.controller");
-const { authenticateUser } = require('../middleware/authMiddleware')
+// middleware TODO
+// const { authenticateUser } = require('../middleware/authMiddleware');
 
 router.post("/register", userController.register);
 router.post("/login", userController.login);
-router.get("/getProfile", authenticateUser, userController.getProfile);
-router.get("/getAllUsers", authenticateUser, userController.getAllUsers);
-router.get("/getUser", authenticateUser, userController.getUser);
+router.get("/getProfile", userController.getProfile);
+router.get("/getAllUsers", userController.getAllUsers);
+router.get("/getUser", userController.getUser);
+router.get("/signout", userController.signout);
 
 module.exports = router;

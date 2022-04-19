@@ -41,6 +41,7 @@ const userSchema = mongoose.Schema(
     reputation: {
       type: Number,
       required: false,
+      default: 0,
     },
     location: {
       type: String,
@@ -49,10 +50,12 @@ const userSchema = mongoose.Schema(
     upVoteCount: {
       type: Number,
       required: false,
+      default: 0,
     },
     downVoteCount: {
       type: Number,
       required: false,
+      default: 0,
     },
     tags: [userTagSchema],
     bookmarks: [String],

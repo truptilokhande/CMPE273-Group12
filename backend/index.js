@@ -12,6 +12,7 @@ const connectDB = require("./database/connection");
 const answerRoutes = require("./routes/answer.routes");
 const userRoutes = require("./routes/user.routes");
 const tagRoutes = require("./routes/tag.routes");
+const questionRoutes = require("./routes/question.routes");
 
 //set up cors
 app.use(cors({ origin: config.frontEndUrl, credentials: true }));
@@ -57,6 +58,7 @@ connectDB();
 app.use("/api/answer/", answerRoutes);
 app.use("/api/user/", userRoutes);
 app.use("/api/tag/", tagRoutes);
+app.use("/api/question/", questionRoutes);
 
 // starting the server
 app.listen(PORT, () => {

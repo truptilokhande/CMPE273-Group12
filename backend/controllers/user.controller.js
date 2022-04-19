@@ -90,6 +90,14 @@ const login = asyncHandler(async (req, res) => {
     }
 })
 
+// TODO
+const signout = (req, res) => {
+    res.json({
+        "status": 200,
+        "message": "User logged out successfully"
+    })
+  };
+
 // @desc    Get user data
 // @route   GET /api/users/getProfile
 // @access  Public
@@ -135,5 +143,6 @@ module.exports = {
     login,
     getProfile,
     getAllUsers,
-    getUser
+    getUser,
+    signout
 }
