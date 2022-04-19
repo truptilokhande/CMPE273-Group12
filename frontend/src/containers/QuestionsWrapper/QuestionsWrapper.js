@@ -1,5 +1,5 @@
 import React from "react";
-import parse from 'html-react-parser'
+import parse from "html-react-parser";
 
 function QuestionsWrapper(props) {
   console.log(props);
@@ -13,7 +13,9 @@ function QuestionsWrapper(props) {
             <div className="question-summary">
               <div className="question-stats">
                 <div className="question-votes">
-                  <span className="question-votes-number">{question.votes}</span>
+                  <span className="question-votes-number">
+                    {question.votes}
+                  </span>
                   <span className="question-votes-text">votes</span>
                 </div>
                 <div className="question-answers">
@@ -21,24 +23,31 @@ function QuestionsWrapper(props) {
                   <span className="question-answers-text">answers</span>
                 </div>
                 <div className="question-views">
-                  <span className="question-views-number">{question.views}</span>
+                  <span className="question-views-number">
+                    {question.views}
+                  </span>
                   <span className="question-views-text">views</span>
                 </div>
               </div>
               <div className="question-content">
                 <h3 className="question-content-title">
-                  <a href="/questionOverview" className="question-link">
+                  <a
+                    href={`/questionOverview/${question?._id}`}
+                    className="question-link"
+                  >
                     {question?.title}
                   </a>
                 </h3>
-                <div className="question-content-summary">{parse(question?.questionbody)}</div>
+                <div className="question-content-summary">
+                  {parse(question?.questionbody)}
+                </div>
                 <div className="question-content-meta-data d-flex align-item-center justify-content-between flex-wrap">
                   <div className="question-tags d-flex flex-wrap">
-                    {
-                      question?.tags.map((tag)=>( <a href="/" className="tag">
-                      {tag?.name}
-                    </a>))
-                    }
+                    {question?.tags.map((tag) => (
+                      <a href="/" className="tag">
+                        {tag?.name}
+                      </a>
+                    ))}
                     {/* tags iteration stop */}
                   </div>
 

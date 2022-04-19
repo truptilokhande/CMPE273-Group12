@@ -1,9 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./QuestionOverview.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
+import axios from "axios";
+import connection from "../../config.json";
 
 function QuestionOverview() {
+  useEffect(() => {
+    axios
+      .get(`${connection.connectionURL}/api/question/getQuestions`)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
   const [addCommentToQuestion, setAddCommentToQuestion] = useState(false);
   const [addCommentToAnswer, setAddCommentToAnswer] = useState(false);
   const modules = {

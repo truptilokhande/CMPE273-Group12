@@ -29,11 +29,9 @@ function App() {
             <Route path="/tags" exact element={<Tags />} />
             <Route path="/users" exact element={<Users />} />
             <Route path="/askQuestion" exact element={<AskQuestion />} />
-            <Route
-              path="/questionOverview/:id"
-              exact
-              element={<QuestionOverview />}
-            />
+            <Route path="questionOverview">
+              <Route path=":id" element={<QuestionOverview />} />
+            </Route>
             <Route path="/tagOverview" exact element={<TagOverview />} />
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />

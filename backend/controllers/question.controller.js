@@ -70,46 +70,48 @@ const editquestion = async (req, res) => {
 };
 
 const getquestion = async (req, res) => {
-  questionId = req.params.questionId;
-  const currtimestamp = new Date();
-  const todaysdate = currtimestamp
-    .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
-    .slice(0, 9);
-  const datenow_arr = todaysdate.split("/");
-  console.log(datenow_arr);
-  Question.updateOne(
-    { _id: questionId },
-    { $inc: { views: 1 } },
-    function (err, result) {
-      if (err) throw err;
-      console.log("1 document updated");
-      Question.findOne({ _id: questionId }, function (err, resultafterviews) {
-        if (err) throw err;
-        const answerscount = resultafterviews.answers.length;
-        const createdAt = resultafterviews.createdAt
-          .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
-          .slice(0, 9);
-        const creationdate_arr = createdAt.split("/");
-        console.log(creationdate_arr);
-        console.log(todaysdate, createdAt);
 
-        const monthdiff =
-          parseInt(datenow_arr[0]) - parseInt(creationdate_arr[0]);
-        const daysdiff =
-          parseInt(datenow_arr[1]) - parseInt(creationdate_arr[1]);
-        const yeardiff =
-          parseInt(datenow_arr[2]) - parseInt(creationdate_arr[2]);
-        console.log(monthdiff, daysdiff, yeardiff);
-        res.send({
-          resultafterviews: resultafterviews,
-          answerscount: answerscount,
-          monthdiff: monthdiff,
-          daysdiff: daysdiff,
-          yeardiff: yeardiff,
-        });
-      });
-    }
-  );
+  const questionId = req.params.questionId;
+  
+  // const currtimestamp = new Date();
+  // const todaysdate = currtimestamp
+  //   .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  //   .slice(0, 9);
+  // const datenow_arr = todaysdate.split("/");
+
+  // Question.updateOne(
+  //   { _id: questionId },
+  //   { $inc: { views: 1 } },
+  //   function (err, result) {
+  //     if (err) throw err;
+  //     console.log("1 document updated");
+  //     Question.findOne({ _id: questionId }, function (err, resultafterviews) {
+  //       if (err) throw err;
+  //       const answerscount = resultafterviews.answers.length;
+  //       const createdAt = resultafterviews.createdAt
+  //         .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  //         .slice(0, 9);
+  //       const creationdate_arr = createdAt.split("/");
+  //       console.log(creationdate_arr);
+  //       console.log(todaysdate, createdAt);
+
+  //       const monthdiff =
+  //         parseInt(datenow_arr[0]) - parseInt(creationdate_arr[0]);
+  //       const daysdiff =
+  //         parseInt(datenow_arr[1]) - parseInt(creationdate_arr[1]);
+  //       const yeardiff =
+  //         parseInt(datenow_arr[2]) - parseInt(creationdate_arr[2]);
+  //       console.log(monthdiff, daysdiff, yeardiff);
+  //       res.send({
+  //         resultafterviews: resultafterviews,
+  //         answerscount: answerscount,
+  //         monthdiff: monthdiff,
+  //         daysdiff: daysdiff,
+  //         yeardiff: yeardiff,
+  //       });
+  //     });
+  //   }
+  // );
 };
 
 module.exports = {
