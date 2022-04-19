@@ -1,7 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "./SignIn.css";
+import { connect } from "react-redux";
+import { signin } from "../../store/thunk/thunk";
 
-function SignIn() {
+function SignIn({ signIn }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
+  const login = () => {
+    const user = {
+      email,
+      password,
+    };
+    signIn(user);
+  };
+
   return (
     <>
       <div className="sign-up-wrapper">
@@ -21,7 +35,18 @@ function SignIn() {
             <form className="d-flex flex-column">
               <div className="d-flex flex-column">
                 <label className="form-label my-1">Email</label>
-                <input name="display-name" className="form-input"></input>
+                <input
+                  name="display-name"
+                  className="form-input"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                ></input>
+                {!email.match(mailformat) && (
+                  <div className="text-danger font-italic small">
+                    Please input valid email ID
+                  </div>
+                )}
               </div>
 
               <div className="d-flex flex-column">
@@ -30,10 +55,31 @@ function SignIn() {
                   name="display-name"
                   className="form-input"
                   type="password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                 ></input>
+                {password.length < 1 && (
+                  <div className="text-danger font-italic small">
+                    Please enter password
+                  </div>
+                )}
               </div>
               <div className="d-flex flex-column mt-3">
-                <button className="nav-signup-btn nav-btn form-input-button">
+                <button
+                  className="nav-signup-btn nav-btn form-input-button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    login();
+                  }}
+                  disabled={
+                    !(
+                      email.length > 0 &&
+                      password.length > 0 &&
+                      email.match(mailformat)
+                    )
+                  }
+                >
                   Log in
                 </button>
               </div>
@@ -45,4 +91,8 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+const mapDispatchToProps = (dispatch) => ({
+  signIn: (val) => dispatch(signin(val)),
+});
+
+export default connect(null, mapDispatchToProps)(SignIn);
