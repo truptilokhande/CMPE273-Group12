@@ -25,11 +25,12 @@ function App() {
         <div className="content container-fluid mt-4 ml-3 p-0 mb-4">
           <Routes>
             <Route path="/" exact element={<Homepage />} />
+            <Route path="/homepage" exact element={<Homepage />} />
             <Route path="/tags" exact element={<Tags />} />
             <Route path="/users" exact element={<Users />} />
             <Route path="/askQuestion" exact element={<AskQuestion />} />
             <Route
-              path="/questionOverview"
+              path="/questionOverview/:id"
               exact
               element={<QuestionOverview />}
             />
