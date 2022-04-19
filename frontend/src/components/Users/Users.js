@@ -52,9 +52,9 @@ function Users() {
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
                   <a href="/" className="users-name">mozway</a>
-                  <span class="users-location">Mare Tranquillitatis</span>
-                  <div class="users-reputation">
-                    <span class="reputation-score">968</span>
+                  <span className="users-location">Mare Tranquillitatis</span>
+                  <div className="users-reputation">
+                    <span className="reputation-score">968</span>
                   </div>
                 </div>
               </div>
@@ -75,9 +75,9 @@ function Users() {
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
                   <a href="/" className="users-name">mozway</a>
-                  <span class="users-location">Mare Tranquillitatis</span>
-                  <div class="users-reputation">
-                    <span class="reputation-score">968</span>
+                  <span className="users-location">Mare Tranquillitatis</span>
+                  <div className="users-reputation">
+                    <span className="reputation-score">968</span>
                   </div>
                 </div>
               </div>
@@ -98,9 +98,9 @@ function Users() {
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
                   <a href="/" className="users-name">mozway</a>
-                  <span class="users-location">Mare Tranquillitatis</span>
-                  <div class="users-reputation">
-                    <span class="reputation-score">968</span>
+                  <span className="users-location">Mare Tranquillitatis</span>
+                  <div className="users-reputation">
+                    <span className="reputation-score">968</span>
                   </div>
                 </div>
               </div>
@@ -121,9 +121,9 @@ function Users() {
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
                   <a href="/" className="users-name">mozway</a>
-                  <span class="users-location">Mare Tranquillitatis</span>
-                  <div class="users-reputation">
-                    <span class="reputation-score">968</span>
+                  <span className="users-location">Mare Tranquillitatis</span>
+                  <div className="users-reputation">
+                    <span className="reputation-score">968</span>
                   </div>
                 </div>
               </div>
@@ -144,9 +144,9 @@ function Users() {
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
                   <a href="/" className="users-name">mozway</a>
-                  <span class="users-location">Mare Tranquillitatis</span>
-                  <div class="users-reputation">
-                    <span class="reputation-score">968</span>
+                  <span className="users-location">Mare Tranquillitatis</span>
+                  <div className="users-reputation">
+                    <span className="reputation-score">968</span>
                   </div>
                 </div>
               </div>

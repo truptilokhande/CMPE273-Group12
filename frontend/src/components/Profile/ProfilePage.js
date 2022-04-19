@@ -62,7 +62,7 @@ const ProfilePage = () => {
           <div className='profile-all-dets'>
             <div className='about'>
             
-                <h4 class='ml-10' style={{marginLeft:"40px"}}>About</h4>
+                <h4 className='ml-10' style={{marginLeft:"40px"}}>About</h4>
                 <div className='about-content'>
                   <p style={{padding:"10px"}}> Python enthusiast</p>
                   <button className='editdetbutton'>edit details</button>
@@ -71,13 +71,13 @@ const ProfilePage = () => {
             </div>
             <div className='badges'>
               {/* //loop badges */}
-              <h4 class='ml-10' style={{marginLeft:"30px"}}>Badges</h4>
+              <h4 className='ml-10' style={{marginLeft:"30px"}}>Badges</h4>
                <Badge ></Badge> 
               
 
             </div>
             <div className='TopTags'>
-              <h4 class='ml-10' style={{marginLeft:"30px"}}>Top tags</h4>
+              <h4 className='ml-10' style={{marginLeft:"30px"}}>Top tags</h4>
               <TopTags/>
             </div>
            <div className='Posts'>
