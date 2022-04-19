@@ -1,9 +1,24 @@
 import React from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import axios from 'axios';
+import connection from '../../config.json';
 
-function Navbar() {
-  const isAuthenticated = false;
+function Navbar({ isAuthenticated }) {
+
+   const signout = () => {
+    axios
+      .get(`${connection.connectionURL}/api/user/signout`)
+      .then(() => {
+        localStorage.clear();
+        window.location.reload(true);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -30,8 +45,8 @@ function Navbar() {
           {isAuthenticated ? (
             <ol className="d-flex list-unstyled m-0 align-items-center">
               <li className="d-flex align-items-center">
-                <a href="/user" class="navbar-user-card">
-                  <div class="navbar-avatar">
+                <a href="/user" className="navbar-user-card">
+                  <div className="navbar-avatar">
                     <img
                       src="https://www.gravatar.com/avatar/0555bd0deb416a320a0069abef08078a?s=96&amp;d=identicon&amp;r=PG&amp;f=1"
                       alt="user avatar"
@@ -56,9 +71,9 @@ function Navbar() {
                 </div>
               </li>
               <li className="mx-3 align-self-end mt-2">
-                <a href="/myMessages" class="navbar-messages">
+                <a href="/myMessages" className="navbar-messages">
                   <svg
-                    class="iconInbox"
+                    className="iconInbox"
                     width="20"
                     height="18"
                     viewBox="0 0 20 18"
@@ -69,7 +84,12 @@ function Navbar() {
               </li>
 
               <li className="align-self-end">
-                <a href="/logout" class="navbar-logout">
+                <button
+                  className="navbar-logout"
+                  onClick={() => {
+                    signout();
+                  }}
+                >
                   <svg
                     id="cloud-upload"
                     fill="#232629"
@@ -84,19 +104,19 @@ function Navbar() {
                       d="M10.09 15.59l1.41 1.41 5-5-5-5-1.41 1.41 2.58 2.59h-9.67v2h9.67l-2.58 2.59zm8.91-12.59h-14c-1.11 0-2 .9-2 2v4h2v-4h14v14h-14v-4h-2v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-14c0-1.1-.9-2-2-2z"
                     />
                   </svg>
-                </a>
+                </button>
               </li>
             </ol>
           ) : (
             <>
               <ul className="navbar-nav ml-auto mr-4">
                 <li className="nav-item ml-1">
-                  <a href="/signin" class="nav-login-btn nav-btn">
+                  <a href="/signin" className="nav-login-btn nav-btn">
                     Log in
                   </a>
                 </li>
                 <li className="nav-item ml-1">
-                  <a href="/signup" class="nav-signup-btn nav-btn">
+                  <a href="/signup" className="nav-signup-btn nav-btn">
                     Sign up
                   </a>
                 </li>
@@ -109,4 +129,8 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.isAuthenticated,
+});
+
+export default connect(mapStateToProps, null)(Navbar);

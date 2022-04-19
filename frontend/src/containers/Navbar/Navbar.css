@@ -63,3 +63,8 @@
 .iconInbox path {
   fill: #232629;
 }
+.navbar-logout {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
