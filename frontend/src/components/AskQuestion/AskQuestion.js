@@ -3,8 +3,13 @@ import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import ReactTags from "react-tag-autocomplete";
+import axios from "axios";
+import connection from "../../config.json";
+import { connect } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 
-function AskQuestion() {
+function AskQuestion({ user, tagsFromStore }) {
+  const navigate = useNavigate();
   const quillOptions = {
     toolbar: [
       //   [{ 'header': [1, 2, false] }],
@@ -16,17 +21,17 @@ function AskQuestion() {
   };
 
   const reactTags = useRef();
+  const [title, setTitle] = useState();
+  const [questionbody, setQuestionBody] = useState();
   const [tags, setTags] = useState([]);
-  const [questionBody, setQuestionBody] = useState();
-  console.log(questionBody);
-  const [suggestions] = useState([
-    { id: 1, name: "Apples" },
-    { id: 2, name: "Pears" },
-    { id: 3, name: "Bananas" },
-    { id: 4, name: "Mangos" },
-    { id: 5, name: "Lemons" },
-    { id: 6, name: "Apricots" },
-  ]);
+  const [suggestions] = useState(
+    tagsFromStore.map((tag) => {
+      return {
+        id: tag._id,
+        name: tag.name,
+      };
+    })
+  );
 
   const onDelete = useCallback(
     (tagIndex) => {
@@ -42,11 +47,28 @@ function AskQuestion() {
     [tags]
   );
 
+  const postQuestion = () => {
+    axios.defaults.headers.common.authorization = localStorage.getItem("token");
+    axios
+      .post(`${connection.connectionURL}/api/question/addquestion`, {
+        userId: user?._id,
+        title,
+        questionbody,
+        tags,
+      })
+      .then((response) => {
+        navigate(`/questionOverview/${response.data._id}`);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
   return (
     <>
       <h1 className="ask-question-heading">Ask a question</h1>
       <div className="ask-question-wrapper">
-        <div className="d-flex flex-column p-4 title-wrapper">
+        <div className="d-flex flex-column p-4 title-wrapper pb-1">
           <div className="d-flex flex-column">
             <label className="ask-question-label mb-0">Title</label>
             <div className="ask-question-description">
@@ -64,8 +86,16 @@ function AskQuestion() {
               maxlength="300"
               placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
               className="ask-question-input"
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
             />
           </div>
+          {!title && (
+            <div className="text-danger font-italic small">
+              Please input valid email ID
+            </div>
+          )}
           {/* <div className="flex--item s-input-message js-stacks-validation-message">
             Title must be at least 15 characters.
           </div> */}
@@ -105,14 +135,6 @@ function AskQuestion() {
             </div>
           </div>
           <div className="d-flex position-relative">
-            {/* <input
-              id="title"
-              name="title"
-              type="text"
-              maxlength="300"
-              placeholder="e.g. (python css excel)"
-              className="ask-question-input"
-            /> */}
             <ReactTags
               ref={reactTags}
               tags={tags}
@@ -123,11 +145,22 @@ function AskQuestion() {
           </div>
         </div>
       </div>
-      <button className="ask-question-submit my-3" type="submit">
+      <button
+        className="ask-question-submit my-3"
+        type="submit"
+        onClick={() => {
+          postQuestion();
+        }}
+      >
         Post Your Question
       </button>
     </>
   );
 }
 
-export default AskQuestion;
+const mapStateToProps = (state) => ({
+  user: state.user,
+  tagsFromStore: state.tags,
+});
+
+export default connect(mapStateToProps, null)(AskQuestion);
