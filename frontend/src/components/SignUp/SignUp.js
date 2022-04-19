@@ -1,16 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import "./SignUp.css";
+import { connect } from "react-redux";
+import { signup } from "../../store/thunk/thunk";
 
-function SignUp() {
+function SignUp({ signUp }) {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
+  const register = () => {
+    const newUser = {
+      email,
+      name,
+      password,
+    };
+    signUp(newUser);
+  };
+
   return (
     <>
       <div className="sign-up-wrapper">
         <div className="sign-up d-flex flex-column justify-content-center m-4">
-          <div class="text-center mb-4">
+          <div className="text-center mb-4">
             <a href="https://stackoverflow.com">
               <svg
                 aria-hidden="true"
-                class="iconLogoGlyphMd "
+                className="iconLogoGlyphMd "
                 width="32"
                 height="37"
                 viewBox="0 0 32 37"
@@ -27,11 +43,33 @@ function SignUp() {
             <form className="d-flex flex-column">
               <div className="d-flex flex-column">
                 <label className="form-label my-1">Display name</label>
-                <input name="display-name" className="form-input"></input>
+                <input
+                  name="display-name"
+                  className="form-input"
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                ></input>
+                {name.length < 1 && (
+                  <div className="text-danger font-italic small">
+                    Please enter name
+                  </div>
+                )}
               </div>
               <div className="d-flex flex-column">
                 <label className="form-label my-1">Email</label>
-                <input name="display-name" className="form-input"></input>
+                <input
+                  name="display-name"
+                  className="form-input"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                ></input>
+                {!email.match(mailformat) && (
+                  <div className="text-danger font-italic small">
+                    Please input valid email ID
+                  </div>
+                )}
               </div>
               <div className="d-flex flex-column">
                 <label className="form-label my-1">Password</label>
@@ -39,10 +77,32 @@ function SignUp() {
                   name="display-name"
                   className="form-input"
                   type="password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                 ></input>
+                {password.length < 1 && (
+                  <div className="text-danger font-italic small">
+                    Please enter password
+                  </div>
+                )}
               </div>
               <div className="d-flex flex-column mt-3">
-                <button className="nav-signup-btn nav-btn form-input-button">
+                <button
+                  className="nav-signup-btn nav-btn form-input-button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    register();
+                  }}
+                  disabled={
+                    !(
+                      email.length > 0 &&
+                      password.length > 0 &&
+                      email.match(mailformat) &&
+                      name.length > 0
+                    )
+                  }
+                >
                   Sign up
                 </button>
               </div>
@@ -54,4 +114,7 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+const mapDispatchToProps = (dispatch) => ({
+  signUp: (val) => dispatch(signup(val)),
+});
+export default connect(null, mapDispatchToProps)(SignUp);
