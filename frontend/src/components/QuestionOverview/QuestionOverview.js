@@ -151,40 +151,40 @@ function QuestionOverview() {
         </div>
 
         <div className="question-comments mt-4">
-          <ul class="comments-list">
-            <li class="comment m-2">
-              <div class="comment-text  js-comment-text-and-form">
-                <div class="comment-body js-comment-edit-hide">
-                  <span class="comment-copy">
+          <ul className="comments-list">
+            <li className="comment m-2">
+              <div className="comment-text  js-comment-text-and-form">
+                <div className="comment-body js-comment-edit-hide">
+                  <span className="comment-copy">
                     Hi. Please take the time to read this post on
                   </span>
 
-                  <div class="d-inline-flex align-items-center">
+                  <div className="d-inline-flex align-items-center">
                     &nbsp;–&nbsp;
-                    <a href="/" class="comment-user">
+                    <a href="/" className="comment-user">
                       jezrael
                     </a>
                   </div>
-                  <span class="comment-date">
+                  <span className="comment-date">
                     <span>27 mins ago</span>
                   </span>
                 </div>
               </div>
             </li>
-            <li class="comment m-2">
-              <div class="comment-text  js-comment-text-and-form">
-                <div class="comment-body js-comment-edit-hide">
-                  <span class="comment-copy">
+            <li className="comment m-2">
+              <div className="comment-text  js-comment-text-and-form">
+                <div className="comment-body js-comment-edit-hide">
+                  <span className="comment-copy">
                     Hi. Please take the time to read this post on
                   </span>
 
-                  <div class="d-inline-flex align-items-center">
+                  <div className="d-inline-flex align-items-center">
                     &nbsp;–&nbsp;
-                    <a href="/" class="comment-user">
+                    <a href="/" className="comment-user">
                       jezrael
                     </a>
                   </div>
-                  <span class="comment-date">
+                  <span className="comment-date">
                     <span>27 mins ago</span>
                   </span>
                 </div>
@@ -262,7 +262,7 @@ function QuestionOverview() {
                 <div className="text-center correct-answer">
                   <svg
                     aria-hidden="true"
-                    class="svg-icon iconCheckmarkLg"
+                    className="svg-icon iconCheckmarkLg"
                     width="36"
                     height="36"
                     viewBox="0 0 36 36"
@@ -336,40 +336,40 @@ function QuestionOverview() {
           </div>
 
           <div className="question-comments mt-4">
-            <ul class="comments-list">
-              <li class="comment m-2">
-                <div class="comment-text  js-comment-text-and-form">
-                  <div class="comment-body js-comment-edit-hide">
-                    <span class="comment-copy">
+            <ul className="comments-list">
+              <li className="comment m-2">
+                <div className="comment-text  js-comment-text-and-form">
+                  <div className="comment-body js-comment-edit-hide">
+                    <span className="comment-copy">
                       Hi. Please take the time to read this post on
                     </span>
 
-                    <div class="d-inline-flex align-items-center">
+                    <div className="d-inline-flex align-items-center">
                       &nbsp;–&nbsp;
-                      <a href="/" class="comment-user">
+                      <a href="/" className="comment-user">
                         jezrael
                       </a>
                     </div>
-                    <span class="comment-date">
+                    <span className="comment-date">
                       <span>27 mins ago</span>
                     </span>
                   </div>
                 </div>
               </li>
-              <li class="comment m-2">
-                <div class="comment-text  js-comment-text-and-form">
-                  <div class="comment-body js-comment-edit-hide">
-                    <span class="comment-copy">
+              <li className="comment m-2">
+                <div className="comment-text  js-comment-text-and-form">
+                  <div className="comment-body js-comment-edit-hide">
+                    <span className="comment-copy">
                       Hi. Please take the time to read this post on
                     </span>
 
-                    <div class="d-inline-flex align-items-center">
+                    <div className="d-inline-flex align-items-center">
                       &nbsp;–&nbsp;
-                      <a href="/" class="comment-user">
+                      <a href="/" className="comment-user">
                         jezrael
                       </a>
                     </div>
-                    <span class="comment-date">
+                    <span className="comment-date">
                       <span>27 mins ago</span>
                     </span>
                   </div>
