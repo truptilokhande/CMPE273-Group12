@@ -9,18 +9,10 @@ const addquestion = async (req, res) => {
   const new_question = {userId:userToken,title: title, tags: tags, questionbody: questionbody, views:0,waitingForApproval:false,answers:[],comments:[],votes:0 }
   new Question(new_question).save()
   .then((result) => {
-    res.send({
-      "response_code": 200,
-      "response_message": "Success",
-      "data":result
-    })
+    res.status(200).send({ success: true, result: data});
+   
   }).catch((err) => {
-    res.send({
-      "response_code": 500,
-      "response_message": "Backend error",
-      "data":err
-    })
-    
+    res.status(500).send({message: "Backend error" });
   });
 
 }
@@ -54,7 +46,8 @@ const getquestion = async (req, res) => {
       const monthdiff = parseInt(datenow_arr[0]) - parseInt(creationdate_arr[0])
       const daysdiff = parseInt(datenow_arr[1]) - parseInt(creationdate_arr[1])
       const yeardiff = parseInt(datenow_arr[2]) - parseInt(creationdate_arr[2])
-      res.send({resultafterviews:resultafterviews,answerscount:answerscount,monthdiff:monthdiff,daysdiff:daysdiff,yeardiff:yeardiff})
+      data = {resultafterviews:resultafterviews,answerscount:answerscount,monthdiff:monthdiff,daysdiff:daysdiff,yeardiff:yeardiff}
+      res.send({ success: true, result: data })
     })
   });
   
