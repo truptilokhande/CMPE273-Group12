@@ -13,6 +13,7 @@ import SearchPage from "./components/SearchPage/SearchPage";
 import SignUp from "./components/SignUp/SignUp";
 import SignIn from "./components/SignIn/SignIn";
 import EditQuestion from "./components/EditQuestion/EditQuestion";
+
 // import Footer from './containers/Footer/Footer';
 
 function App() {
