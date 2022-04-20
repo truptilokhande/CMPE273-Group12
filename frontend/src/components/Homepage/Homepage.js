@@ -6,13 +6,17 @@ import connection from "../../config.json";
 import { connect } from "react-redux";
 import { getTags } from "../../store/thunk/thunk";
 
+
 function Homepage({ setTagsInstore, isAuthenticated }) {
+  
   const [questions, setQuestions] = useState();
+  const [answercount, setAnswerCount] = useState();
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/question/getQuestions`)
       .then((response) => {
-        setQuestions(response?.data?.data);
+        setQuestions(response?.data?.data?.questions);
+        setAnswerCount(response?.data?.data?.answercount);
       })
       .catch((err) => {
         throw err;
@@ -39,7 +43,7 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
       <div className="d-flex align-items-end justify-content-between mb-3">
         <div className=""> {questions?.length} questions</div>
 
-        <div className="d-flex flex-row filter-btn-wrapper mt-3">
+        <div className="d-flex flex-row filter-btn-wrappers mt-3">
           <div className="filter-btn">Interesting</div>
           <div className="filter-btn">Hot</div>
           <div className="filter-btn">Score</div>
@@ -47,7 +51,7 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
         </div>
       </div>
 
-      <QuestionsWrapper questions={questions}/>
+      <QuestionsWrapper questions={questions} answercount={answercount} />
     </>
   );
 }

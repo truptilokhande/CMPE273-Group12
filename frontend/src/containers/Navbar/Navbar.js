@@ -2,12 +2,11 @@ import React from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import axios from 'axios';
-import connection from '../../config.json';
+import axios from "axios";
+import connection from "../../config.json";
 
 function Navbar({ isAuthenticated }) {
-
-   const signout = () => {
+  const signout = () => {
     axios
       .get(`${connection.connectionURL}/api/user/signout`)
       .then(() => {
@@ -17,6 +16,21 @@ function Navbar({ isAuthenticated }) {
       .catch((err) => {
         throw err;
       });
+  };
+
+  const onSearch = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const serachkey = e.target.value;
+      if(/^\[.*\]$/.test(serachkey)){
+        //
+      }
+      // check for [ ] and then its tag search and redirect to tag overview page
+      // check for user and redirect to users page
+      // check for " " and search for anything redirect to search page
+      // is:question redirect to home page
+      // is:accepted ??
+    }
   };
 
   return (
@@ -38,7 +52,47 @@ function Navbar({ isAuthenticated }) {
             className="form-control navbar-search-input"
             type="search"
             placeholder="Search..."
+            onKeyDown={(e) => {
+              onSearch(e);
+            }}
           />
+          <div
+            class="js-search-hints px-4"
+            aria-describedby="Tips for searching"
+          >
+            <div class="js-search-hints-text d-flex">
+              <div class="flex-grow-1">
+                <div class="mb-3">
+                  <span class="search-criteria mr-2">[tag]</span>
+                  <span class="search-criteria-description">
+                    search within a tag
+                  </span>
+                </div>
+                <div class="mb12">
+                  <span class="search-criteria mr-2">user:1234</span>
+                  <span class="search-criteria-description">
+                    search by author
+                  </span>
+                </div>
+                <div class="mb12">
+                  <span class="search-criteria mr-2">"words here"</span>
+                  <span class="search-criteria-description">exact phrase</span>
+                </div>
+              </div>
+              <div class="flex-grow-1">
+                <div class="mb-3">
+                  <span class="search-criteria mr-2">is:question</span>
+                  <span class="search-criteria-description">type of post</span>
+                </div>
+                <div class="">
+                  <span class="search-criteria mr-2">isaccepted:yes</span>
+                  <span class="search-criteria-description">
+                    search within status
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
 
         <div className="auth-details">

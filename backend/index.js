@@ -3,7 +3,6 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-//const frontendURL = require("./config.json").frontEnd;
 const config = require("./config/config.json");
 const mongoose = require("mongoose");
 const connectDB = require("./database/connection");

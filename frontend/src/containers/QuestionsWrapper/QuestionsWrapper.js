@@ -1,14 +1,15 @@
 import React from "react";
 import parse from "html-react-parser";
+import RelativeTime from "@yaireo/relative-time";
 
 function QuestionsWrapper(props) {
-  console.log(props);
+
+  const relativeTime = new RelativeTime();
   return (
     <>
       <div className="questions-wrapper move-left">
         {/* start iterating question  */}
         {props.questions?.map((question) => {
-          // console.log(question)
           return (
             <div className="question-summary">
               <div className="question-stats">
@@ -19,7 +20,9 @@ function QuestionsWrapper(props) {
                   <span className="question-votes-text">votes</span>
                 </div>
                 <div className="question-answers">
-                  <span className="question-answers-number">0</span>
+                  <span className="question-answers-number">
+                    {props?.answercount?.filter((i) => i._id === question?._id)[0]?.answerCount}
+                  </span>
                   <span className="question-answers-text">answers</span>
                 </div>
                 <div className="question-views">
@@ -67,12 +70,12 @@ function QuestionsWrapper(props) {
 
                     <div className="user-card-info">
                       <div className="user-link">
-                        <a href="/">Hamidullah Muslih</a>
+                        <a href="/">{question?.user[0]?.name}</a>
                       </div>
                     </div>
 
                     <time className="user-card-time">
-                      asked <span className="time">1 min ago</span>
+                      asked <span className="time">{relativeTime.from(new Date(question?.createdAt))}</span>
                     </time>
                   </div>
                 </div>

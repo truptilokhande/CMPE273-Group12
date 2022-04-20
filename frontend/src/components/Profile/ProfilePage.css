@@ -221,8 +221,8 @@ a,
 	display: flex;
 }
 .users-name {
-	font-size: 30px;
-	color: rgb(3, 3, 3);
+	font-size: 15px;
+	color: rgb(0, 116, 204);
 }
 
 .users-location {

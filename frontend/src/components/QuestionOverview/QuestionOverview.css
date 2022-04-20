@@ -110,7 +110,8 @@
   border: 1px solid transparent;
 }
 
-.add-comment-link:hover, .edit-question:hover {
+.add-comment-link:hover,
+.edit-question:hover {
   color: hsl(206, 100%, 52%);
 }
 
@@ -153,6 +154,26 @@ ul.comments-list .comment > * {
   margin-top: 52px;
 }
 
-.correct-answer svg path {
-  fill: #47a868 !important;
+.correct-answer  {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.correct-answer:focus{
+  outline: none;
+}
+
+.vote-up-button,
+.vote-up-button:focus {
+  outline: none;
+}
+
+.correct-answer-user svg path {
+  fill: green !important;
+}
+
+.bookmark-button:focus{
+  outline: none;
 }

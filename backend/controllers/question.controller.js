@@ -1,19 +1,53 @@
 const Question = require("../models/question.model");
+const Answers = require("../models/answer.model");
+const Users = require("../models/user.model");
+const mongoose = require("mongoose");
 
 const getQuestions = async (req, res) => {
   try {
     // fetching the questions
-    const result = await Question.find({});
+    // calculate answers count and send questions when results are fetched
+    const answerAgg = [
+      {
+        $lookup: {
+          from: "answers",
+          localField: "_id",
+          foreignField: "questionId",
+          as: "qId",
+        },
+      },
+      {
+        $group: {
+          _id: "$questionId",
+          answerCount: {
+            $sum: 1,
+          },
+        },
+      },
+    ];
+    const questionsAgg = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ];
+    const result = await Question.aggregate(questionsAgg);
+    const answercount = await Answers.aggregate(answerAgg);
+
     // if no results fetched
-    if (!result) {
+    if (!result || !answercount) {
       res.status(400).send({
         data: {},
         message: "error fetching the questions",
       });
     }
-    // send questions when results are fetched
+
     res.status(200).send({
-      data: result,
+      data: { questions: result, answercount },
       message: "fetched questions",
     });
   } catch (err) {
@@ -54,64 +88,122 @@ const addquestion = async (req, res) => {
   }
 };
 
-const editquestion = async (req, res) => {
-  questionId = req.body.questionId;
-  title = req.body.title;
-  tags = req.body.tags;
-  questionbody = req.body.questionbody;
-  Question.updateOne(
+const getquestion = async (req, res) => {
+  const questionId = req.params.questionId;
+  console.log(typeof questionId);
+
+  // increment the count and get questiondetails
+  const question = await Question.findOneAndUpdate(
     { _id: questionId },
-    { $set: { title: title, tags: tags, questionbody: questionbody } },
-    function (err, res) {
-      if (err) throw err;
-      console.log("1 document updated");
-    }
+    { $inc: { views: 1 } },
+    { new: true }
   );
+
+  // get user details
+  const userDetails = await Users.findOne({ _id: question?.userId });
+
+  // get answers along with details of user who answered the question
+  const answerAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        questionId: mongoose.Types.ObjectId(questionId),
+      },
+    },
+  ];
+  const answers = await Answers.aggregate(answerAgg);
+
+  question && res.status(200).send({ question, userDetails, answers });
+  !question && res.status(400).send("error getting question");
 };
 
-const getquestion = async (req, res) => {
+const editquestion = async (req, res) => {
+  const questionId = req.body.questionId;
+  const title = req.body.title;
+  const tags = req.body.tags;
+  const questionbody = req.body.questionbody;
 
-  const questionId = req.params.questionId;
-  
-  // const currtimestamp = new Date();
-  // const todaysdate = currtimestamp
-  //   .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
-  //   .slice(0, 9);
-  // const datenow_arr = todaysdate.split("/");
+  try {
+    const result = await Question.findOneAndUpdate(
+      { _id: questionId },
+      { title, tags, questionbody },
+      { new: true }
+    );
+    res.status(200).send({ success: true, data: result });
+  } catch (err) {
+    res.status(400).send({ success: false, message: "Can't update" });
+  }
+};
 
-  // Question.updateOne(
-  //   { _id: questionId },
-  //   { $inc: { views: 1 } },
-  //   function (err, result) {
-  //     if (err) throw err;
-  //     console.log("1 document updated");
-  //     Question.findOne({ _id: questionId }, function (err, resultafterviews) {
-  //       if (err) throw err;
-  //       const answerscount = resultafterviews.answers.length;
-  //       const createdAt = resultafterviews.createdAt
-  //         .toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
-  //         .slice(0, 9);
-  //       const creationdate_arr = createdAt.split("/");
-  //       console.log(creationdate_arr);
-  //       console.log(todaysdate, createdAt);
+const voteQuestion = async (req, res) => {
+  const { upvote } = req.query;
+  const questionId = req.body.questionId;
+  const userId = req.body.userId;
 
-  //       const monthdiff =
-  //         parseInt(datenow_arr[0]) - parseInt(creationdate_arr[0]);
-  //       const daysdiff =
-  //         parseInt(datenow_arr[1]) - parseInt(creationdate_arr[1]);
-  //       const yeardiff =
-  //         parseInt(datenow_arr[2]) - parseInt(creationdate_arr[2]);
-  //       console.log(monthdiff, daysdiff, yeardiff);
-  //       res.send({
-  //         resultafterviews: resultafterviews,
-  //         answerscount: answerscount,
-  //         monthdiff: monthdiff,
-  //         daysdiff: daysdiff,
-  //         yeardiff: yeardiff,
-  //       });
-  //     });
-  //   }
-  // );
+  // update user upvote count
+  try {
+    if (upvote === "1") {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { upVoteCount: 1 } }
+      );
+      await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: 1 } }
+      );
+    } else {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { downVoteCount: 1 } }
+      );
+      await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: -1 } }
+      );
+    }
+    res.status(200).send({ success: true, message: "Updated successfully" });
+  } catch (err) {
+    res.status(400).send({ success: false, message: "Can't update" });
+  }
+};
+
+const bookmarkQuestion = async (req, res) => {
+  const questionId = req.body.questionId;
+  const userId = req.body.userId;
+  try {
+    const user = await Users.findOne({ _id: userId });
+    const bookmarks = user?.bookmarks || [];
+    if (bookmarks.includes(questionId)) {
+      const index = bookmarks.indexOf(questionId);
+      if (index !== -1) {
+        bookmarks.splice(index, 1);
+      }
+    } else {
+      bookmarks.push(questionId);
+    }
+
+    const result = await Users.findOneAndUpdate(
+      { _id: userId },
+      { bookmarks },
+      { new: true }
+    );
+    result && res.status(200).send({ success: true, result });
+    !result &&
+      res
+        .status(400)
+        .send({ success: false, message: "Error while bookmarking" });
+  } catch (err) {
+    res
+      .status(400)
+      .send({ success: false, message: "Error while bookmarking" });
+  }
 };
 
 module.exports = {
@@ -119,6 +211,8 @@ module.exports = {
   editquestion,
   getquestion,
   getQuestions,
+  voteQuestion,
+  bookmarkQuestion,
 };
 
 /*

@@ -63,8 +63,43 @@
 .iconInbox path {
   fill: #232629;
 }
+
 .navbar-logout {
   border: none;
   background-color: transparent;
   cursor: pointer;
+}
+
+.js-search-hints {
+  display: none;
+}
+
+.navbar-search-input:focus + .js-search-hints {
+  display: block;
+}
+
+.js-search-hints {
+  position: absolute;
+  top: 53px;
+  position: absolute;
+  top: 53px;
+  width: 850px;
+  background-color: white;
+  z-index: 100;
+  border: 1px solid hsl(210, 8%, 85%);
+  border-radius: 5px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px hsl(0deg 0% 0% / 6%), 0 2px 6px hsl(0deg 0% 0% / 6%),
+    0 0px;
+  color: hsl(210, 8%, 5%);
+  font-size: 15px;
+}
+
+.search-criteria {
+  font-family: monospace;
+  color: hsl(210, 8%, 5%);
+}
+
+.search-criteria-description {
+  color: hsl(210,8%,65%);
 }

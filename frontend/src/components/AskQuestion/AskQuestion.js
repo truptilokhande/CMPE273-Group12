@@ -57,7 +57,7 @@ function AskQuestion({ user, tagsFromStore }) {
         tags,
       })
       .then((response) => {
-        navigate(`/questionOverview/${response.data._id}`);
+        navigate(`/questionOverview/${response?.data?.data?._id}`);
       })
       .catch((err) => {
         throw err;

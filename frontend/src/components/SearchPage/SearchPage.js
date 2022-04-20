@@ -12,7 +12,7 @@ function TagOverview() {
       <div className="d-flex align-items-end justify-content-between mb-3">
         <div className="">22,412,082 questions</div>
 
-        <div className="d-flex flex-row filter-btn-wrapper mt-3">
+        <div className="d-flex flex-row filter-btn-wrappers mt-3">
           <div className="filter-btn">Interesting</div>
           <div className="filter-btn">Hot</div>
           <div className="filter-btn">Score</div>
