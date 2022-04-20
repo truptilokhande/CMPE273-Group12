@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Users.css";
 
 function Users() {
@@ -42,6 +43,7 @@ function Users() {
             <div className="user-content-wrapper">
               <div className="d-flex">
                 <div className="users-avatar">
+                 
                   <img
                     src="https://www.gravatar.com/avatar/0555bd0deb416a320a0069abef08078a?s=96&amp;d=identicon&amp;r=PG&amp;f=1"
                     alt="user avatar"
@@ -51,7 +53,7 @@ function Users() {
                   />
                 </div>
                 <div className="user-details d-flex flex-column ml-2">
-                  <a href="/" className="users-name">mozway</a>
+                  <a href="/userProfile" className="users-name">mozway</a>
                   <span className="users-location">Mare Tranquillitatis</span>
                   <div className="users-reputation">
                     <span className="reputation-score">968</span>

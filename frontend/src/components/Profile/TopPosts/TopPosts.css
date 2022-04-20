@@ -7,3 +7,9 @@
 	width: 700px;
 	margin-top: 10px;
 }
+.questionlink {
+	font-size: medium;
+	margin: 10px;
+	text-decoration: none;
+	background-color: #fafafb;
+}
