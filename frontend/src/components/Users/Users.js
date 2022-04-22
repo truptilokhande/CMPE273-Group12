@@ -1,22 +1,37 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
 import "./Users.css";
 import axios from "axios";
 import connection from "../../config.json";
 
 function Users() {
+  const [users, setUsers] = useState();
+  const [usersInitial, setUsersInitial] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      // if (searchTerm.length < 4) return;
+      const filteredTags = usersInitial.filter((i) =>
+        i.name.includes(searchTerm, i)
+      );
+      setUsers(filteredTags);
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+  
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/user/getAllUsers`)
       .then((response) => {
         setUsers(response?.data?.data);
+        setUsersInitial(response?.data?.data);
       })
       .catch((err) => {
         throw err;
       });
   }, []);
-
-  const [users, setUsers] = useState();
 
 
   return (
@@ -33,6 +48,7 @@ function Users() {
           type="text"
           maxlength="35"
           placeholder="Filter by user"
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
@@ -58,7 +74,9 @@ function Users() {
                     </a>
                     <span className="users-location">{user?.location}</span>
                     <div className="users-reputation">
-                      <span className="reputation-score">{user?.reputation}</span>
+                      <span className="reputation-score">
+                        {user?.reputation}
+                      </span>
                     </div>
                   </div>
                 </div>
