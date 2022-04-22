@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./SearchPage.css";
 import QuestionsWrapper from "../../containers/QuestionsWrapper/QuestionsWrapper";
+import { useLocation } from "react-router-dom";
 
-function TagOverview() {
+function Search() {
+  const location = useLocation();
+  const [questions] = useState([...location?.state?.questions]);
+  console.log(questions);
+
   return (
     <>
       <div className="d-flex justify-content-between">
@@ -20,9 +25,9 @@ function TagOverview() {
         </div>
       </div>
 
-      <QuestionsWrapper />
+      <QuestionsWrapper questions={[...questions]} />
     </>
   );
 }
 
-export default TagOverview;
+export default Search;

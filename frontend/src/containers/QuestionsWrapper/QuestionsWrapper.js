@@ -1,17 +1,21 @@
 import React from "react";
-import parse from "html-react-parser";
 import RelativeTime from "@yaireo/relative-time";
 
-function QuestionsWrapper(props) {
-
+function QuestionsWrapper({ ...props }) {
   const relativeTime = new RelativeTime();
+  const getTime = (createdTime, updatedTime) => {
+    if (new Date(createdTime) < new Date(updatedTime)) {
+      return relativeTime.from(new Date(updatedTime));
+    }
+    return relativeTime.from(new Date(createdTime));
+  };
   return (
     <>
       <div className="questions-wrapper move-left">
         {/* start iterating question  */}
         {props.questions?.map((question) => {
           return (
-            <div className="question-summary">
+            <div className="question-summary" key={question?._id}>
               <div className="question-stats">
                 <div className="question-votes">
                   <span className="question-votes-number">
@@ -21,7 +25,9 @@ function QuestionsWrapper(props) {
                 </div>
                 <div className="question-answers">
                   <span className="question-answers-number">
-                    {props?.answercount?.filter((i) => i._id === question?._id)[0]?.answerCount}
+                    {props?.answercount?.filter(
+                      (i) => i._id === question?._id
+                    )[0]?.answerCount || 0}
                   </span>
                   <span className="question-answers-text">answers</span>
                 </div>
@@ -41,9 +47,9 @@ function QuestionsWrapper(props) {
                     {question?.title}
                   </a>
                 </h3>
-                <div className="question-content-summary">
+                {/* <div className="question-content-summary">
                   {parse(question?.questionbody)}
-                </div>
+                </div> */}
                 <div className="question-content-meta-data d-flex align-item-center justify-content-between flex-wrap">
                   <div className="question-tags d-flex flex-wrap">
                     {question?.tags.map((tag) => (
@@ -75,7 +81,13 @@ function QuestionsWrapper(props) {
                     </div>
 
                     <time className="user-card-time">
-                      asked <span className="time">{relativeTime.from(new Date(question?.createdAt))}</span>
+                      {new Date(question.createdAt) <
+                      new Date(question.updatedAt)
+                        ? "updated"
+                        : "asked"}
+                      <span className="time ml-1">
+                        {getTime(question?.createdAt, question?.updatedAt)}
+                      </span>
                     </time>
                   </div>
                 </div>

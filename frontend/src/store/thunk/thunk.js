@@ -47,7 +47,7 @@ export const getTags = () => (dispatch) => {
   axios
     .get(`${connection.connectionURL}/api/tag/getAlltags`)
     .then((res) => {
-      dispatch(getAllTagsSuccess(res.data.result));
+      dispatch(getAllTagsSuccess(res.data.tags));
     })
     .catch((err) => {
       throw err;
