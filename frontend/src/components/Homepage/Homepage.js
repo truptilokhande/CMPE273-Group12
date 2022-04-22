@@ -6,16 +6,19 @@ import connection from "../../config.json";
 import { connect } from "react-redux";
 import { getTags } from "../../store/thunk/thunk";
 
-
 function Homepage({ setTagsInstore, isAuthenticated }) {
-  
+  // maintaing two copies of questions, one is used to sort and filter the questions and other has orginal set of questions.
   const [questions, setQuestions] = useState();
+  const [questionsCopy, setQuestionsCopy] = useState(questions);
   const [answercount, setAnswerCount] = useState();
+  const [sort, setSort] = useState();
+
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/question/getQuestions`)
       .then((response) => {
         setQuestions(response?.data?.data?.questions);
+        setQuestionsCopy(response?.data?.data?.questions);
         setAnswerCount(response?.data?.data?.answercount);
       })
       .catch((err) => {
@@ -26,6 +29,51 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
   useEffect(() => {
     setTagsInstore();
   }, []);
+
+  const sortQuestions = (criteria) => {
+    if (criteria === "interesting") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        const t1 =
+          new Date(a.createdAt) < new Date(a.updatedAt)
+            ? new Date(a.updatedAt)
+            : new Date(a.createdAt);
+        const t2 =
+          new Date(a.createdAt) < new Date(b.updatedAt)
+            ? new Date(b.updatedAt)
+            : new Date(b.createdAt);
+        return t2 - t1;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("interesting");
+    }
+    if (criteria === "hot") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        return b.views - a.views;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("hot");
+    }
+    if (criteria === "score") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        return b.votes - a.votes;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("score");
+    }
+    if (criteria === "unanswered") {
+      const unanswered = questions.filter((question) => {
+        const answerscount =
+          answercount?.filter((i) => i._id === question?._id)[0]?.answerCount ||
+          0;
+        return !answerscount;
+      });
+      const sortedQuestions = unanswered.sort(function (a, b) {
+        return b.votes - a.votes;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("unanswered");
+    }
+  };
 
   return (
     <>
@@ -41,17 +89,47 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
       </div>
 
       <div className="d-flex align-items-end justify-content-between mb-3">
-        <div className=""> {questions?.length} questions</div>
+        <div className=""> {questionsCopy?.length} questions</div>
 
         <div className="d-flex flex-row filter-btn-wrappers mt-3">
-          <div className="filter-btn">Interesting</div>
-          <div className="filter-btn">Hot</div>
-          <div className="filter-btn">Score</div>
-          <div className="filter-btn fliter-btn-last">Unanswered</div>
+          <div
+            className={`filter-btn ${sort === "interesting" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("interesting");
+            }}
+          >
+            Interesting
+          </div>
+          <div
+            className={`filter-btn ${sort === "hot" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("hot");
+            }}
+          >
+            Hot
+          </div>
+          <div
+            className={`filter-btn ${sort === "score" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("score");
+            }}
+          >
+            Score
+          </div>
+          <div
+            className={`filter-btn fliter-btn-last ${
+              sort === "unanswered" ? "active" : ""
+            }`}
+            onClick={() => {
+              sortQuestions("unanswered");
+            }}
+          >
+            Unanswered
+          </div>
         </div>
       </div>
 
-      <QuestionsWrapper questions={questions} answercount={answercount} />
+      <QuestionsWrapper questions={questionsCopy} answercount={answercount} />
     </>
   );
 }

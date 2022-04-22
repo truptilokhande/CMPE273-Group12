@@ -25,7 +25,7 @@ function AskQuestion({ user, tagsFromStore }) {
   const [questionbody, setQuestionBody] = useState();
   const [tags, setTags] = useState([]);
   const [suggestions] = useState(
-    tagsFromStore.map((tag) => {
+    tagsFromStore?.map((tag) => {
       return {
         id: tag._id,
         name: tag.name,

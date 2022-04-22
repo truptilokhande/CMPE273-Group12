@@ -183,3 +183,7 @@
   color: hsl(210, 8%, 45%);
   font-size: 12px;
 }
+
+.filter-btn.active {
+  background-color: #E3E6E8;
+}
