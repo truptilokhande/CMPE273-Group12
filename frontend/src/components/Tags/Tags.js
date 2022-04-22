@@ -1,15 +1,32 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import "./Tags.css";
 import axios from "axios";
 import connection from "../../config.json";
 
 function Tags() {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      // if (searchTerm.length < 4) return;
+      const filteredTags = tagsInitial.filter((i) =>
+        i.name.includes(searchTerm, i)
+      );
+      setTags(filteredTags);
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/tag/getAllTags`)
       .then((response) => {
         setTags(response?.data?.tags);
+        setTagsInitial(response?.data?.tags);
         setTagsCount(response?.data?.taggedQuestionsCount);
+        sortTags("popular");
       })
       .catch((err) => {
         throw err;
@@ -17,10 +34,37 @@ function Tags() {
   }, []);
 
   const [tags, setTags] = useState();
+  const [tagsInitial, setTagsInitial] = useState();
   const [taggedQuestionsCount, setTagsCount] = useState();
+  const [sort, setSort] = useState("popular");
 
-  // const result = taggedQuestionsCount?.find((id)=>id===tag?._id)?.count
-  // console.log(result)
+  const sortTags = (criteria) => {
+    if (criteria === "popular") {
+      const sortedTags = tagsInitial.sort(function (a, b) {
+        const acount =
+          taggedQuestionsCount?.find((item) => item._id === a?._id)?.count || 0;
+        const bcount =
+          taggedQuestionsCount?.find((item) => item._id === b?._id)?.count || 0;
+        return bcount - acount;
+      });
+      setTags([...sortedTags]);
+      setSort("popular");
+    }
+    if (criteria === "name") {
+      const sortedTags = tagsInitial.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+      setTags([...sortedTags]);
+      setSort("name");
+    }
+    if (criteria === "new") {
+      const sortedTags = tagsInitial.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      setTags([...sortedTags]);
+      setSort("new");
+    }
+  };
 
   return (
     <>
@@ -40,12 +84,36 @@ function Tags() {
           type="text"
           maxlength="35"
           placeholder="Filter by tag name"
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <div className="d-flex flex-row filter-btn-wrappers mt-3">
-          <div className="filter-btn">Popular</div>
-          <div className="filter-btn">Name</div>
-          <div className="filter-btn fliter-btn-last">New</div>
+          <div
+            className={`filter-btn ${sort === "popular" ? "active" : ""}`}
+            onClick={() => {
+              sortTags("popular");
+            }}
+          >
+            Popular
+          </div>
+          <div
+            className={`filter-btn ${sort === "name" ? "active" : ""}`}
+            onClick={() => {
+              sortTags("name");
+            }}
+          >
+            Name
+          </div>
+          <div
+            className={`filter-btn fliter-btn-last ${
+              sort === "new" ? "active" : ""
+            }`}
+            onClick={() => {
+              sortTags("new");
+            }}
+          >
+            New
+          </div>
         </div>
       </div>
 
@@ -66,7 +134,11 @@ function Tags() {
                 <div className="mb-3 tag-content">{tag?.tagBody}</div>
 
                 <div className="d-flex row no-gutters justify-content-between tag-meta-data">
-                  <div className="col-6">{taggedQuestionsCount?.find((item)=>item._id===tag?._id)?.count || 0} questions</div>
+                  <div className="col-6">
+                    {taggedQuestionsCount?.find((item) => item._id === tag?._id)
+                      ?.count || 0}{" "}
+                    questions
+                  </div>
                   <div className="col-6">
                     {" "}
                     <span>759 asked today</span>, <span>4450 this week</span>{" "}
