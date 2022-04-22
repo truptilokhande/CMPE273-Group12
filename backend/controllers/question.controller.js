@@ -90,13 +90,12 @@ const addquestion = async (req, res) => {
 
 const getquestion = async (req, res) => {
   const questionId = req.params.questionId;
-  console.log(typeof questionId);
 
   // increment the count and get questiondetails
   const question = await Question.findOneAndUpdate(
     { _id: questionId },
     { $inc: { views: 1 } },
-    { new: true }
+    { new: true, upsert: true, timestamps: false }
   );
 
   // get user details
@@ -206,6 +205,65 @@ const bookmarkQuestion = async (req, res) => {
   }
 };
 
+const searchQuestionsByUserId = async (req, res) => {
+  const searchkey = req.params.searchkey;
+  const searchQuestionAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        "user.name": searchkey,
+      },
+    },
+  ];
+  const users = await Question.aggregate(searchQuestionAgg);
+
+  users && res.status(200).send({ success: true, data: users });
+  !users &&
+    res.status(200).send({ success: false, message: "failed to search users" });
+};
+
+const searchQuestionsByText = async (req, res) => {
+  const searchkey = req.params.searchkey;
+  const searchQuestionAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          {
+            title: {
+              $regex: new RegExp(searchkey, "i"),
+            },
+          },
+          {
+            questionBody: {
+              $regex: new RegExp(searchkey, "i"),
+            },
+          },
+        ],
+      },
+    },
+  ];
+  const users = await Question.aggregate(searchQuestionAgg);
+
+  users && res.status(200).send({ success: true, data: users });
+  !users &&
+    res.status(200).send({ success: false, message: "failed to search users" });
+};
+
 module.exports = {
   addquestion,
   editquestion,
@@ -213,6 +271,8 @@ module.exports = {
   getQuestions,
   voteQuestion,
   bookmarkQuestion,
+  searchQuestionsByUserId,
+  searchQuestionsByText,
 };
 
 /*
