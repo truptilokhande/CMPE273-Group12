@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import connection from "../../config.json";
+import { useNavigate } from "react-router-dom";
 
 function Navbar({ isAuthenticated }) {
+  const navigate = useNavigate();
+
   const signout = () => {
     axios
       .get(`${connection.connectionURL}/api/user/signout`)
@@ -18,18 +21,55 @@ function Navbar({ isAuthenticated }) {
       });
   };
 
+  const searchUsers = (searchkey) => {
+    axios
+      .get(
+        `${connection.connectionURL}/api/question/searchQuestionsByUserId/${searchkey}`
+      )
+      .then((response) => {
+        // redirect to users page
+        navigate("/search", { state: { questions: response?.data?.data } });
+        window.location.reload(true);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
+  const searchQuestionsByText = (searchkey) => {
+    axios
+      .get(
+        `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`
+      )
+      .then((response) => {
+        // redirect to users page
+        navigate("/search", { state: { questions: response?.data?.data } });
+        window.location.reload(true);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
   const onSearch = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const serachkey = e.target.value;
-      if(/^\[.*\]$/.test(serachkey)){
-        //
-      }
+      const searchkey = e.target.value;
       // check for [ ] and then its tag search and redirect to tag overview page
-      // check for user and redirect to users page
+      if (/^\[.*\]$/.test(searchkey)) {
+        // redirect to tags page
+      } else if (/^user:.*$/.test(searchkey)) {
+        // split the search key and get search key value and call the api for results
+        searchUsers(searchkey.split(":")[1]);
+      }
       // check for " " and search for anything redirect to search page
-      // is:question redirect to home page
-      // is:accepted ??
+      else if (/^".*"$/.test(searchkey)) {
+        // redirect to search page
+        searchQuestionsByText(searchkey.split('"')[1]);
+      } else if (/^is:question.*$/.test(searchkey)) {
+        navigate("/homepage");
+      } else if (/^is:accepted.*$/.test(searchkey)) {
+      }
     }
   };
 
