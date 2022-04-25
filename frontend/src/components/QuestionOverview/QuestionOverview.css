@@ -184,3 +184,15 @@ ul.comments-list .comment > * {
   border-radius: 3px;
   padding: 2px 4px;
 }
+
+.upvoted-btn svg path {
+  fill: #F48224 !important;
+}
+
+.vote-down-button {
+  outline: none!important;
+}
+
+.downvoted-btn svg path {
+  fill: #F48224 !important;
+}

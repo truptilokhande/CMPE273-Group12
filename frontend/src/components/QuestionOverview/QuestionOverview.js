@@ -8,7 +8,7 @@ import parse from "html-react-parser";
 import RelativeTime from "@yaireo/relative-time";
 import moment from "moment";
 import { connect } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function QuestionOverview({ user }) {
   const relativeTime = new RelativeTime();
@@ -19,6 +19,8 @@ function QuestionOverview({ user }) {
   const [answerBody, setAnswerBody] = useState();
   const [addCommentToQuestion, setAddCommentToQuestion] = useState(false);
   const [addCommentToAnswer, setAddCommentToAnswer] = useState(false);
+  const [isQuestionUpvoted, setQuestionUpVoted] = useState(false);
+  const [isQuestionDownVoted, setQuestionDownVoted] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,19 +80,52 @@ function QuestionOverview({ user }) {
   };
 
   const upvoteordownvoteQuestion = (param) => {
+    let paramVal;
+    if (param === 1) {
+      // upvoted
+      if (isQuestionDownVoted) {
+        // check if already up voted then we need to remove upvote and downvote too.
+        paramVal = 3;
+      } else {
+        // check if already upvoted
+        paramVal = isQuestionUpvoted ? 0 : 1;
+      }
+    } else {
+      // downvoted
+      if (isQuestionUpvoted) {
+        // check if already up voted then we need to remove upvote and downvote too.
+        paramVal = 2;
+      } else {
+        // check if already downvoted.
+        paramVal = isQuestionDownVoted ? 1 : 0;
+      }
+    }
+    // const paramVal =
+    //   param === 1 ? (isQuestionUpvoted ? 0 : 1) : isQuestionDownVoted ? 1 : 0;
     axios
       .post(
-        `${connection.connectionURL}/api/question/voteQuestion?upvote=${param}`,
+        `${connection.connectionURL}/api/question/voteQuestion?upvote=${paramVal}`,
         {
           userId: user?._id,
           questionId: question?._id,
         }
       )
-      .then(() => {
+      .then((response) => {
         setQuestion({
           ...question,
-          votes: param === 1 ? question?.votes + 1 : question?.votes - 1,
+          votes: response?.data?.vote,
         });
+        if (param === 1) {
+          setQuestionUpVoted(!isQuestionUpvoted);
+        } else {
+          setQuestionDownVoted(!isQuestionDownVoted);
+        }
+        if (paramVal === 2) {
+          setQuestionUpVoted(!isQuestionUpvoted);
+        }
+        if (paramVal === 3) {
+          setQuestionDownVoted(!isQuestionDownVoted);
+        }
       })
       .catch((err) => {
         throw err;
@@ -134,19 +169,19 @@ function QuestionOverview({ user }) {
       });
   };
 
-  const bookmarkQuestion = ()=>{
+  const bookmarkQuestion = () => {
     axios
-    .post(`${connection.connectionURL}/api/question/bookmark`, {
-      questionId: question?._id,
-      userId: user?._id,
-    })
-    .then((response) => {
-      setUserdetails({...response?.data?.result});
-    })
-    .catch((err) => {
-      throw err;
-    });
-  }
+      .post(`${connection.connectionURL}/api/question/bookmark`, {
+        questionId: question?._id,
+        userId: user?._id,
+      })
+      .then((response) => {
+        setUserdetails({ ...response?.data?.result });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
 
   return (
     <>
@@ -178,7 +213,9 @@ function QuestionOverview({ user }) {
           <div className="vote-cell col-1">
             <div className="voting-container d-flex justify-content-center flex-column align-items-stretch">
               <button
-                className="vote-up-button voting-container-button"
+                className={`vote-up-button voting-container-button ${
+                  isQuestionUpvoted ? "upvoted-btn" : ""
+                }`}
                 onClick={() => {
                   upvoteordownvoteQuestion(1);
                 }}
@@ -198,7 +235,9 @@ function QuestionOverview({ user }) {
               </div>
 
               <button
-                className="vote-down-button voting-container-button"
+                className={`vote-down-button voting-container-button ${
+                  isQuestionDownVoted ? "downvoted-btn" : ""
+                }`}
                 onClick={() => {
                   upvoteordownvoteQuestion(0);
                 }}
@@ -213,7 +252,12 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <button className="bookmark-button voting-container-button" onClick={()=>{bookmarkQuestion()}}>
+              <button
+                className="bookmark-button voting-container-button"
+                onClick={() => {
+                  bookmarkQuestion();
+                }}
+              >
                 <svg
                   aria-hidden="true"
                   className="iconBookmark"
@@ -261,9 +305,12 @@ function QuestionOverview({ user }) {
 
         <div className="question-overview-user-profile d-flex justify-content-between">
           <div className="ml-4">
-            <button className="edit-question" onClick={()=>{
-              navigate('/edit-question', { state: { question } });
-            }}>
+            <button
+              className="edit-question"
+              onClick={() => {
+                navigate("/edit-question", { state: { question } });
+              }}
+            >
               edit question
             </button>
           </div>

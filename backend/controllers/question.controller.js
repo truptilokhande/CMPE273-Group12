@@ -145,7 +145,7 @@ const voteQuestion = async (req, res) => {
   const { upvote } = req.query;
   const questionId = req.body.questionId;
   const userId = req.body.userId;
-
+  let result;
   // update user upvote count
   try {
     if (upvote === "1") {
@@ -153,21 +153,47 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
-      await Question.findOneAndUpdate(
+      result = await Question.findOneAndUpdate(
         { _id: questionId },
-        { $inc: { votes: 1 } }
+        { $inc: { votes: 1 } },
+        { new: true }
       );
-    } else {
+    } else if (upvote === "0") {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
-      await Question.findOneAndUpdate(
+      result = await Question.findOneAndUpdate(
         { _id: questionId },
-        { $inc: { votes: -1 } }
+        { $inc: { votes: -1 } },
+        { new: true }
+      );
+    } else if (upvote === "2") {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { downVoteCount: 1 } }
+      );
+      result = await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: -2 } },
+        { new: true }
+      );
+    } else {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { upVoteCount: 1 } }
+      );
+      result = await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: 2 } },
+        { new: true }
       );
     }
-    res.status(200).send({ success: true, message: "Updated successfully" });
+    res.status(200).send({
+      success: true,
+      message: "Updated successfully",
+      vote: result?.votes,
+    });
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }
