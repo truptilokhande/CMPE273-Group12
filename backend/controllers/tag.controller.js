@@ -43,6 +43,8 @@ exports.addTag = (req, res) => {
   console.log("handling add Tag");
   const tagTitle = req.body.tagTitle;
   const tagDescription = req.body.tagDescription;
+  console.log(tagTitle);
+  console.log(tagDescription);
 
   const tags = new tagsDb({
     name: tagTitle,
