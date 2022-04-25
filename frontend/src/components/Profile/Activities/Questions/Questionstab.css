@@ -1,0 +1,22 @@
+.s-post-summary--content .s-post-summary--content-title a {
+    word-break: break-word !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    -webkit-hyphens: auto !important;
+    -moz-hyphens: auto !important;
+    -ms-hyphens: auto !important;
+    hyphens: auto !important;
+    color: hsl(206,100%,40%);
+    
+}
+a, .s-link {
+    text-decoration: none;
+    color: hsl(206,100%,40%);
+    cursor: pointer;
+    user-select: auto;
+}
+a {
+    color: hsl(206,100%,40%);
+    text-decoration: none;
+    cursor: pointer;
+}

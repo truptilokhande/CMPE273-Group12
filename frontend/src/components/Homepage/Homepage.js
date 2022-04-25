@@ -1,104 +1,145 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Homepage.css";
+import axios from "axios";
+import QuestionsWrapper from "../../containers/QuestionsWrapper/QuestionsWrapper";
+import connection from "../../config.json";
+import { connect } from "react-redux";
+import { getTags } from "../../store/thunk/thunk";
 
-function App() {
+function Homepage({ setTagsInstore, isAuthenticated }) {
+  // maintaing two copies of questions, one is used to sort and filter the questions and other has orginal set of questions.
+  const [questions, setQuestions] = useState();
+  const [questionsCopy, setQuestionsCopy] = useState(questions);
+  const [answercount, setAnswerCount] = useState();
+  const [sort, setSort] = useState();
+
+  useEffect(() => {
+    axios
+      .get(`${connection.connectionURL}/api/question/getQuestions`)
+      .then((response) => {
+        setQuestions(response?.data?.data?.questions);
+        setQuestionsCopy(response?.data?.data?.questions);
+        setAnswerCount(response?.data?.data?.answercount);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
+
+  useEffect(() => {
+    setTagsInstore();
+  }, []);
+
+  const sortQuestions = (criteria) => {
+    if (criteria === "interesting") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        const t1 =
+          new Date(a.createdAt) < new Date(a.updatedAt)
+            ? new Date(a.updatedAt)
+            : new Date(a.createdAt);
+        const t2 =
+          new Date(a.createdAt) < new Date(b.updatedAt)
+            ? new Date(b.updatedAt)
+            : new Date(b.createdAt);
+        return t2 - t1;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("interesting");
+    }
+    if (criteria === "hot") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        return b.views - a.views;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("hot");
+    }
+    if (criteria === "score") {
+      const sortedQuestions = questions.sort(function (a, b) {
+        return b.votes - a.votes;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("score");
+    }
+    if (criteria === "unanswered") {
+      const unanswered = questions.filter((question) => {
+        const answerscount =
+          answercount?.filter((i) => i._id === question?._id)[0]?.answerCount ||
+          0;
+        return !answerscount;
+      });
+      const sortedQuestions = unanswered.sort(function (a, b) {
+        return b.votes - a.votes;
+      });
+      setQuestionsCopy([...sortedQuestions]);
+      setSort("unanswered");
+    }
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between">
         <h1 className="fs-headline1">All Questions</h1>
-        <div className="ml12 aside-cta flex--item print:d-none">
-          <a href="/askQuestion" className="ask-btn">
-            Ask Question
-          </a>
-        </div>
+        {isAuthenticated ? (
+          <div>
+            <a href="/askQuestion" className="ask-btn">
+              Ask Question
+            </a>
+          </div>
+        ) : null}
       </div>
 
       <div className="d-flex align-items-end justify-content-between mb-3">
-        <div className="">22,412,082 questions</div>
+        <div className=""> {questionsCopy?.length} questions</div>
 
-        <div className="d-flex flex-row filter-btn-wrapper mt-3">
-          <div className="filter-btn">Interesting</div>
-          <div className="filter-btn">Hot</div>
-          <div className="filter-btn">Score</div>
-          <div className="filter-btn fliter-btn-last">Unanswered</div>
+        <div className="d-flex flex-row filter-btn-wrappers mt-3">
+          <div
+            className={`filter-btn ${sort === "interesting" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("interesting");
+            }}
+          >
+            Interesting
+          </div>
+          <div
+            className={`filter-btn ${sort === "hot" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("hot");
+            }}
+          >
+            Hot
+          </div>
+          <div
+            className={`filter-btn ${sort === "score" ? "active" : ""}`}
+            onClick={() => {
+              sortQuestions("score");
+            }}
+          >
+            Score
+          </div>
+          <div
+            className={`filter-btn fliter-btn-last ${
+              sort === "unanswered" ? "active" : ""
+            }`}
+            onClick={() => {
+              sortQuestions("unanswered");
+            }}
+          >
+            Unanswered
+          </div>
         </div>
       </div>
 
-      <div className="questions-wrapper move-left">
-         {/* start iterating question  */}
-        <div className="question-summary">
-          <div className="question-stats">
-            <div className="question-votes">
-              <span className="question-votes-number">0</span>
-              <span className="question-votes-text">votes</span>
-            </div>
-            <div className="question-answers">
-              <span className="question-answers-number">0</span>
-              <span className="question-answers-text">answers</span>
-            </div>
-            <div className="question-views">
-              <span className="question-views-number">2</span>
-              <span className="question-views-text">views</span>
-            </div>
-          </div>
-          <div className="question-content">
-            <h3 className="question-content-title">
-              <a href="/" className="question-link">
-                What are the differences among below topics?
-              </a>
-            </h3>
-            <div className="question-content-summary">
-              Static code analysis, dynamic code analysis, static testing,
-              dynamic testing, Dynamic security testing (DAST), Static security
-              testing (SAST), debugging, static binary testing, and dynamic
-              binary ...
-            </div>
-            <div className="question-content-meta-data d-flex align-item-center justify-content-between flex-wrap">
-              <div className="question-tags d-flex flex-wrap">
-                 {/* tags iteration start */}
-                <a href="/" className="tag">
-                  debugging
-                </a>{" "}
-                <a href="/" className="tag">
-                  code-analysis
-                </a>{" "}
-                {/* tags iteration stop */}
-              </div>
-
-              <div className="question-user-card d-flex align-items-center p-0">
-                <a href="/" className="user-avatar">
-                  {" "}
-                  <div className="avatar-wrapper">
-                    <img
-                      src="https://lh3.googleusercontent.com/a-/AOh14Gjb-jYzr-dJrhzggih4y7UD7vp0E54gYkwCGkhF=k-s32"
-                      alt="user avatar"
-                      width="16"
-                      height="16"
-                      className="avatar-image"
-                    />
-                  </div>
-                </a>
-
-                <div className="user-card-info">
-                  <div className="user-link">
-                    <a href="/">Hamidullah Muslih</a>
-                  </div>
-                </div>
-
-                <time className="user-card-time">
-                  asked{" "}
-                  <span className="time">
-                    1 min ago
-                  </span>
-                </time>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* question iteration end */}
-      </div>
+      <QuestionsWrapper questions={questionsCopy} answercount={answercount} />
     </>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.isAuthenticated,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setTagsInstore: (val) => dispatch(getTags(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

@@ -1,0 +1,35 @@
+
+.form-label {
+  padding: 0 2px;
+  color: hsl(210, 8%, 5%);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  margin: 0;
+  border: 1px solid hsl(210, 8%, 75%);
+  border-radius: 3px;
+  background-color: white;
+  color: hsl(210, 8%, 5%);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.sign-up-form {
+  box-shadow: 0 10px 25px rgb(0 0 0 / 5%), 0 20px 48px rgb(0 0 0 / 5%),
+    0 1px 4px rgb(0 0 0 / 10%);
+  height: 300px;
+  width: 300px;
+  border-radius: 7px;
+}
+
+.form-input-button {
+  width: 100%;
+}
+
+.sign-up-wrapper {
+    margin-right: -264px;
+}

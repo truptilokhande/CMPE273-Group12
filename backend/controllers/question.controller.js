@@ -1,78 +1,297 @@
 const Question = require("../models/question.model");
+const Answers = require("../models/answer.model");
+const Users = require("../models/user.model");
+const mongoose = require("mongoose");
+
+const getQuestions = async (req, res) => {
+  try {
+    // fetching the questions
+    // calculate answers count and send questions when results are fetched
+    const answerAgg = [
+      {
+        $lookup: {
+          from: "answers",
+          localField: "_id",
+          foreignField: "questionId",
+          as: "qId",
+        },
+      },
+      {
+        $group: {
+          _id: "$questionId",
+          answerCount: {
+            $sum: 1,
+          },
+        },
+      },
+    ];
+    const questionsAgg = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ];
+    const result = await Question.aggregate(questionsAgg);
+    const answercount = await Answers.aggregate(answerAgg);
+
+    // if no results fetched
+    if (!result || !answercount) {
+      res.status(400).send({
+        data: {},
+        message: "error fetching the questions",
+      });
+    }
+
+    res.status(200).send({
+      data: { questions: result, answercount },
+      message: "fetched questions",
+    });
+  } catch (err) {
+    console.log(err);
+    // any errors in fetching the questions
+    res.status(400).send({
+      data: {},
+      message: "error fetching the questions",
+    });
+  }
+};
 
 const addquestion = async (req, res) => {
-  userToken = req.body.userToken;
-  title = req.body.title;
-  tags = req.body.tags;
-  questionbody = req.body.questionbody;
-  
-  console.log(userToken, title, tags, questionbody);
-  const new_question = {userId:userToken,title: title, tags: tags, questionbody: questionbody, views:0,waitingForApproval:false,answers:[],comments:[],votes:0 }
-  console.log(new_question)
-  new Question(new_question).save()
-  .then((result) => {
-    res.send({
-      "response_code": 200,
-      "response_message": "Success",
-      "data":result
-    })
-  }).catch((err) => {
-    res.send({
-      "response_code": 500,
-      "response_message": "Backend error",
-      "data":err
-    })
-    
-  });
+  const { userId, title, tags, questionbody } = req.body;
 
-}
-
-const editquestion = async (req, res) => {
-  questionId =req.body.questionId
-  title = req.body.title;
-  tags = req.body.tags;
-  questionbody = req.body.questionbody;
-  Question.updateOne({_id:questionId},{ $set:{title: title, tags: tags, questionbody: questionbody}}, function(err, res) {
-    if (err) throw err;
-    console.log("1 document updated");
-  });
-
-}
+  try {
+    const newQuestion = new Question({
+      userId,
+      title,
+      tags,
+      questionbody,
+    });
+    // check if it has image
+    const result = await newQuestion.save();
+    if (!result) {
+      res.status(400).send({
+        message: "error posting question",
+      });
+    }
+    res.status(200).send({
+      data: result,
+      message: "posted question successfully",
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "error posting question",
+    });
+  }
+};
 
 const getquestion = async (req, res) => {
-  questionId =req.params.questionId
-  const currtimestamp = new Date()
-  const todaysdate = currtimestamp.toLocaleString("en-US", {timeZone:
-    "America/Los_Angeles"}).slice(0,9);
-  const datenow_arr = todaysdate.split("/")
-  console.log(datenow_arr)
-  Question.updateOne({_id:questionId},{ $inc: { views:1 } }, function(err, result) {
-    if (err) throw err;
-    console.log("1 document updated");
-    Question.findOne({_id:questionId}, function(err, resultafterviews) {
-      if (err) throw err;
-      const answerscount = resultafterviews.answers.length
-      const createdAt = resultafterviews.createdAt.toLocaleString("en-US", {timeZone:
-        "America/Los_Angeles"}).slice(0,9);
-      const creationdate_arr = createdAt.split("/")
-      console.log(creationdate_arr)
-      console.log(todaysdate,createdAt)
-      
-      
-      const monthdiff = parseInt(datenow_arr[0]) - parseInt(creationdate_arr[0])
-      const daysdiff = parseInt(datenow_arr[1]) - parseInt(creationdate_arr[1])
-      const yeardiff = parseInt(datenow_arr[2]) - parseInt(creationdate_arr[2])
-      console.log(monthdiff,daysdiff,yeardiff)
-      res.send({resultafterviews:resultafterviews,answerscount:answerscount,monthdiff:monthdiff,daysdiff:daysdiff,yeardiff:yeardiff})
-    })
-  });
-  
+  const questionId = req.params.questionId;
 
-}
+  // increment the count and get questiondetails
+  const question = await Question.findOneAndUpdate(
+    { _id: questionId },
+    { $inc: { views: 1 } },
+    { new: true, upsert: true, timestamps: false }
+  );
+
+  // get user details
+  const userDetails = await Users.findOne({ _id: question?.userId });
+
+  // get answers along with details of user who answered the question
+  const answerAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        questionId: mongoose.Types.ObjectId(questionId),
+      },
+    },
+  ];
+  const answers = await Answers.aggregate(answerAgg);
+
+  question && res.status(200).send({ question, userDetails, answers });
+  !question && res.status(400).send("error getting question");
+};
+
+const editquestion = async (req, res) => {
+  const questionId = req.body.questionId;
+  const title = req.body.title;
+  const tags = req.body.tags;
+  const questionbody = req.body.questionbody;
+
+  try {
+    const result = await Question.findOneAndUpdate(
+      { _id: questionId },
+      { title, tags, questionbody },
+      { new: true }
+    );
+    res.status(200).send({ success: true, data: result });
+  } catch (err) {
+    res.status(400).send({ success: false, message: "Can't update" });
+  }
+};
+
+const voteQuestion = async (req, res) => {
+  const { upvote } = req.query;
+  const questionId = req.body.questionId;
+  const userId = req.body.userId;
+
+  // update user upvote count
+  try {
+    if (upvote === "1") {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { upVoteCount: 1 } }
+      );
+      await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: 1 } }
+      );
+    } else {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { downVoteCount: 1 } }
+      );
+      await Question.findOneAndUpdate(
+        { _id: questionId },
+        { $inc: { votes: -1 } }
+      );
+    }
+    res.status(200).send({ success: true, message: "Updated successfully" });
+  } catch (err) {
+    res.status(400).send({ success: false, message: "Can't update" });
+  }
+};
+
+const bookmarkQuestion = async (req, res) => {
+  const questionId = req.body.questionId;
+  const userId = req.body.userId;
+  try {
+    const user = await Users.findOne({ _id: userId });
+    const bookmarks = user?.bookmarks || [];
+    if (bookmarks.includes(questionId)) {
+      const index = bookmarks.indexOf(questionId);
+      if (index !== -1) {
+        bookmarks.splice(index, 1);
+      }
+    } else {
+      bookmarks.push(questionId);
+    }
+
+    const result = await Users.findOneAndUpdate(
+      { _id: userId },
+      { bookmarks },
+      { new: true }
+    );
+    result && res.status(200).send({ success: true, result });
+    !result &&
+      res
+        .status(400)
+        .send({ success: false, message: "Error while bookmarking" });
+  } catch (err) {
+    res
+      .status(400)
+      .send({ success: false, message: "Error while bookmarking" });
+  }
+};
+
+const searchQuestionsByUserId = async (req, res) => {
+  const searchkey = req.params.searchkey;
+  const searchQuestionAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        "user.name": searchkey,
+      },
+    },
+  ];
+  const users = await Question.aggregate(searchQuestionAgg);
+
+  users && res.status(200).send({ success: true, data: users });
+  !users &&
+    res.status(200).send({ success: false, message: "failed to search users" });
+};
+
+const searchQuestionsByText = async (req, res) => {
+  const searchkey = req.params.searchkey;
+  const searchQuestionAgg = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          {
+            title: {
+              $regex: new RegExp(searchkey, "i"),
+            },
+          },
+          {
+            questionBody: {
+              $regex: new RegExp(searchkey, "i"),
+            },
+          },
+        ],
+      },
+    },
+  ];
+  const users = await Question.aggregate(searchQuestionAgg);
+
+  users && res.status(200).send({ success: true, data: users });
+  !users &&
+    res.status(200).send({ success: false, message: "failed to search users" });
+};
 
 module.exports = {
   addquestion,
   editquestion,
   getquestion,
-  
+  getQuestions,
+  voteQuestion,
+  bookmarkQuestion,
+  searchQuestionsByUserId,
+  searchQuestionsByText,
 };
+
+/*
+1. Tag badges
+whenever user asks the question, we nedd to check if user has that tag already present 
+if present we need to increment the count for that tag
+if not we need to add as new tag for the user
+
+2. user upvotes the answer/question, upvotes count should be increased
+3. downvotes the answer/question, downvote count should be increased
+
+4. when user signs in increase count
+
+1. number of questions asked
+2. number of answers answered
+3. reputation score
+4. upVoteCount
+5. downVoteCount
+6. notableQuestion
+7. famousQuestion
+8. commentBadge
+*/

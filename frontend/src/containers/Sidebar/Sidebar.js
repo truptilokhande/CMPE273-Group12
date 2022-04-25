@@ -15,7 +15,7 @@ function Sidebar() {
           </ul>
 
           <ul className="sidebar-navigation pt-4">
-            <li class="side-bar-menu-item sidebar-heading">PUBLIC</li>
+            <li className="side-bar-menu-item sidebar-heading">PUBLIC</li>
             <li>
               <a href="/tags" className="side-bar-menu-item">
                 Tags

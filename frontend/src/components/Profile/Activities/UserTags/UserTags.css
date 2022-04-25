@@ -1,0 +1,42 @@
+.bb {
+	border-bottom-style: solid !important;
+	border-bottom-width: 1px !important;
+}
+.p12 {
+	padding: 12px !important;
+}
+.bc-black-075 {
+	border-color: hsl(210, 8%, 90%) !important;
+}
+.fs-body3 {
+	font-size: 1.30769231rem !important;
+}
+
+.tt-lowercase {
+	text-transform: lowercase !important;
+}
+
+.fc-light {
+	color: var(--fc-light) !important;
+}
+.fs-body3 {
+	font-size: 20px !important;
+}
+
+.mr4 {
+	margin-right: 4px !important;
+}
+.tt-lowercase {
+	text-transform: lowercase !important;
+}
+
+.fc-light {
+	color: hsl(210, 8%, 45%) !important;
+}
+.d-flex {
+	display: flex !important;
+}
+
+.ai-center {
+	align-items: center !important;
+}
