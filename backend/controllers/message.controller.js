@@ -30,7 +30,7 @@ console.log(err);
 
 }
 
-exports.sendMessage = (req, res) =>  {
+exports.sendMessage = async(req, res) =>  {
     const senderID = req.body.senderID;
     const receiverID = req.body.receiverID;
     const mainMessage = req.body.message;
@@ -112,7 +112,7 @@ exports.sendMessage = (req, res) =>  {
       });
   }
 
-  exports.getChatrooms = (req, res) => {
+  exports.getChatrooms = async(req, res) => {
     const senderID = req.body.senderID;
     // const receiverID = req.body.receiverID;
 
