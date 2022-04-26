@@ -290,6 +290,25 @@ const searchQuestionsByText = async (req, res) => {
     res.status(200).send({ success: false, message: "failed to search users" });
 };
 
+const addComment = async (req, res) => {
+  const { questionId, userId, userName, commentBody } = req.body;
+  const question = await Question.findOne({ _id: questionId });
+  const comments = question?.comments;
+  comments.push({
+    userId,
+    userName,
+    commentBody,
+  });
+
+  const result = await Question.findOneAndUpdate(
+    { _id: questionId },
+    { comments },
+    { new: true }
+  );
+  result && res.status(200).send({ success: true, comments: result?.comments });
+  !result && res.status(400).send({ success: false, message: err.message });
+};
+
 module.exports = {
   addquestion,
   editquestion,
@@ -299,6 +318,7 @@ module.exports = {
   bookmarkQuestion,
   searchQuestionsByUserId,
   searchQuestionsByText,
+  addComment,
 };
 
 /*

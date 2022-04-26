@@ -1,5 +1,6 @@
 const express = require("express");
 const answersDb = require("../models/answer.model");
+const commentDb = require("../models/commentModel");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 
@@ -74,32 +75,37 @@ exports.voteAnswer = async (req, res) => {
         { new: true }
       );
     }
-    res
-      .status(200)
-      .send({
-        success: true,
-        message: "Updated successfully",
-        votes: result?.votes,
-      });
+    res.status(200).send({
+      success: true,
+      message: "Updated successfully",
+      votes: result?.votes,
+    });
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }
 };
 
 exports.addComment = async (req, res) => {
-  console.log("handling comment answer ");
   try {
-    const answerId = req.body.answerId;
+    const { answerId, userId, userName, commentBody } = req.body;
     const answer = await answersDb.findOne({ _id: answerId });
     const comments = answer?.comments || [];
-    comments.push(req.body);
+    comments.push(
+      new commentDb({
+        userId,
+        userName,
+        commentBody,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    );
 
     const result = await answersDb.findOneAndUpdate(
       { _id: answerId },
       { comments },
       { new: true }
     );
-    result && res.status(200).send({ success: true, result: answer });
+    result && res.status(200).send({ success: true, data: answer });
     !result &&
       res
         .status(400)
