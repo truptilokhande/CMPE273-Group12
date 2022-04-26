@@ -70,17 +70,41 @@ const addquestion = async (req, res) => {
       tags,
       questionbody,
     });
-    // check if it has image
+    // check if it has image before saving.
     const result = await newQuestion.save();
-    if (!result) {
-      res.status(400).send({
-        message: "error posting question",
-      });
-    }
-    res.status(200).send({
-      data: result,
-      message: "posted question successfully",
+
+    // add tags to the user profile and update score for the tag.
+    const user = await Users.findOne({ _id: userId }).lean();
+    const userTags = user?.tags; // [{tagId,tagName,tagCount}]
+    tags.forEach(async (tag) => {
+      // check if tag is already present in user profile userTags.
+      const index = userTags.findIndex((x) => x?.tagId?.toString() === tag?.id);
+      // i.e if tag is already present
+      if (index != -1) {
+        const editedTags = userTags?.map((x) => {
+          if (x.tagId == tag.id) {
+            x.tagCount = x?.tagCount + 1;
+          }
+          return x;
+        });
+        await Users.findOneAndUpdate({ _id: userId, tags: editedTags });
+      }
+      // if tag is not present
+      else {
+        const newTag = {
+          tagId: tag?.id,
+          tagName: tag?.name,
+        };
+        userTags.push(newTag);
+        await Users.findOneAndUpdate({ _id: userId, tags: userTags });
+      }
     });
+
+    !result && res.status(400).send({ message: "error posting question" });
+    result &&
+      res
+        .status(200)
+        .send({ data: result, message: "posted question successfully" });
   } catch (err) {
     res.status(400).send({
       message: "error posting question",
@@ -327,10 +351,7 @@ whenever user asks the question, we nedd to check if user has that tag already p
 if present we need to increment the count for that tag
 if not we need to add as new tag for the user
 
-2. user upvotes the answer/question, upvotes count should be increased
-3. downvotes the answer/question, downvote count should be increased
-
-4. when user signs in increase count
+4. when user signs in store logged in info.
 
 1. number of questions asked
 2. number of answers answered
