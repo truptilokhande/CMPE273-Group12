@@ -1,6 +1,6 @@
 const express = require("express");
 const tagsDb = require("../models/TagModel");
-var moment = require("moment");
+const moment = require("moment");
 const QuestionsDb = require("../models/question.model");
 
 exports.getAllTags = async (req, res) => {
