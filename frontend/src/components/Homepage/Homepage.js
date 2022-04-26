@@ -79,13 +79,14 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
     <>
       <div className="d-flex justify-content-between">
         <h1 className="fs-headline1">All Questions</h1>
-        {isAuthenticated ? (
-          <div>
-            <a href="/askQuestion" className="ask-btn">
-              Ask Question
-            </a>
-          </div>
-        ) : null}
+        <div>
+          <a
+            href={isAuthenticated ? "/askQuestion" : "/signin"}
+            className="ask-btn"
+          >
+            Ask Question
+          </a>
+        </div>
       </div>
 
       <div className="d-flex align-items-end justify-content-between mb-3">

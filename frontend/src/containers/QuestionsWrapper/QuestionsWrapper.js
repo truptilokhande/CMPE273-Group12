@@ -23,18 +23,16 @@ function QuestionsWrapper({ ...props }) {
                   </span>
                   <span className="question-votes-text">votes</span>
                 </div>
-                {
-                props?.answercount
-                ? <div className="question-answers">
-                                  <span className="question-answers-number">
-                                    {props?.answercount?.filter(
-                                      (i) => i._id === question?._id
-                                    )[0]?.answerCount || 0}
-                                  </span>
-                                  <span className="question-answers-text">answers</span>
-                                </div>
-                : null
-                }
+                {props?.answercount ? (
+                  <div className="question-answers">
+                    <span className="question-answers-number">
+                      {props?.answercount?.filter(
+                        (i) => i._id === question?._id
+                      )[0]?.answerCount || 0}
+                    </span>
+                    <span className="question-answers-text">answers</span>
+                  </div>
+                ) : null}
                 <div className="question-views">
                   <span className="question-views-number">
                     {question.views}
@@ -69,7 +67,7 @@ function QuestionsWrapper({ ...props }) {
                       {" "}
                       <div className="avatar-wrapper">
                         <img
-                          src="https://lh3.googleusercontent.com/a-/AOh14Gjb-jYzr-dJrhzggih4y7UD7vp0E54gYkwCGkhF=k-s32"
+                          src={question?.user[0]?.profilepicture}
                           alt="user avatar"
                           width="16"
                           height="16"

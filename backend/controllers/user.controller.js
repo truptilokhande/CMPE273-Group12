@@ -3,6 +3,13 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user.model");
 const config = require("../config/config.json");
+const userProfileDefaultImages = [
+  "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
+  "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/28a48027ee89f30d8681f415ea164f70.png",
+  "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/aaeb0451b1f430b5c177aa1f5f3ea8f4.png",
+  "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/f056a82f02a580b04febfb36b0ccefc4.png",
+  "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/fd1092142390701a6e86fa5ca1282465.png",
+];
 
 // @desc    Register a user
 // @route   POST /api/users/register
@@ -39,6 +46,8 @@ const register = asyncHandler(async (req, res) => {
     name,
     email,
     password: hashedPassword,
+    profilepicture:
+      userProfileDefaultImages[Math.floor(Math.random() * (0 - 6 + 1)) + min],
   });
 
   if (user) {
@@ -78,6 +87,7 @@ const login = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         token: generateToken(user._id),
+        profilepicture: user.profilepicture,
       },
       message: "User logged in successfully",
     });
