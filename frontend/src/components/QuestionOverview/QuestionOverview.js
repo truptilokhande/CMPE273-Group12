@@ -21,6 +21,8 @@ function QuestionOverview({ user }) {
   const [addCommentToAnswer, setAddCommentToAnswer] = useState(false);
   const [isQuestionUpvoted, setQuestionUpVoted] = useState(false);
   const [isQuestionDownVoted, setQuestionDownVoted] = useState(false);
+  const [isAnswerupvoted, setAnswerupvoted] = useState([]);
+  const [isAnswerdownvoted, setAnswerdownvoted] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,32 +81,31 @@ function QuestionOverview({ user }) {
       });
   };
 
-  const upvoteordownvoteQuestion = (param) => {
-    let paramVal;
-    if (param === 1) {
+  const upvoteordownvoteQuestion = (upordownvotevalue) => {
+    let valuetobeincrementedordecremented;
+    if (upordownvotevalue === 1) {
       // upvoted
       if (isQuestionDownVoted) {
         // check if already up voted then we need to remove upvote and downvote too.
-        paramVal = 3;
+        valuetobeincrementedordecremented = 3;
       } else {
         // check if already upvoted
-        paramVal = isQuestionUpvoted ? 0 : 1;
+        valuetobeincrementedordecremented = isQuestionUpvoted ? 0 : 1;
       }
     } else {
       // downvoted
       if (isQuestionUpvoted) {
         // check if already up voted then we need to remove upvote and downvote too.
-        paramVal = 2;
+        valuetobeincrementedordecremented = 2;
       } else {
         // check if already downvoted.
-        paramVal = isQuestionDownVoted ? 1 : 0;
+        valuetobeincrementedordecremented = isQuestionDownVoted ? 1 : 0;
       }
     }
-    // const paramVal =
-    //   param === 1 ? (isQuestionUpvoted ? 0 : 1) : isQuestionDownVoted ? 1 : 0;
+
     axios
       .post(
-        `${connection.connectionURL}/api/question/voteQuestion?upvote=${paramVal}`,
+        `${connection.connectionURL}/api/question/voteQuestion?upvote=${valuetobeincrementedordecremented}`,
         {
           userId: user?._id,
           questionId: question?._id,
@@ -115,15 +116,15 @@ function QuestionOverview({ user }) {
           ...question,
           votes: response?.data?.vote,
         });
-        if (param === 1) {
+        if (upordownvotevalue === 1) {
           setQuestionUpVoted(!isQuestionUpvoted);
         } else {
           setQuestionDownVoted(!isQuestionDownVoted);
         }
-        if (paramVal === 2) {
+        if (valuetobeincrementedordecremented === 2) {
           setQuestionUpVoted(!isQuestionUpvoted);
         }
-        if (paramVal === 3) {
+        if (valuetobeincrementedordecremented === 3) {
           setQuestionDownVoted(!isQuestionDownVoted);
         }
       })
@@ -132,10 +133,44 @@ function QuestionOverview({ user }) {
       });
   };
 
-  const upvoteordownvoteAnswer = (answerId, param) => {
+  const upvoteordownvoteAnswer = (answerId, upordownvotevalue) => {
+    let valuetobeincrementedordecremented;
+    if (upordownvotevalue === 1) {
+      // user has clicked upvote if value is 1
+      // checking if answers down vote array has answerid i.e checking if user has already downvoted
+      if (isAnswerdownvoted.some((item) => item === answerId)) {
+        // sending 3 as code to BE, BE will remove the down vote and add the upvote i.e increment votes by 2
+        valuetobeincrementedordecremented = 3;
+      } else {
+        // this executes when user didn't downvote anytime.
+        // checks if user upvoted anytime -> if so we need to downvote the question
+        // checks if user didn't upvoted anytime ->  need to up the question
+        valuetobeincrementedordecremented = isAnswerupvoted.some(
+          (item) => item === answerId
+        )
+          ? 0
+          : 1;
+      }
+    } else {
+      // user has clicked downvote if value is 0
+      // checking if answers up vote array has answerid i.e checking if user has already upvoted
+      if (isAnswerupvoted.some((item) => item === answerId)) {
+        // sending 2 as code to BE, BE will remove the up vote and down the upvote i.e decrement votes by 2
+        valuetobeincrementedordecremented = 2;
+      } else {
+        // this executes when user didn't up anytime.
+        // checks if user downvoted anytime -> if so we need to upvote the question
+        // checks if user didn't downvote anytime ->  need to downvote the question
+        valuetobeincrementedordecremented = isAnswerdownvoted.some(
+          (item) => item === answerId
+        )
+          ? 1
+          : 0;
+      }
+    }
     axios
       .post(
-        `${connection.connectionURL}/api/answer/vote-answer?upvote=${param}`,
+        `${connection.connectionURL}/api/answer/vote-answer?upvote=${valuetobeincrementedordecremented}`,
         {
           userId: user?._id,
           answerId,
@@ -144,11 +179,72 @@ function QuestionOverview({ user }) {
       .then((response) => {
         const res = answers.map((i) => {
           if (i._id === answerId) {
-            return { ...i, votes: param === 1 ? i.votes + 1 : i.votes - 1 };
+            return { ...i, votes: response?.data?.votes };
           }
           return i;
         });
         setAnswers([...res]);
+        // upvote and downvote button are not active and upvote is clicked
+        if (
+          valuetobeincrementedordecremented === 1 &&
+          upordownvotevalue === 1
+        ) {
+          setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+        }
+        // upvote is active and downvote button is not active and upvote is clicked
+        else if (
+          upordownvotevalue === 1 &&
+          valuetobeincrementedordecremented === 0
+        ) {
+          const index = isAnswerupvoted.findIndex((item) => item === answerId);
+          if (index !== -1) {
+            isAnswerupvoted.splice(index, 1);
+          }
+          setAnswerupvoted([...isAnswerupvoted]);
+        }
+        // upvote is active and downvote button is not active and downvote is clicked
+        else if (
+          valuetobeincrementedordecremented === 2 &&
+          upordownvotevalue === 0
+        ) {
+          const index = isAnswerupvoted.findIndex((item) => item === answerId);
+          if (index !== -1) {
+            isAnswerupvoted.splice(index, 1);
+          }
+          setAnswerupvoted(isAnswerupvoted);
+          setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+        }
+        // upvote and downvote button are not active and down is clicked
+        else if (
+          valuetobeincrementedordecremented === 0 &&
+          upordownvotevalue === 0
+        ) {
+          setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+        }
+        // upvote is active and downvote button is not active and downvote is clicked
+        else if (
+          valuetobeincrementedordecremented === 1 &&
+          upordownvotevalue === 0
+        ) {
+          const index = isAnswerdownvoted.findIndex(
+            (item) => item === answerId
+          );
+          if (index !== -1) {
+            isAnswerdownvoted.splice(index, 1);
+          }
+          setAnswerdownvoted([...isAnswerdownvoted]);
+        }
+        // upvote is not active and downvote button is active and upvote is clicked
+        else {
+          const index = isAnswerdownvoted.findIndex(
+            (item) => item === answerId
+          );
+          if (index !== -1) {
+            isAnswerdownvoted.splice(index, 1);
+          }
+          setAnswerdownvoted(isAnswerdownvoted);
+          setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+        }
       })
       .catch((err) => {
         throw err;
@@ -436,7 +532,13 @@ function QuestionOverview({ user }) {
               <div className="vote-cell col-1">
                 <div className="voting-container d-flex justify-content-center flex-column align-items-stretch">
                   <button
-                    className="vote-up-button voting-container-button"
+                    className={`vote-up-button voting-container-button answer-up-${
+                      answer._id
+                    } ${
+                      isAnswerupvoted.some((item) => item === answer._id)
+                        ? "active-up-vote"
+                        : ""
+                    }`}
                     onClick={() => {
                       upvoteordownvoteAnswer(answer?._id, 1);
                     }}
@@ -456,7 +558,13 @@ function QuestionOverview({ user }) {
                   </div>
 
                   <button
-                    className="vote-down-button voting-container-button"
+                    className={`vote-down-button voting-container-button answer-down-${
+                      answer._id
+                    } ${
+                      isAnswerdownvoted.some((item) => item === answer._id)
+                        ? "active-up-vote"
+                        : ""
+                    }`}
                     onClick={() => {
                       upvoteordownvoteAnswer(answer?._id, 0);
                     }}

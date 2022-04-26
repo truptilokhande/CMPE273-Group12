@@ -186,13 +186,21 @@ ul.comments-list .comment > * {
 }
 
 .upvoted-btn svg path {
-  fill: #F48224 !important;
+  fill: #f48224 !important;
 }
 
 .vote-down-button {
-  outline: none!important;
+  outline: none !important;
 }
 
 .downvoted-btn svg path {
-  fill: #F48224 !important;
+  fill: #f48224 !important;
+}
+
+.active-up-vote svg path {
+  fill: #f48224 !important;
+}
+
+.active-down-vote svg path {
+  fill: #f48224 !important;
 }

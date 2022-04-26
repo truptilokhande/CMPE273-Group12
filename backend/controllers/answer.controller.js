@@ -29,6 +29,7 @@ exports.voteAnswer = async (req, res) => {
   const { upvote } = req.query;
   const answerId = req.body.answerId;
   const userId = req.body.userId;
+  let result;
 
   // update user upvote count
   try {
@@ -37,21 +38,49 @@ exports.voteAnswer = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
-      await answersDb.findOneAndUpdate(
+      result = await answersDb.findOneAndUpdate(
         { _id: answerId },
-        { $inc: { votes: 1 } }
+        { $inc: { votes: 1 } },
+        { new: true }
       );
-    } else {
+    } else if (upvote === "0") {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
-      await answersDb.findOneAndUpdate(
+      result = await answersDb.findOneAndUpdate(
         { _id: answerId },
-        { $inc: { votes: -1 } }
+        { $inc: { votes: -1 } },
+        { new: true }
+      );
+    } else if (upvote === "2") {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { downVoteCount: 1 } }
+      );
+      result = await answersDb.findOneAndUpdate(
+        { _id: answerId },
+        { $inc: { votes: -2 } },
+        { new: true }
+      );
+    } else {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { upVoteCount: 1 } }
+      );
+      result = await answersDb.findOneAndUpdate(
+        { _id: answerId },
+        { $inc: { votes: 2 } },
+        { new: true }
       );
     }
-    res.status(200).send({ success: true, message: "Updated successfully" });
+    res
+      .status(200)
+      .send({
+        success: true,
+        message: "Updated successfully",
+        votes: result?.votes,
+      });
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }
@@ -86,7 +115,7 @@ exports.setBestAnswer = async (req, res) => {
   const questionId = req.body.questionId;
   try {
     const answer = await answersDb.findOne({ _id: id });
-    console.log(answer)
+    console.log(answer);
     // checking if it is alraedy set to true
     if (answer.markedAsRight !== true) {
       // removing if there's any answer set to best previously
