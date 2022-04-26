@@ -6,7 +6,7 @@ import connection from "../../config.json";
 import { connect } from "react-redux";
 import { getTags } from "../../store/thunk/thunk";
 
-function Homepage({ setTagsInstore, isAuthenticated }) {
+function Homepage({ setTagsInstore, isAuthenticated, user }) {
   // maintaing two copies of questions, one is used to sort and filter the questions and other has orginal set of questions.
   const [questions, setQuestions] = useState();
   const [questionsCopy, setQuestionsCopy] = useState(questions);
@@ -17,8 +17,16 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
     axios
       .get(`${connection.connectionURL}/api/question/getQuestions`)
       .then((response) => {
-        setQuestions(response?.data?.data?.questions);
-        setQuestionsCopy(response?.data?.data?.questions);
+        // filtering out questions which are waiting for approval and not posted by current user.
+        const filteredQuestions = response?.data?.data?.questions?.filter(
+          (question) =>
+            !(
+              question.waitingForApproval === true &&
+              question?.user[0]?._id !== user?._id
+            )
+        );
+        setQuestions(filteredQuestions);
+        setQuestionsCopy(filteredQuestions);
         setAnswerCount(response?.data?.data?.answercount);
       })
       .catch((err) => {
@@ -137,6 +145,7 @@ function Homepage({ setTagsInstore, isAuthenticated }) {
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.isAuthenticated,
+  user: state.user,
 });
 
 const mapDispatchToProps = (dispatch) => ({
