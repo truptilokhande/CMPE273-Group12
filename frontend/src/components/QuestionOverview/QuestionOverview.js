@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import "./QuestionOverview.css";
 import "react-quill/dist/quill.snow.css";
@@ -17,12 +18,12 @@ function QuestionOverview({ user }) {
   const [userdetails, setUserdetails] = useState();
   const [answers, setAnswers] = useState();
   const [answerBody, setAnswerBody] = useState();
-  const [addCommentToQuestion, setAddCommentToQuestion] = useState(false);
-  const [addCommentToAnswer, setAddCommentToAnswer] = useState(false);
+  const [commentAdded, setCommentAdded] = useState(false);
   const [isQuestionUpvoted, setQuestionUpVoted] = useState(false);
   const [isQuestionDownVoted, setQuestionDownVoted] = useState(false);
   const [isAnswerupvoted, setAnswerupvoted] = useState([]);
   const [isAnswerdownvoted, setAnswerdownvoted] = useState([]);
+  const [questionCommentContent, setQuestionCommentContent] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +41,10 @@ function QuestionOverview({ user }) {
       });
   }, []);
 
+  useEffect(() => {
+    addEventListeners();
+  }, [answers]);
+
   const modules = {
     toolbar: [
       ["bold", "italic", "underline"],
@@ -47,6 +52,36 @@ function QuestionOverview({ user }) {
       [{ list: "ordered" }, { list: "bullet" }],
       ["clean"],
     ],
+  };
+
+  const addEventListeners = () => {
+    answers?.forEach((answer) => {
+      const show = document.getElementById(`show-${answer._id}`);
+      const hide = document.getElementById(`hide-${answer._id}`);
+      const form = document.getElementById(`form-${answer._id}`);
+      const textarea = document.getElementById(`textarea-${answer._id}`);
+
+      show.addEventListener("click", function () {
+        form.style = "display: block";
+        textarea.style = "animation: riseHeight 1s .1s normal forwards";
+        hide.style = "display: block";
+        show.disabled = true;
+      });
+
+      hide.addEventListener("click", function () {
+        form.style = "display: none";
+        hide.style = "display: none";
+        show.disabled = false;
+      });
+    });
+    document.addEventListener("DOMContentLoaded", function (event) {
+      var scrollpos = localStorage.getItem("scrollpos");
+      if (scrollpos) window.scrollTo(0, scrollpos);
+    });
+
+    window.onbeforeunload = function (e) {
+      localStorage.setItem("scrollpos", window.scrollY);
+    };
   };
 
   const postAnswer = () => {
@@ -68,13 +103,20 @@ function QuestionOverview({ user }) {
   const postCommentToAnswer = (id) => {
     const comment = {
       userId: user?._id,
+      userName: user?.name,
       answerId: id,
       commentBody: usercomment,
     };
     axios
       .post(`${connection.connectionURL}/api/answer/add-comment`, comment)
       .then((response) => {
-        window.location.reload(true);
+        const result = answers.map((x) => {
+          const item = x?._id === id;
+          const comments = response?.data?.data?.comments;
+          return item ? { ...x, comments } : x;
+        });
+        setAnswers([...result]);
+        document.location.reload(true);
       })
       .catch((err) => {
         throw err;
@@ -279,6 +321,24 @@ function QuestionOverview({ user }) {
       });
   };
 
+  const addCommentToQuestion = () => {
+    axios
+      .post(`${connection.connectionURL}/api/question/addComment`, {
+        questionId: question?._id,
+        userId: user?._id,
+        userName: user?.name,
+        commentBody: questionCommentContent,
+      })
+      .then((response) => {
+        const comments = response?.data?.comments;
+        setQuestion({ ...question, comments });
+        setCommentAdded(false);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
   return (
     <>
       <div className="question">
@@ -422,7 +482,7 @@ function QuestionOverview({ user }) {
               </div>
               <div className="user-avatar">
                 <img
-                  src="https://www.gravatar.com/avatar/d812ca76337577d1eefe44dc80877e6f?s=64&amp;d=identicon&amp;r=PG&amp;f=1"
+                  src={userdetails?.profilepicture}
                   alt="user avatar"
                   width="32"
                   height="32"
@@ -449,68 +509,57 @@ function QuestionOverview({ user }) {
 
         <div className="question-comments mt-4">
           <ul className="comments-list">
-            <li className="comment m-2">
-              <div className="comment-text  js-comment-text-and-form">
-                <div className="comment-body js-comment-edit-hide">
-                  <span className="comment-copy">
-                    Hi. Please take the time to read this post on
-                  </span>
+            {question?.comments?.map((comment) => (
+              <li className="comment m-2">
+                <div className="comment-text  js-comment-text-and-form">
+                  <div className="comment-body js-comment-edit-hide">
+                    <span className="comment-copy">{comment?.commentBody}</span>
 
-                  <div className="d-inline-flex align-items-center">
-                    &nbsp;–&nbsp;
-                    <a href="/" className="comment-user">
-                      jezrael
-                    </a>
+                    <div className="d-inline-flex align-items-center">
+                      &nbsp;–&nbsp;
+                      <a href="/" className="comment-user">
+                        {comment?.userName}
+                      </a>
+                    </div>
+                    <span className="comment-date">
+                      <span>
+                        {relativeTime.from(new Date(comment?.createdAt))}
+                      </span>
+                    </span>
                   </div>
-                  <span className="comment-date">
-                    <span>27 mins ago</span>
-                  </span>
                 </div>
-              </div>
-            </li>
-            <li className="comment m-2">
-              <div className="comment-text  js-comment-text-and-form">
-                <div className="comment-body js-comment-edit-hide">
-                  <span className="comment-copy">
-                    Hi. Please take the time to read this post on
-                  </span>
-
-                  <div className="d-inline-flex align-items-center">
-                    &nbsp;–&nbsp;
-                    <a href="/" className="comment-user">
-                      jezrael
-                    </a>
-                  </div>
-                  <span className="comment-date">
-                    <span>27 mins ago</span>
-                  </span>
-                </div>
-              </div>
-            </li>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div className="add-comment-question mt-4">
-          {!addCommentToQuestion && (
+          {!commentAdded && (
             <button
               className="add-comment-link"
               onClick={() => {
-                setAddCommentToQuestion(true);
+                setCommentAdded(true);
               }}
             >
               Add a comment
             </button>
           )}
-          {addCommentToQuestion && (
+          {commentAdded && (
             <div className="comment-wrapper row no-gutters mt-4">
               <div className="col-8 mr-2">
-                <textarea className="w-100"></textarea>
+                <textarea
+                  className="w-100"
+                  onChange={(e) => {
+                    setQuestionCommentContent(e.target.value);
+                  }}
+                ></textarea>
               </div>
               <div className="col-2">
                 <button
                   className="add-comment-button"
                   onClick={() => {
-                    setAddCommentToQuestion(true);
+                    addCommentToQuestion();
+                    setCommentAdded(true);
                   }}
                 >
                   Add a comment
@@ -651,7 +700,7 @@ function QuestionOverview({ user }) {
                   </div>
                   <div className="user-avatar">
                     <img
-                      src="https://www.gravatar.com/avatar/d812ca76337577d1eefe44dc80877e6f?s=64&amp;d=identicon&amp;r=PG&amp;f=1"
+                      src={answer?.user[0]?.profilepicture}
                       alt="user avatar"
                       width="32"
                       height="32"
@@ -678,80 +727,69 @@ function QuestionOverview({ user }) {
 
             <div className="question-comments mt-4">
               <ul className="comments-list">
-                <li className="comment m-2">
-                  <div className="comment-text  js-comment-text-and-form">
-                    <div className="comment-body js-comment-edit-hide">
-                      <span className="comment-copy">
-                        Hi. Please take the time to read this post on
-                      </span>
+                {answer?.comments?.map((comment) => (
+                  <li className="comment m-2">
+                    <div className="comment-text  js-comment-text-and-form">
+                      <div className="comment-body js-comment-edit-hide">
+                        <span className="comment-copy">
+                          {comment?.commentBody}
+                        </span>
 
-                      <div className="d-inline-flex align-items-center">
-                        &nbsp;–&nbsp;
-                        <a href="/" className="comment-user">
-                          jezrael
-                        </a>
+                        <div className="d-inline-flex align-items-center">
+                          &nbsp;–&nbsp;
+                          <a href="/" className="comment-user">
+                            {comment?.userName}
+                          </a>
+                        </div>
+                        <span className="comment-date">
+                          <span>
+                            {relativeTime.from(
+                              new Date(comment?.createdAt) || ""
+                            )}
+                          </span>
+                        </span>
                       </div>
-                      <span className="comment-date">
-                        <span>27 mins ago</span>
-                      </span>
                     </div>
-                  </div>
-                </li>
-                <li className="comment m-2">
-                  <div className="comment-text  js-comment-text-and-form">
-                    <div className="comment-body js-comment-edit-hide">
-                      <span className="comment-copy">
-                        Hi. Please take the time to read this post on
-                      </span>
-
-                      <div className="d-inline-flex align-items-center">
-                        &nbsp;–&nbsp;
-                        <a href="/" className="comment-user">
-                          jezrael
-                        </a>
-                      </div>
-                      <span className="comment-date">
-                        <span>27 mins ago</span>
-                      </span>
-                    </div>
-                  </div>
-                </li>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="add-comment-question mt-4 mb-2">
-              {!addCommentToAnswer && (
-                <button
-                  className="add-comment-link"
-                  onClick={() => {
-                    setAddCommentToAnswer(true);
-                  }}
-                >
+              <>
+                <button className="add-comment-link" id={`show-${answer._id}`}>
                   Add a comment
                 </button>
-              )}
-              {addCommentToAnswer && (
-                <div className="comment-wrapper row no-gutters mt-4">
-                  <div className="col-8 mr-2">
-                    <textarea
-                      className="w-100"
-                      onChange={(e) => {
-                        setComment(e.target.value);
-                      }}
-                    ></textarea>
-                  </div>
-                  <div className="col-2">
-                    <button
-                      className="add-comment-button"
-                      onClick={() => {
-                        postCommentToAnswer(answer?._id);
-                      }}
-                    >
-                      Add a comment
-                    </button>
-                  </div>
+                <button id={`hide-${answer._id}`} style={{ display: "none" }}>
+                  X
+                </button>
+              </>
+
+              <form
+                id={`form-${answer._id}`}
+                className="comment-wrapper row no-gutters mt-4"
+                style={{ display: "none" }}
+              >
+                <div className="col-8 mr-2">
+                  <textarea
+                    className="w-100"
+                    id={`textarea-${answer._id}`}
+                    onChange={(e) => {
+                      setComment(e.target.value);
+                    }}
+                  ></textarea>
                 </div>
-              )}
+                <div className="col-2">
+                  <button
+                    className="add-comment-button"
+                    onClick={() => {
+                      postCommentToAnswer(answer?._id);
+                    }}
+                  >
+                    Add a comment
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         ))}

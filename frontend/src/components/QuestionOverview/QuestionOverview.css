@@ -204,3 +204,16 @@ ul.comments-list .comment > * {
 .active-down-vote svg path {
   fill: #f48224 !important;
 }
+
+@keyframes riseHeight {
+  0% {height: 0px;}
+  100% {height: 200px;}
+}
+
+pre{
+  background-color: #F6F6F6;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 13px;
+  font-family: monospace;
+}
