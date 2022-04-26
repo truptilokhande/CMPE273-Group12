@@ -64,13 +64,16 @@ const addquestion = async (req, res) => {
   const { userId, title, tags, questionbody } = req.body;
 
   try {
+    // check if it has image before saving.
+    const checkQuestionBodyHasImage = questionbody.match(/<img/);
+
     const newQuestion = new Question({
       userId,
       title,
       tags,
       questionbody,
+      waitingForApproval: !!checkQuestionBodyHasImage,
     });
-    // check if it has image before saving.
     const result = await newQuestion.save();
 
     // add tags to the user profile and update score for the tag.
