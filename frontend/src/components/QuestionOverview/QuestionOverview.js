@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import "./QuestionOverview.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -10,6 +10,7 @@ import RelativeTime from "@yaireo/relative-time";
 import moment from "moment";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import S3FileUpload from "react-s3";
 
 function QuestionOverview({ user }) {
   const relativeTime = new RelativeTime();
@@ -25,6 +26,7 @@ function QuestionOverview({ user }) {
   const [isAnswerdownvoted, setAnswerdownvoted] = useState([]);
   const [questionCommentContent, setQuestionCommentContent] = useState();
   const navigate = useNavigate();
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const url = window.location.pathname;
@@ -44,15 +46,6 @@ function QuestionOverview({ user }) {
   useEffect(() => {
     addEventListeners();
   }, [answers]);
-
-  const modules = {
-    toolbar: [
-      ["bold", "italic", "underline"],
-      ["link", "image", "code-block"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["clean"],
-    ],
-  };
 
   const addEventListeners = () => {
     answers?.forEach((answer) => {
@@ -83,6 +76,53 @@ function QuestionOverview({ user }) {
       localStorage.setItem("scrollpos", window.scrollY);
     };
   };
+
+  const saveToServer = (file) => {
+    const config = {
+      accessKeyId: "AKIA2WX32KIUACMHTCOR",
+      secretAccessKey: "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",
+      region: "us-west-1",
+      bucketName: "etsy-lab2",
+    };
+    S3FileUpload.uploadFile(file, config)
+      .then(async (res) => {
+        console.log(res);
+        editorRef.current.getEditor().insertEmbed(null, "image", res?.location);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      const file = input.files[0];
+      saveToServer(file);
+    };
+  };
+
+  const quillOptions = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          //   [{ 'header': [1, 2, false] }],
+          ["bold", "italic", "underline"],
+          ["link", "image", "code-block"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
 
   const postAnswer = () => {
     const answer = {
@@ -432,7 +472,7 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <a className="post-issue-button mx-auto my-1" href="/">
+              <a className="post-issue-button mx-auto my-1" href="/timeline">
                 <svg
                   aria-hidden="true"
                   className="mln2 mr0 svg-icon iconHistory"
@@ -446,7 +486,7 @@ function QuestionOverview({ user }) {
             </div>
           </div>
           <div className="question-layout col-11">
-            <div className="question-content">
+            <div className="question-content question-wrapper-content">
               {parse(question?.questionbody || "")}
             </div>
             <div className="question-tags d-flex flex-wrap">
@@ -461,14 +501,16 @@ function QuestionOverview({ user }) {
 
         <div className="question-overview-user-profile d-flex justify-content-between">
           <div className="ml-4">
-            <button
-              className="edit-question"
-              onClick={() => {
-                navigate("/edit-question", { state: { question } });
-              }}
-            >
-              edit question
-            </button>
+            {userdetails?._id === user?._id ? (
+              <button
+                className="edit-question"
+                onClick={() => {
+                  navigate("/edit-question", { state: { question } });
+                }}
+              >
+                edit question
+              </button>
+            ) : null}
           </div>
 
           <div className="user-info-wrapper">
@@ -523,7 +565,8 @@ function QuestionOverview({ user }) {
                     </div>
                     <span className="comment-date">
                       <span>
-                        {relativeTime.from(new Date(comment?.createdAt))}
+                        {moment(comment?.createdAt).format("MMMM DD,YYYY")} at{" "}
+                        {moment(comment?.createdAt).format("h:mm")}
                       </span>
                     </span>
                   </div>
@@ -743,9 +786,8 @@ function QuestionOverview({ user }) {
                         </div>
                         <span className="comment-date">
                           <span>
-                            {relativeTime.from(
-                              new Date(comment?.createdAt) || ""
-                            )}
+                            {moment(comment?.createdAt).format("MMMM DD,YYYY")}{" "}
+                            at {moment(comment?.createdAt).format("h:mm")}
                           </span>
                         </span>
                       </div>
@@ -803,7 +845,8 @@ function QuestionOverview({ user }) {
         <div className="d-flex position-relative">
           <ReactQuill
             placeholder={"Write something awesome..."}
-            modules={modules}
+            modules={quillOptions}
+            ref={editorRef}
             onChange={(val) => {
               setAnswerBody(val);
             }}

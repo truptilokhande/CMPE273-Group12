@@ -50,8 +50,8 @@ const register = asyncHandler(async (req, res) => {
     name,
     email,
     password: hashedPassword,
-    profilepicture:
-      userProfileDefaultImages[Math.floor(Math.random() * (0 - 6 + 1)) + min],
+    profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + min)],
+
   });
 
   if (user) {
