@@ -472,7 +472,7 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <a className="post-issue-button mx-auto my-1" href="/">
+              <a className="post-issue-button mx-auto my-1" href="/timeline">
                 <svg
                   aria-hidden="true"
                   className="mln2 mr0 svg-icon iconHistory"
