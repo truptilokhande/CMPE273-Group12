@@ -143,7 +143,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/getUser
 // @access  Public
 const getUser = asyncHandler(async (req, res) => {
-  console.log("in user")
+  
     const userid=req.params.id;
     filter1={userId:userid}
     filter={_id:userid}
@@ -154,11 +154,11 @@ const getUser = asyncHandler(async (req, res) => {
         console.log(err2);
 
       }else{
-        console.log(res2);
-        ac=String(res2); 
+        console.log("ac"+res2);
+        ac=res2; 
       }
     })
-   console.log("ac"+String(ac));
+   //console.log("ac"+ac);
     // console.log("q"+questioncount);
     question.countDocuments( filter1, function(err1,res1){
       if(err1){
@@ -196,15 +196,27 @@ const getUser = asyncHandler(async (req, res) => {
 // })
 const getTopposts = asyncHandler(async(req,res)=>{
   const userid=req.params.id;
+  console.log("inside posts");
+  let ansposts;
+  let quesposts;
   filter={userId:userid}
-  try{
-      const ansposts=answer.find({filter}).populate(questionId).sort({score:-1});
-      const quesposts=question.find({filter}).sort({score:-1});
-      res.status(200).send({ success: true, data1: ansposts,data2: quesposts });
-  }
-  catch{
-    res.status(400).send({ success: false, message: "error fetching tags" });
-  }
+  
+      answer.find(filter).populate("questionId").limit(3)
+      .then((result)=>{
+          console.log(result);
+          ansposts=result;
+          question.find(filter).limit(3)
+            .then((result1)=>{
+            console.log(result1);
+            quesposts=result1;
+            res.status(200).send({ success: true, data1: ansposts,data2: quesposts });
+    }).catch((err1)=>{console.log(err1);})
+      }).catch((err)=>{console.log(err);})
+      
+      
+      
+  
+  
 });
 
 const getQuestions = asyncHandler(async(req,res)=>{
@@ -258,7 +270,7 @@ const generateToken = (id) => {
 module.exports = {
   register,
   login,
-
+  getTopposts,
   getAllUsers,
   getUser,
   signout,
