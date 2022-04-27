@@ -67,6 +67,7 @@ const userSchema = mongoose.Schema(
       required: false,
       default: 0,
     },
+    
     tags: [userTagSchema],
     bookmarks: [mongoose.Types.ObjectId],
   },

@@ -2,11 +2,13 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
 import axios from "axios";
+
 import connection from "../../config.json";
 import {
   signupSuccess,
   signinsuccess,
   getAllTagsSuccess,
+  getUserSuccess,
   // setUser,
 } from "../actions/actions";
 
@@ -52,4 +54,15 @@ export const getTags = () => (dispatch) => {
     .catch((err) => {
       throw err;
     });
+};
+
+export const getUser=(id)=>(dispatch)=>{
+  axios.defaults.withCredentials=true;
+  axios.get(`${connection.connectionURL}/api/user/getUser`,id)
+  .then((res)=>{
+    dispatch(getUserSuccess(res.data.user));
+  })
+  .catch((err)=>{
+    throw err;
+  });
 };

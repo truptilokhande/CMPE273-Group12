@@ -56,7 +56,7 @@ function App({ isAuthenticated }) {
               exact
               element={isAuthenticated ? <EditQuestion /> : <SignIn />}
             />
-            <Route path="/userProfile" exact element={<ProfilePage />} />
+            <Route path="/userProfile/:id" exact element={<ProfilePage />} />
             <Route path="/Activities" exact element={<Activities />} />
             <Route
               path="/Questions/Questionstab"

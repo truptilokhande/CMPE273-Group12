@@ -34,6 +34,12 @@ const reducer = (state = initialState, action) => {
       tags: action.payload,
     };
   }
+  if (action.type === "SET_USER_IN_STORE") {
+    return {
+      ...state,
+      tags: action.payload,
+    };
+  }
 
   return state;
 };

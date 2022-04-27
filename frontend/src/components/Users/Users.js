@@ -68,7 +68,7 @@ function Users() {
                     />
                   </div>
                   <div className="user-details d-flex flex-column ml-2">
-                    <a href="/userProfile" className="users-name">
+                    <a href={`/userProfile/${user._id}`} className="users-name">
                       {user?.name}
                     </a>
                     <span className="users-location">{user?.location}</span>

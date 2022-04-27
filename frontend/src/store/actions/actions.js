@@ -17,3 +17,8 @@ export const getAllTagsSuccess = (value) => ({
   type: "SET_TAGS_IN_STORE",
   payload: value,
 });
+
+export const getUserSuccess = (value) => ({
+  type: "SET_USER_IN_STORE",
+  payload: value,
+});

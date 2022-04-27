@@ -1,6 +1,7 @@
 import './ProfilePage.css';
 
-import React, {useEffect, Fragment} from 'react';
+import React, {useEffect, useState, Fragment} from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 import goldTag from "../../assets/goldbadge.png";
@@ -8,42 +9,62 @@ import silverTag from "../../assets/silverbadge.png";
 import bronzeTag from "../../assets/bronzebadge.png";
 import Spinner from './Spinner/Spinnercomponent.js';
 
-
+import connection from "../../config.json";
 import TopPosts from "./TopPosts/TopPosts.js"
 import Activities from "./Activities/Activities.js"
 import BasicDetails from './BasicDetails/BasicDetails';
-const ProfilePage = () => {
+const ProfilePage = (user) => {
   // useEffect(() => {
   //   getProfile(match.params.id);
   //   // eslint-disable-next-line
   // }, [getProfile]);
+  const [userdetails,setUserdetails]=useState();
+  const [tags,setTags]=useState([]);
+  const url = window.location.pathname;
+    const id = url.substring(url.lastIndexOf("/") + 1);
+  console.log(id);
+  useEffect(() => {
+      
+    axios
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .then((response) => {
+          console.log(response);
+        setUserdetails(response.data);
+        setTags(response.data.data.tags);
+        //setLastseen(response.data.data.updatedAt)
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
 
 
   return (
     <div>
 
-      <BasicDetails></BasicDetails>
-         <div id='mainbar' className='d-flex flex-col user-main-bar pl24 pt24'>
+      <BasicDetails
+      id={id}></BasicDetails>
+         <div id='mainbar' className='d-flex flex-col user-main-bar pl24 pt24' >
          <div class="grid--item" data-is-here-when="lg" id="stats">
                         <div class="fs-title mb8">Stats</div>
-                        <div class="s-card fc-light bar-md">
+                        <div class="s-card fc-light bar-md" style={{width:"200px"}}>
                             <div class="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
                                         <div class="flex--item md:fl-auto">
-            <div class="fs-body3 fc-dark">93,446</div>
+            <div class="fs-body3 fc-dark">{userdetails?.data.reputation}</div>
             reputation
         </div>
             <div class="flex--item md:fl-auto" title="Estimated number of times people viewed helpful posts by this user
 (based on page views of questions
 and questions where they wrote highly-ranked answers)">
-                <div class="fs-body3 fc-dark">2.4m</div>
+                <div class="fs-body3 fc-dark">200</div>
                 reached
             </div>
         <div class="flex--item md:fl-auto">
-            <div class="fs-body3 fc-dark">4,042</div>
+            <div class="fs-body3 fc-dark">{userdetails?.ac}</div>
             answers
         </div>
         <div class="flex--item md:fl-auto">
-            <div class="fs-body3 fc-dark">0</div>
+            <div class="fs-body3 fc-dark">{userdetails?.qc}</div>
             questions
         </div>
 <div class="flex--item fl-auto m8 js-rank-container">
@@ -62,7 +83,7 @@ and questions where they wrote highly-ranked answers)">
             
                 <h4 class='ml-10' style={{marginLeft:"40px"}}>About</h4>
                 <div className='about-content'>
-                  <p style={{padding:"25px",color:'black',fontSize:"15px"}}> Python enthusiast</p>
+                  <p style={{padding:"25px",color:'black',fontSize:"15px"}}> {userdetails?.data.about}</p>
                   <button className='editdetbutton'>edit details</button>
                 </div>
 
@@ -188,153 +209,33 @@ and questions where they wrote highly-ranked answers)">
                 View all tags
             </a>
     </div>
-
-        <div class="s-card bar-md p0">
+     
+        <div class="s-card bar-md p0" style={{width:"800px"}}>
+        {tags?.map((tag) => (
                 <div class="p12 bb bc-black-075" title=" Gave 3859 non-wiki answers with a total score of 4974.">
+                
                     <div class="d-flex ai-center gs12 fw-wrap">
                         <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[reactjs]" class="s-tag js-gps-track" title="show questions tagged 'reactjs'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">reactjs</a>
+                            <a href="/search?q=user:8690857+[reactjs]" class="s-tag js-gps-track" title="show questions tagged 'reactjs'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">{tag?.tagName}</a>
         <a href="/help/badges/5357/reactjs" class="badge-tag bg-transparent bc-transparent m0" title="Gold badge"><span class="badge1"></span></a>
                         </div>
                         <div class="flex--item ml-auto"> 
                             <div class="d-flex gsx gs16">
                                 <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">4,974</div>
+                                    <div class="fs-body3 mr4">{tag?.tagCount}</div>
                                     <div class="fc-light tt-lowercase">Score</div>
                                 </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">3,859</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">95</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="p12 bb bc-black-075" title=" Gave 1884 non-wiki answers with a total score of 2404.">
-                    <div class="d-flex ai-center gs12 fw-wrap">
-                        <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[javascript]" class="s-tag js-gps-track" title="show questions tagged 'javascript'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">javascript</a>
-        <a href="/help/badges/78/javascript" class="badge-tag bg-transparent bc-transparent m0" title="Gold badge"><span class="badge1"></span></a>
-                        </div>
-                        <div class="flex--item ml-auto"> 
-                            <div class="d-flex gsx gs16">
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">2,404</div>
-                                    <div class="fc-light tt-lowercase">Score</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">1,884</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">47</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p12 bb bc-black-075" title=" Gave 881 non-wiki answers with a total score of 1158.">
-                    <div class="d-flex ai-center gs12 fw-wrap">
-                        <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[react-hooks]" class="s-tag js-gps-track" title="show questions tagged 'react-hooks'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">react-hooks</a>
-        <a href="/help/badges/9195/react-hooks" class="badge-tag bg-transparent bc-transparent m0" title="Gold badge"><span class="badge1"></span></a>
-                        </div>
-                        <div class="flex--item ml-auto"> 
-                            <div class="d-flex gsx gs16">
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">1,158</div>
-                                    <div class="fc-light tt-lowercase">Score</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">881</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">22</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p12 bb bc-black-075" title=" Gave 715 non-wiki answers with a total score of 1136.">
-                    <div class="d-flex ai-center gs12 fw-wrap">
-                        <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[react-router-dom]" class="s-tag js-gps-track" title="show questions tagged 'react-router-dom'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">react-router-dom</a>
-        <a href="/help/badges/10969/react-router-dom" class="badge-tag bg-transparent bc-transparent m0" title="Gold badge"><span class="badge1"></span></a>
-                        </div>
-                        <div class="flex--item ml-auto"> 
-                            <div class="d-flex gsx gs16">
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">1,136</div>
-                                    <div class="fc-light tt-lowercase">Score</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">715</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">18</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p12 bb bc-black-075" title=" Gave 645 non-wiki answers with a total score of 902.">
-                    <div class="d-flex ai-center gs12 fw-wrap">
-                        <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[react-router]" class="s-tag js-gps-track" title="show questions tagged 'react-router'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">react-router</a>
-        <a href="/help/badges/7226/react-router" class="badge-tag bg-transparent bc-transparent m0" title="Silver badge"><span class="badge2"></span></a>
-                        </div>
-                        <div class="flex--item ml-auto"> 
-                            <div class="d-flex gsx gs16">
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">902</div>
-                                    <div class="fc-light tt-lowercase">Score</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">645</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">16</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p12" title=" Gave 252 non-wiki answers with a total score of 345.">
-                    <div class="d-flex ai-center gs12 fw-wrap">
-                        <div class="flex--item ws-nowrap">
-                            <a href="/search?q=user:8690857+[react-native]" class="s-tag js-gps-track" title="show questions tagged 'react-native'" rel="tag" data-gps-track="profile_link.click({target:2, type:2 })">react-native</a>
-        <a href="/help/badges/5182/react-native" class="badge-tag bg-transparent bc-transparent m0" title="Bronze badge"><span class="badge3"></span></a>
-                        </div>
-                        <div class="flex--item ml-auto"> 
-                            <div class="d-flex gsx gs16">
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">345</div>
-                                    <div class="fc-light tt-lowercase">Score</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">252</div>
-                                    <div class="fc-light tt-lowercase">Posts</div>
-                                </div>
-                                <div class="flex--item d-flex ai-center">
-                                    <div class="fs-body3 mr4">6</div>
-                                    <div class="fc-light tt-lowercase">Posts %</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        </div>
+                </div>))}
+                
+                
+               
+                
+                
+        </div> 
 </div>
 
 
@@ -352,7 +253,7 @@ and questions where they wrote highly-ranked answers)">
                   </div>
          
                 </div>
-                <TopPosts/>
+                <TopPosts id={id}/>
              
             </div>
 
