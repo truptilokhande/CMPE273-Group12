@@ -205,3 +205,13 @@ react-tags {
   font-size: 13px;
   font-family: inherit;
 }
+
+.ql-container img {
+  width: 250px;
+  height: 250px;
+}
+
+.question-wrapper-content img {
+  width: 250px;
+  height: 250px;
+}

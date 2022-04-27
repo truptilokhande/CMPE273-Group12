@@ -24,6 +24,7 @@ import BasicDetails from "./components/Profile/BasicDetails/BasicDetails";
 import Addtag from "./components/Admin/Addtag";
 import Aproove from "./components/Admin/Aproove";
 import { connect } from "react-redux";
+import TimeLine from "./components/QuestionOverview/TimeLine";
 
 function App({ isAuthenticated }) {
   return (
@@ -81,6 +82,7 @@ function App({ isAuthenticated }) {
             <Route path="/BasicDetails" exact element={<BasicDetails />} />
             <Route path="/Addtag" exact element={<Addtag />} />
             <Route path="/Aproove" exact element={<Aproove />} />
+            <Route path="/timeline" exact element={<TimeLine />} />
           </Routes>
         </div>
       </main>
