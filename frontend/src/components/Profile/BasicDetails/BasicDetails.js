@@ -1,18 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import "./BasicDetails.css"
-function BasicDetails() {
+import axios from 'axios'
+import connection from "../../../config.json";
+function BasicDetails(id) {
+    const [userdetails, setUserdetails] = useState();
+    const [lastseen,setLastseen]=useState();
+    const url = window.location.pathname;
+    const userid=id.id
+    //const id = url.substring(url.lastIndexOf("/") + 1);
+    console.log(userid);
+    useEffect(() => {
+      
+        axios
+          .get(`${connection.connectionURL}/api/user/getUser/${userid}`)
+          .then((response) => {
+              console.log(response);
+            setUserdetails(response.data)
+            setLastseen(response.data.data.updatedAt)
+          })
+          .catch((err) => {
+            throw err;
+          });
+      }, []);
+
+
+
   return (
     <div>
         <div class="d-flex ai-center fw-wrap gs16 mb16">
     <a class="flex--item" href="/users/2930622/g-rafael">
-        <div class="md:d-none js-usermini-avatar-container"><div class="bar-md bs-sm"><img src="https://www.gravatar.com/avatar/?s=256&amp;d=identicon&amp;r=PG&amp;f=1" alt="user avatar" width="128" height="128" class="bar-sm bar-md d-block"></img></div></div>
-        <div class="d-none md:d-block sm:d-none js-usermini-avatar-container"><div class="bar-md bs-sm"><img src="https://www.gravatar.com/avatar/?s=192&amp;d=identicon&amp;r=PG&amp;f=1" alt="user avatar" width="96" height="96" class="bar-sm bar-md d-block"></img></div></div>
-        <div class="d-none sm:d-block js-usermini-avatar-container"><div class="bar-md bs-sm"><img src="https://www.gravatar.com/avatar/?s=128&amp;d=identicon&amp;r=PG&amp;f=1" alt="user avatar" width="64" height="64" class="bar-sm bar-md d-block"></img></div></div>
+        <div class="md:d-none js-usermini-avatar-container"><div class="bar-md bs-sm"><img src={userdetails?.data.profilepicture} alt="user avatar" width="128" height="128" class="bar-sm bar-md d-block"></img></div></div>
+        <div class="d-none md:d-block sm:d-none js-usermini-avatar-container"><div class="bar-md bs-sm"><img src={userdetails?.data.profilepicture} alt="user avatar" width="96" height="96" class="bar-sm bar-md d-block"></img></div></div>
+        <div class="d-none sm:d-block js-usermini-avatar-container"><div class="bar-md bs-sm"><img src={userdetails?.data.profilepicture} alt="user avatar" width="64" height="64" class="bar-sm bar-md d-block"></img></div></div>
     </a>
     <div class="flex--item">
         <div class="d-flex ai-center fw-wrap gs8 wmx4">
             <div class="flex--item mb12 fs-headline2 lh-xs">
-                G. Rafael
+                {userdetails?.data.name}
             </div>
             <div class="flex--item">
                 <div class="d-flex ai-center fw-nowrap gs4">
@@ -39,8 +63,8 @@ Member for <span title="2013-10-29 04:42:46Z">8 years, 5 months</span>
                     <div class="d-flex gs4 gsx ai-center">
                         <div class="flex--item fc-black-350"><svg aria-hidden="true" class="svg-icon iconClock" width="18" height="18" viewBox="0 0 18 18"><path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8Zm0-2c3.27 0 6-2.73 6-6s-2.73-6-6-6-6 2.73-6 6 2.73 6 6 6ZM8 5h1.01L9 9.36l3.22 2.1-.6.93L8 10V5Z"></path></svg></div>
                         <div class="flex--item">
-                            Last seen
-this week                        </div>
+                            Last seen : {userdetails?.data.updatedAt} 
+                       </div>
                     </div>
                 </li>
 
