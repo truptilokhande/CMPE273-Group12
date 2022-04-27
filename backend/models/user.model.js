@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const login=require("./question.model")
 
 const userTagSchema = new mongoose.Schema({
   tagName: {
@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    joiningdate: {
+      type:Date,
+      
+    },
     password: {
       type: String,
       required: true,
@@ -30,7 +34,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    lastLoginDate: {
+    lastseen: {
       type: Date,
       required: false,
     },
@@ -43,6 +47,12 @@ const userSchema = mongoose.Schema(
       required: false,
       default: 0,
     },
+    reach: {
+      type: Number,
+      required: false,
+      default: 10,
+    },
+    
     location: {
       type: String,
       required: false,
@@ -56,6 +66,9 @@ const userSchema = mongoose.Schema(
       type: Number,
       required: false,
       default: 0,
+    },
+    bookmarks: {
+      type : [mongoose.Schema.Types.ObjectId], ref: login, 
     },
     tags: [userTagSchema],
     bookmarks: [mongoose.Types.ObjectId],
