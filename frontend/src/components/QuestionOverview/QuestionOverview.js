@@ -501,14 +501,16 @@ function QuestionOverview({ user }) {
 
         <div className="question-overview-user-profile d-flex justify-content-between">
           <div className="ml-4">
-            <button
-              className="edit-question"
-              onClick={() => {
-                navigate("/edit-question", { state: { question } });
-              }}
-            >
-              edit question
-            </button>
+            {userdetails?._id === user?._id ? (
+              <button
+                className="edit-question"
+                onClick={() => {
+                  navigate("/edit-question", { state: { question } });
+                }}
+              >
+                edit question
+              </button>
+            ) : null}
           </div>
 
           <div className="user-info-wrapper">
@@ -563,7 +565,8 @@ function QuestionOverview({ user }) {
                     </div>
                     <span className="comment-date">
                       <span>
-                        {relativeTime.from(new Date(comment?.createdAt))}
+                        {moment(comment?.createdAt).format("MMMM DD,YYYY")} at{" "}
+                        {moment(comment?.createdAt).format("h:mm")}
                       </span>
                     </span>
                   </div>
@@ -783,9 +786,8 @@ function QuestionOverview({ user }) {
                         </div>
                         <span className="comment-date">
                           <span>
-                            {relativeTime.from(
-                              new Date(comment?.createdAt) || ""
-                            )}
+                            {moment(comment?.createdAt).format("MMMM DD,YYYY")}{" "}
+                            at {moment(comment?.createdAt).format("h:mm")}
                           </span>
                         </span>
                       </div>
