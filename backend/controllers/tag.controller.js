@@ -140,3 +140,24 @@ exports.addTag = (req, res) => {
       res.status(500).send({ message: "some error occured" });
     });
 };
+
+exports.getAllQuestionWithSpecificTag = async (req, res) => {
+  let today = new Date();
+
+  try {
+    const name = req.params.tagName;
+    console.log(name);
+    const checkQuery = [
+      {
+        $match: {
+          "tags.name": name,
+        },
+      },
+    ];
+
+    const questions = await QuestionsDb.aggregate(checkQuery);
+    res.send({ questions });
+  } catch (error) {
+    res.json(error.message);
+  }
+};
