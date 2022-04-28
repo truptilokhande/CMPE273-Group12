@@ -51,7 +51,6 @@ const register = asyncHandler(async (req, res) => {
     email,
     password: hashedPassword,
     profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
-
   });
 
   if (user) {
@@ -143,45 +142,36 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/getUser
 // @access  Public
 const getUser = asyncHandler(async (req, res) => {
-  console.log("in user")
-    const userid=req.params.id;
-    filter1={userId:userid}
-    filter={_id:userid}
-    var qc=0;
-    var ac=0;
-    answer.countDocuments( filter1, function(err2,res2){
-      if(err2){
-        console.log(err2);
+  const userid = req.params.id;
+  filter1 = { userId: userid };
+  filter = { _id: userid };
+  var qc = 0;
+  var ac = 0;
+  answer.countDocuments(filter1, function (err2, res2) {
+    if (err2) {
+      console.log(err2);
+    } else {
+      ac = String(res2);
+    }
+  });
 
-      }else{
-        console.log(res2);
-        ac=String(res2); 
-      }
-    })
-   console.log("ac"+String(ac));
-    // console.log("q"+questioncount);
-    question.countDocuments( filter1, function(err1,res1){
-      if(err1){
-        console.log(err1);
+  // console.log("q"+questioncount);
+  question.countDocuments(filter1, function (err1, res1) {
+    if (err1) {
+      console.log(err1);
+    } else {
+      console.log(res1);
+      qc = String(res1);
+    }
+  });
 
-      }else{
-        console.log(res1);
-        qc=String(res1); 
-      }
-    })
-    
-    const user =  User.findOne(filter, function(err, result){
-      if(err) {
-        console.log(err);
-        res.status(400).send({ success: false, message: "error fetching user" });}
-      else{
-    console.log(result)
-    res.status(200).send({ success: true, data: result,qc:qc,ac:ac });
-    
- 
-    
-      }
-    })
+  const user = User.findOne(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: "error fetching user" });
+    } else {
+      res.status(200).send({ success: true, data: result, qc: qc, ac: ac });
+    }
+  });
 });
 // const getToptags = asyncHandler(async(req,res)=>{
 //   const userid=req.params.id;
@@ -194,59 +184,53 @@ const getUser = asyncHandler(async (req, res) => {
 //     res.status(400).send({ success: "false", message: "error fetching tags" });
 //   }
 // })
-const getTopposts = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-      const ansposts=answer.find({filter}).populate(questionId).sort({score:-1});
-      const quesposts=question.find({filter}).sort({score:-1});
-      res.status(200).send({ success: true, data1: ansposts,data2: quesposts });
-  }
-  catch{
+const getTopposts = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const ansposts = answer
+      .find({ filter })
+      .populate(questionId)
+      .sort({ score: -1 });
+    const quesposts = question.find({ filter }).sort({ score: -1 });
+    res.status(200).send({ success: true, data1: ansposts, data2: quesposts });
+  } catch {
     res.status(400).send({ success: false, message: "error fetching tags" });
   }
 });
 
-const getQuestions = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const questions=question.find({filter},{_id:1,title});
-        res.status(200).send({ success: true, data : questions});
+const getQuestions = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const questions = question.find({ filter }, { _id: 1, title });
+    res.status(200).send({ success: true, data: questions });
+  } catch {
+    res
+      .status(400)
+      .send({ success: false, message: "error fetching questions" });
   }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching questions" });
-
+});
+const getAnswers = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const questions = answers.find({ filter }).populate(questionId);
+    res.status(200).send({ success: true, data: questions });
+  } catch {
+    res.status(400).send({ success: false, message: "error fetching Answers" });
   }
-})
-const getAnswers = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const questions=answers.find({filter}).populate(questionId);
-        res.status(200).send({ success: true, data : questions});
+});
+const getBookmarks = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const bookmarks = user.find({ filter }, { bookmarks: 1 });
+    res.status(200).send({ success: true, data: bookmarks });
+  } catch {
+    res.status(400).send({ success: false, message: "error fetching Answers" });
   }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching Answers" });
-
-  }
-})
-const getBookmarks = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const bookmarks=user.find({filter},{bookmarks:1})
-        res.status(200).send({ success: true, data : bookmarks});
-  }
-  catch{
-        res.status(400).send({ success: false, message : "error fetching Answers" });
-
-  }
-
-})
-
-
-
+});
 
 // Generate JWT
 const generateToken = (id) => {

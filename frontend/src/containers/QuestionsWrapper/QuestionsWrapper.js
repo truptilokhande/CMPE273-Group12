@@ -64,7 +64,6 @@ function QuestionsWrapper({ ...props }) {
 
                   <div className="question-user-card d-flex align-items-center p-0">
                     <a href="/" className="user-avatar">
-                      {" "}
                       <div className="avatar-wrapper">
                         <img
                           src={question?.user[0]?.profilepicture}
