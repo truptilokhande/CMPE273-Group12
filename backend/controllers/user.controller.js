@@ -52,8 +52,7 @@ const register = asyncHandler(async (req, res) => {
     name,
     email,
     password: hashedPassword,
-    profilepicture:
-      userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+    profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
   });
 
   if (user) {
@@ -150,16 +149,14 @@ const getUser = asyncHandler(async (req, res) => {
   filter = { _id: userid };
   var qc = 0;
   var ac = 0;
-  answer.countDocuments(filter1, function (err2, res2) {
+answer.countDocuments(filter1, function (err2, res2) {
     if (err2) {
       console.log(err2);
     } else {
-      console.log("ac" + res2);
-      ac = res2;
+      ac = String(res2);
     }
   });
-  //console.log("ac"+ac);
-  // console.log("q"+questioncount);
+
   question.countDocuments(filter1, function (err1, res1) {
     if (err1) {
       console.log(err1);
@@ -171,10 +168,8 @@ const getUser = asyncHandler(async (req, res) => {
 
   const user = User.findOne(filter, function (err, result) {
     if (err) {
-      console.log(err);
       res.status(400).send({ success: false, message: "error fetching user" });
     } else {
-      console.log(result);
       res.status(200).send({ success: true, data: result, qc: qc, ac: ac });
     }
   });
@@ -191,36 +186,17 @@ const getUser = asyncHandler(async (req, res) => {
 //   }
 // })
 const getTopposts = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
   try {
-    const userid = req.params.id;
-    const answersagg = [
-      {
-        $lookup: {
-          from: "questions",
-          localField: "questionId",
-          foreignField: "_id",
-          as: "question",
-        },
-      },
-      {
-        $match: {
-          userId: mongoose.Types.ObjectId("62675bd87312f57514b2f8cb"),
-        },
-      },
-      {
-        $project: {
-          question: 1,
-        },
-      },
-      {
-        $limit: 3,
-      },
-    ];
-    const quesposts = await QuestionDb.find({ userId: userid }).limit(3);
-    const answerposts = await QuestionDb.aggregate(answersagg);
-    res.status(200).send({ quesposts, answerposts });
-  } catch (err) {
-    res.status(400).send("error retriving user questions and answers");
+    const ansposts = answer
+      .find({ filter })
+      .populate(questionId)
+      .sort({ score: -1 });
+    const quesposts = question.find({ filter }).sort({ score: -1 });
+    res.status(200).send({ success: true, data1: ansposts, data2: quesposts });
+  } catch {
+    res.status(400).send({ success: false, message: "error fetching tags" });
   }
 });
 
