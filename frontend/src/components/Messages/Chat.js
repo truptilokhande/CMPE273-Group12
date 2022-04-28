@@ -5,7 +5,6 @@ import {Link} from 'react-router-dom';
 //var message_array=[{senderID:1,receiverID:2,message:"hi",timestamp:"123"},{senderID:2,receiverID:1,message:"hello",timestamp:"123"},{senderID:1,receiverID:2,message:"thx",timestamp:"123"}]
 
 function Chat(){
-    console.log("chat")
     const [message_array, set_message_array] = useState([]); 
     const [message_text, setmessagetext] = useState("");    
     const senderID = localStorage.getItem("sender");
@@ -53,24 +52,32 @@ console.log(message_text)
 
 
  <div className="block col-2" >
- <table class="center">
+ <div style={{justifyContent:'center', alignItems:'center'}}>
+    
+
+ <table class="center" >
  <tr>
 
-         <th>messages</th>
+         <th >messages</th>
          
- 
+ <br></br><br></br>
  </tr>
  { message_array.map(item => (
  <tr> 
-    {item.senderID=="1" ?<td style={{textAlign: "left",}}>{item.message}</td> : <td style={{color: "red",textAlign: "right",}}>{item.message}</td>}
-  
-   
+    {item.senderID=="1" ?<td style={{textAlign: "left",}}><span  style={{
+        backgroundColor:  'greenyellow',borderRadius: '5px',width: "900px",padding: "10px"
+      }}>{item.message}<br></br></span></td> : <td style={{textAlign: "right",}}><span  style={{
+        backgroundColor:  'cornsilk',borderRadius: '5px',padding: "10px"
+      }}>{item.message}<br></br></span></td>}
 
-</tr> 
+</tr>
+
+ 
 ))} 
+
 </table>  
 </div> 
-
+</div>
 
 
 </ul>

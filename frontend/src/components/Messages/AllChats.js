@@ -48,7 +48,6 @@ function AllChats(){
  <table class="center">
  <tr>
 
-         <th>all chats</th>
          
  
  </tr>

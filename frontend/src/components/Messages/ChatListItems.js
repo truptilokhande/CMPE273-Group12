@@ -33,12 +33,12 @@ function ChatListItems(props){
     }
   return (
    
-      
+
     <div>
          {showchattoken && <Navigate to="/chat" />}
-        <button onClick={showChatRoom}>{receiverID}</button>
-
-        
+         <button style={{
+        backgroundColor:  'cornsilk',}} onClick={showChatRoom}> {receiverID}</button>
+    <br></br><br></br>
     </div>
   )
 }
