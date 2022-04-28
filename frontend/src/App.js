@@ -62,25 +62,25 @@ function App({ isAuthenticated }) {
               element={isAuthenticated ? <EditQuestion /> : <SignIn />}
             />
             <Route path="/userProfile/:id" exact element={<ProfilePage />} />
-            <Route path="/Activities" exact element={<Activities />} />
+            <Route path="/Activities/:id" exact element={<Activities />} />
             <Route
-              path="/Questions/Questionstab"
+              path="/Questions/Questionstab/:id"
               exact
               element={<Questionstab />}
             />
             <Route path="/UserTags/UserTags" exact element={<UserTags />} />
             <Route
-              path="/ActivityBadges/ActivityBadges"
+              path="/ActivityBadges/ActivityBadges/:id"
               exact
               element={<ActivityBadges />}
             />
             <Route
-              path="/Bookmarkstab/Bookmarkstab"
+              path="/Bookmarkstab/Bookmarkstab/:id"
               exact
               element={<Bookmarkstab />}
             />
             <Route
-              path="/Reputation/Reputation"
+              path="/Reputation/Reputation/:id"
               exact
               element={<Reputation />}
             />

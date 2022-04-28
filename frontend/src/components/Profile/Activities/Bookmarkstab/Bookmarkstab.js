@@ -1,10 +1,52 @@
-import React from 'react'
-import "./Bookmarkstab.css"
+import React, {useEffect, useState, Fragment} from 'react';
+import "./Bookmarkstab.css";
+import axios from 'axios';
+import connection from "../../../../config.json";
 import BasicDetails from '../../BasicDetails/BasicDetails'
 function Bookmarkstab() {
+    const [book,setBookmarks]=useState([]);
+    const filtered=[]
+  const url = window.location.pathname;
+    const id = url.substring(url.lastIndexOf("/") + 1);
+  console.log(id);
+  useEffect(() => {
+      
+    axios
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .then((res) => {
+          console.log(res.data.data.bookmarks);
+        setBookmarks(res.data.data.bookmarks);
+        console.log(typeof(book));
+        console.log(Array.isArray(book));
+        //setLastseen(response.data.data.updatedAt)
+      })
+      .catch((err) => {
+        throw err;
+      });
+      axios.get(`${connection.connectionURL}/api/question/getQuestions`)
+      .then((response)=>{
+          console.log(response);
+        const filteredQuestions = response?.data?.data?.questions?.filter(
+            (question) =>
+
+              (
+                  
+                book.includes(question._id)
+
+                
+              )
+                
+          );
+          setBookmarks(filteredQuestions);
+          console.log(book);
+         
+      }).catch((err)=>{
+          console.log(err);
+      })
+  }, []);
   return (
     <div>
-        <BasicDetails/>
+        <BasicDetails id={id}/>
         <div class="d-flex mb48">
          <nav class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav" role="navigation">
             <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
@@ -51,7 +93,7 @@ function Bookmarkstab() {
 <div class="d-flex fd-column">
     
 <h2 class="flex--item fs-title mb0">
-0 Bookmarks
+{book.length} Bookmarks
 </h2>
 
 
@@ -79,14 +121,14 @@ function Bookmarkstab() {
     </div>
 </div>
 </div>
-
+{book?.map((b) => (
 <div class="ba bc-black-100 bar-md">
 
 <div class="s-empty-state wmx4 p48">
-This user has no bookmarked questions       </div>
+{b.title}      </div>
 
 </div>
-
+))}
 <div>
 
 <div class="js-user-tab-paging">

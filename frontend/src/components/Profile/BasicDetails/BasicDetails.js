@@ -74,8 +74,8 @@ Member for <span title="2013-10-29 04:42:46Z">8 years, 5 months</span>
 </div>
 <div class="d-flex ai-center jc-space-between fw-wrap mb16 js-user-header">
     <div class="flex--item s-navigation">
-            <a href="/userProfile" class="s-navigation--item" data-shortcut="P">Profile</a>
-            <a href="/Activities" class="s-navigation--item is-selected" data-shortcut="A">Activity</a>
+            <a href={`/userProfile/${userid}`} class="s-navigation--item" data-shortcut="P">Profile</a>
+            <a href={`/Activities/${userid}`} class="s-navigation--item is-selected" data-shortcut="A">Activity</a>
     </div>
     <div class="flex--item ml-auto">
         <div class="s-navigation s-navigation__muted ai-center">
