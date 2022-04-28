@@ -10,9 +10,9 @@ router.post("/login", userController.login);
 router.get("/getAllUsers", userController.getAllUsers);
 router.get("/getUser/:id", userController.getUser);
 router.get("/getTopposts/:id",userController.getTopposts);
-//router.get("/getQuestions",userController.getQuestions);
-//router.get("/getAnswers",userController.getAnswers);
-//router.get("/getTopposts",userController.getTopposts);
+router.get("/getQuestions/:id",userController.getQuestions);
+router.get("/getAnswers/:id",userController.getAnswers);
+router.get("/getBookmarks/:id",userController.getBookmarks);
 router.get("/signout", userController.signout);
 
 module.exports = router;

@@ -221,39 +221,69 @@ const getTopposts = asyncHandler(async(req,res)=>{
 
 const getQuestions = asyncHandler(async(req,res)=>{
   const userid=req.params.id;
+  console.log("question");
   filter={userId:userid}
-  try{
-        const questions=question.find({filter},{_id:1,title});
-        res.status(200).send({ success: true, data : questions});
-  }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching questions" });
+  let qc=0;
+  question.countDocuments( filter, function(err2,res2){
+    if(err2){
+      console.log(err2);
 
-  }
+    }else{
+      console.log("qc"+res2);
+      qc=res2; 
+    }
+  })
+  
+        question.find(filter)
+        .then((result)=>{
+          console.log(result);
+          res.status(200).send({ success: true, data : result, qc:qc});
+        }).catch((err)=>{console.log(err);
+          res.status(400).send({ success: false, message: "error fetching Answers" });
+        })
+        
+
 })
 const getAnswers = asyncHandler(async(req,res)=>{
+  console.log("in answers");
   const userid=req.params.id;
   filter={userId:userid}
-  try{
-        const questions=answers.find({filter}).populate(questionId);
-        res.status(200).send({ success: true, data : questions});
-  }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching Answers" });
+  var ac=0;
+  answer.countDocuments( filter, function(err2,res2){
+    if(err2){
+      console.log(err2);
 
-  }
+    }else{
+      console.log("ac"+res2);
+      ac=res2; 
+    }
+  })
+  
+        answer.find(filter).populate("questionId")
+        .then((result)=>{
+          console.log(result);
+          res.status(200).send({ success: true, data : result,ac:ac});
+        }).catch((err)=>{console.log(err);
+          res.status(400).send({ success: false, message: "error fetching Answers" });
+        })
+        
+
+  
 })
 const getBookmarks = asyncHandler(async(req,res)=>{
   const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const bookmarks=user.find({filter},{bookmarks:1})
-        res.status(200).send({ success: true, data : bookmarks});
-  }
-  catch{
-        res.status(400).send({ success: false, message : "error fetching Answers" });
+  filter={_id:userid}
 
-  }
+        User.find(filter,{bookmarks:1})
+        .then((result)=>{
+          console.log(result);
+          res.status(200).send({ success: true, data : result});
+        })
+       .catch((err)=>{
+ 
+        res.status(400).send({ success: false, message : "error fetching Answers" });
+      })
+  
 
 })
 
@@ -273,5 +303,8 @@ module.exports = {
   getTopposts,
   getAllUsers,
   getUser,
+  getAnswers,
+  getQuestions,
+  getBookmarks,
   signout,
 };
