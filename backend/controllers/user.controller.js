@@ -183,41 +183,8 @@ const getUser = asyncHandler(async (req, res) => {
       }
     })
 });
-// const getToptags = asyncHandler(async(req,res)=>{
-//   const userid=req.params.id;
-//   filter={_id:userid}
-//   try{
-//     const tags= User.find({query},{tags:1})
-//     res.status(200).send({ success: true, data: tags });
-//   }
-//   catch{
-//     res.status(400).send({ success: "false", message: "error fetching tags" });
-//   }
-// })
-const getTopposts = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  console.log("inside posts");
-  let ansposts;
-  let quesposts;
-  filter={userId:userid}
-  
-      answer.find(filter).populate("questionId").limit(3)
-      .then((result)=>{
-          console.log(result);
-          ansposts=result;
-          question.find(filter).limit(3)
-            .then((result1)=>{
-            console.log(result1);
-            quesposts=result1;
-            res.status(200).send({ success: true, data1: ansposts,data2: quesposts });
-    }).catch((err1)=>{console.log(err1);})
-      }).catch((err)=>{console.log(err);})
-      
-      
-      
-  
-  
-});
+
+
 
 const getQuestions = asyncHandler(async(req,res)=>{
   const userid=req.params.id;
@@ -300,7 +267,7 @@ const generateToken = (id) => {
 module.exports = {
   register,
   login,
-  getTopposts,
+
   getAllUsers,
   getUser,
   getAnswers,
