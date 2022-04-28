@@ -1,33 +1,35 @@
 import { useEffect } from 'react';
 import axios from "axios";
 import { useState } from "react";
+import {Link} from 'react-router-dom';
 //var message_array=[{senderID:1,receiverID:2,message:"hi",timestamp:"123"},{senderID:2,receiverID:1,message:"hello",timestamp:"123"},{senderID:1,receiverID:2,message:"thx",timestamp:"123"}]
 
 function Chat(){
     console.log("chat")
     const [message_array, set_message_array] = useState([]); 
     const [message_text, setmessagetext] = useState("");    
-    
+    const senderID = localStorage.getItem("sender");
+    const receiverID = localStorage.getItem("receiver");
     useEffect(() => {
         axios.post('http://localhost:3001'+'/api/messages/getMessages',{
-        senderID: "1",
-        receiverID:"2",
+        senderID: senderID,
+        receiverID:receiverID,
         
         })
         .then(res =>{
           console.log(res.data)
           set_message_array(res.data)
         }).catch(err => {console.log(err)})
-    
+        
     
     },[])
-
+console.log(message_array)
 function sendnewmessage(e){
     e.preventDefault();
 console.log(message_text)
     axios.post('http://localhost:3001'+'/api/messages/sendMessage',{
-        senderID: "3",
-        receiverID:"1",
+        senderID: senderID,
+        receiverID:receiverID,
         message:message_text,
         
         })
@@ -86,7 +88,8 @@ console.log(message_text)
         <button onClick={sendnewmessage}>send</button>
 
     </form>
-</form>   
+</form>  
+<Link to="/allchats">show all my chats</Link>
 </div>)
   
 }

@@ -3,6 +3,8 @@ const tagsDb = require("../models/TagModel");
 const QuestionsDb = require("../models/question.model");
 const Chatroom = require("../models/chatroom.model");
 const Message = require("../models/message.model");
+const asyncHandler = require("express-async-handler");
+const User = require("../models/user.model");
 exports.getMessages = async (req, res) => {
     const senderID = req.body.senderID;
     const receiverID = req.body.receiverID;
@@ -138,4 +140,27 @@ console.log(err);
     })
 
 }
-  
+exports.getReceiverNames = async (req, res) => {
+  const receiverID = req.body.receiverID;
+  // const receiverID = req.body.receiverID;
+
+  const myquery = { _id: receiverID };
+  console.log("%%%%%%%",receiverID)
+
+
+    try {
+      const receiver = await User.findOne(myquery);
+      
+      receiver && res.status(200).send({ success: "true", data: receiver });
+      !receiver &&
+        res
+          .status(400)
+          .send({ success: "false", message: "error fetching users" });
+    } catch (err) {
+      res.status(400).send({ success: "false", message: "error fetching users" });
+    
+    }
+
+
+
+}

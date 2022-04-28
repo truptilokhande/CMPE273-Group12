@@ -2,7 +2,11 @@
 import { useEffect } from 'react';
 import axios from "axios";
 import { useState } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
 //var allchats_array=[{chatRoomID:1,users:["user1","user2"]},{chatRoomID:2,users:["user3","user1"]},{chatRoomID:3,users:["user1","user4"]}]
+
+import ChatListItems from './ChatListItems';
 console.log("chat")
 var my_id = "1"
 function AllChats(){
@@ -13,12 +17,21 @@ function AllChats(){
         senderID: "1",
         })
         .then(res =>{
-          console.log(res)
+          console.log("allchats",res)
           set_allchats_array(res.data)
         }).catch(err => {console.log(err)})
     
     
     },[])
+    const showmessages = (e) => {
+      e.preventDefault();
+      console.log("55555")
+      console.log(e.target.value)
+  
+    };
+    function dosomething(val){
+      alert(val);
+  }
   return(
   <div>
 
@@ -39,17 +52,11 @@ function AllChats(){
          
  
  </tr>
+
  { allchats_array.map(item => (
- <tr> 
-     
-    
-      {item.users[0]==my_id?  <td>{item.users[1]}</td>:  <td>{item.users[0]}</td>}
-
-   
-
-</tr> 
+   <ChatListItems users={item.users} senderID={my_id}/>
 ))} 
-</table>  
+</table>   
 </div> 
 
 

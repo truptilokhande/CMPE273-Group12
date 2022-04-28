@@ -7,4 +7,5 @@ const messageController = require("../controllers/message.controller.js");
 router.post("/getMessages", messageController.getMessages);
 router.post("/sendMessage", messageController.sendMessage);
 router.post("/getChatrooms", messageController.getChatrooms);
+router.post("/getreceivernames",messageController.getReceiverNames)
 module.exports = router;
