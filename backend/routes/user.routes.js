@@ -9,7 +9,7 @@ router.post("/login", userController.login);
 
 router.get("/getAllUsers", userController.getAllUsers);
 router.get("/getUser/:id", userController.getUser);
-//router.get("/getTopposts",userController.getTopposts);
+router.get("/getTopposts/:id",userController.getTopposts);
 //router.get("/getQuestions",userController.getQuestions);
 //router.get("/getAnswers",userController.getAnswers);
 //router.get("/getTopposts",userController.getTopposts);

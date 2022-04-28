@@ -7,6 +7,8 @@ const answer = require("../models/answer.model");
 const config = require("../config/config.json");
 const { query } = require("express");
 const expressAsyncHandler = require("express-async-handler");
+const QuestionDb = require("../models/question.model");
+const mongoose = require("mongoose");
 const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/28a48027ee89f30d8681f415ea164f70.png",
@@ -147,7 +149,7 @@ const getUser = asyncHandler(async (req, res) => {
   filter = { _id: userid };
   var qc = 0;
   var ac = 0;
-  answer.countDocuments(filter1, function (err2, res2) {
+answer.countDocuments(filter1, function (err2, res2) {
     if (err2) {
       console.log(err2);
     } else {
@@ -155,7 +157,6 @@ const getUser = asyncHandler(async (req, res) => {
     }
   });
 
-  // console.log("q"+questioncount);
   question.countDocuments(filter1, function (err1, res1) {
     if (err1) {
       console.log(err1);
@@ -242,7 +243,7 @@ const generateToken = (id) => {
 module.exports = {
   register,
   login,
-
+  getTopposts,
   getAllUsers,
   getUser,
   signout,

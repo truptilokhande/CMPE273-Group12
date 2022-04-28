@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
-/* eslint-disable jsx-a11y/alt-text */
 import "./ProfilePage.css";
 
 import React, { useEffect, useState, Fragment } from "react";
@@ -30,7 +28,6 @@ const ProfilePage = () => {
       )
       .then((response) => {
         setUserProfile(response?.data);
-        console.log(response?.data?.data?.tags);
         setUserTags(response?.data?.data?.tags);
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
