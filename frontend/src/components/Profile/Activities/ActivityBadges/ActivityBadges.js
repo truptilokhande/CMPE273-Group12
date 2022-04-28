@@ -5,26 +5,27 @@ import axios from "axios";
 import connection from "../../../../config.json";
 
 function ActivityBadges() {
+  const [userProfile, setUserProfile] = useState();
   const [userTags, setUserTags] = useState([]);
-
+  const url = window.location.pathname;
+  const id = url.substring(url.lastIndexOf("/") + 1);
   useEffect(() => {
     axios
-      .get(
-        `${connection.connectionURL}/api/user/getUser/62675bd87312f57514b2f8cb`
-      )
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
       .then((response) => {
-        console.log(response?.data?.data?.tags);
+        setUserProfile(response?.data?.data);
         setUserTags(response?.data?.data?.tags);
       })
       .catch((err) => {
         throw err;
       });
   }, []);
+
   return (
     <div>
-      <BasicDetails />
+      <BasicDetails userdetails={userProfile}/>
       <div class="d-flex mb48">
-        <nav
+      <nav
           class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
@@ -32,7 +33,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item is-selected pr48 ps-relative"
-                href="/users/2901002/jezrael?tab=answers"
+                href={`/Activities/${id}`}
                 title="Answers this user provided"
                 data-shortcut="A"
               >
@@ -42,7 +43,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item pr48 ps-relative"
-                href="/Questions/Questionstab"
+                href={`/Questions/Questionstab/${id}`}
                 title="Questions this user asked"
                 data-shortcut="Q"
               >
@@ -52,7 +53,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item pr48 ps-relative"
-                href="/UserTags/UserTags"
+                href={`/UserTags/${id}`}
                 title="Tags this user has posts in"
                 data-shortcut="T"
               >
@@ -63,7 +64,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item pr48 ps-relative"
-                href="/ActivityBadges/ActivityBadges"
+                href={`/ActivityBadges/${id}`}
                 title="Badges this user has earned"
                 data-shortcut="B"
               >
@@ -73,7 +74,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item pr48 ps-relative"
-                href="/Bookmarkstab/Bookmarkstab"
+                href={`/Bookmarkstab/Bookmarkstab/${id}`}
                 title="Questions this user has bookmarked"
                 data-shortcut="F"
               >
@@ -84,7 +85,7 @@ function ActivityBadges() {
             <li>
               <a
                 class="s-navigation--item pr48 ps-relative"
-                href="/Reputation/Reputation"
+                href={`/Reputation/${id}`}
                 title="Reputation this user has earned"
                 data-shortcut="R"
               >
@@ -98,7 +99,7 @@ function ActivityBadges() {
             <div class="d-flex ai-end jc-space-between mb8 fw-wrap">
               <div class="flex--item fl-grow1">
                 <div class="d-flex fd-column">
-                  <h2 class="flex--item fs-title mb0">{userTags.length}</h2>
+                  <h2 class="flex--item fs-title mb0">{userTags.length} Badges</h2>
                 </div>
               </div>
               <div class="flex--item">

@@ -149,7 +149,7 @@ const getUser = asyncHandler(async (req, res) => {
   filter = { _id: userid };
   var qc = 0;
   var ac = 0;
-answer.countDocuments(filter1, function (err2, res2) {
+  answer.countDocuments(filter1, function (err2, res2) {
     if (err2) {
       console.log(err2);
     } else {
@@ -174,29 +174,38 @@ answer.countDocuments(filter1, function (err2, res2) {
     }
   });
 });
-// const getToptags = asyncHandler(async(req,res)=>{
-//   const userid=req.params.id;
-//   filter={_id:userid}
-//   try{
-//     const tags= User.find({query},{tags:1})
-//     res.status(200).send({ success: true, data: tags });
-//   }
-//   catch{
-//     res.status(400).send({ success: "false", message: "error fetching tags" });
-//   }
-// })
+
 const getTopposts = asyncHandler(async (req, res) => {
-  const userid = req.params.id;
-  filter = { userId: userid };
   try {
-    const ansposts = answer
-      .find({ filter })
-      .populate(questionId)
-      .sort({ score: -1 });
-    const quesposts = question.find({ filter }).sort({ score: -1 });
-    res.status(200).send({ success: true, data1: ansposts, data2: quesposts });
-  } catch {
-    res.status(400).send({ success: false, message: "error fetching tags" });
+    const userid = req.params.id;
+    const answersagg = [
+      {
+        $lookup: {
+          from: "questions",
+          localField: "questionId",
+          foreignField: "_id",
+          as: "question",
+        },
+      },
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(userid),
+        },
+      },
+      {
+        $project: {
+          question: 1,
+        },
+      },
+      {
+        $limit: 3,
+      },
+    ];
+    const quesposts = await QuestionDb.find({ userId: userid }).limit(3);
+    const answerposts = await answer.aggregate(answersagg);
+    res.status(200).send({ quesposts, answerposts });
+  } catch (err) {
+    res.status(400).send("error retriving user questions and answers");
   }
 });
 
@@ -212,16 +221,18 @@ const getQuestions = asyncHandler(async (req, res) => {
       .send({ success: false, message: "error fetching questions" });
   }
 });
+
 const getAnswers = asyncHandler(async (req, res) => {
   const userid = req.params.id;
   filter = { userId: userid };
   try {
-    const questions = answers.find({ filter }).populate(questionId);
+    const questions = answer.find({ filter }).populate(questionId);
     res.status(200).send({ success: true, data: questions });
-  } catch {
+  } catch (err) {
     res.status(400).send({ success: false, message: "error fetching Answers" });
   }
 });
+
 const getBookmarks = asyncHandler(async (req, res) => {
   const userid = req.params.id;
   filter = { userId: userid };
@@ -245,6 +256,9 @@ module.exports = {
   login,
   getTopposts,
   getAllUsers,
+  getQuestions,
+  getAnswers,
+  getBookmarks,
   getUser,
   signout,
 };

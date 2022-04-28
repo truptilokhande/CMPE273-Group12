@@ -68,9 +68,9 @@ function App({ isAuthenticated }) {
               exact
               element={<Questionstab />}
             />
-            <Route path="/UserTags/UserTags" exact element={<UserTags />} />
+            <Route path="/UserTags/:id" exact element={<UserTags />} />
             <Route
-              path="/ActivityBadges/ActivityBadges/:id"
+              path="/ActivityBadges/:id"
               exact
               element={<ActivityBadges />}
             />
