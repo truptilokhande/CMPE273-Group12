@@ -130,7 +130,7 @@ function Tags() {
               <div className="tag-content-wrapper">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <div className="">
-                    <a href="/tagOverview" className="tag">
+                    <a href={`/tagOverview/${tag?._id}`} className="tag">
                       {tag?.name}
                     </a>
                   </div>

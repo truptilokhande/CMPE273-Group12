@@ -472,7 +472,7 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <a className="post-issue-button mx-auto my-1" href="/timeline">
+              <a className="post-issue-button mx-auto my-1" href={`/timeline/${question?._id}`}>
                 <svg
                   aria-hidden="true"
                   className="mln2 mr0 svg-icon iconHistory"
@@ -491,7 +491,7 @@ function QuestionOverview({ user }) {
             </div>
             <div className="question-tags d-flex flex-wrap">
               {question?.tags?.map((tag) => (
-                <a href="/" className="tag">
+                <a href={`/tagOverview/${tag?.id}`} className="tag">
                   {tag?.name}
                 </a>
               ))}
