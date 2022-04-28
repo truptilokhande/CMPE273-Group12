@@ -47,7 +47,12 @@ function App({ isAuthenticated }) {
             <Route path="questionOverview">
               <Route path=":id" element={<QuestionOverview />} />
             </Route>
-            <Route path="/tagOverview" exact element={<TagOverview />} />
+            <Route path="/tagOverview">
+              <Route path=":id" element={<TagOverview />} />
+            </Route>
+            <Route path="/timeline">
+              <Route path=":id" element={<TimeLine />} />
+            </Route>
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />

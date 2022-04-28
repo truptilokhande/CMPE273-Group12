@@ -142,21 +142,27 @@ exports.addTag = (req, res) => {
 };
 
 exports.getAllQuestionWithSpecificTag = async (req, res) => {
-  let today = new Date();
-
   try {
-    const name = req.params.tagName;
-    console.log(name);
+    const id = req.params.tagName;
     const checkQuery = [
       {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
         $match: {
-          "tags.name": name,
+          "tags.id": id,
         },
       },
     ];
+    const tag = await tagsDb.findOne({ _id: id });
 
     const questions = await QuestionsDb.aggregate(checkQuery);
-    res.send({ questions });
+    res.send({ questions, tag });
   } catch (error) {
     res.json(error.message);
   }
