@@ -266,6 +266,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      <TopPosts/>
     </div>
   );
 };
