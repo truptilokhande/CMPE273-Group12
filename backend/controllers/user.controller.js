@@ -80,19 +80,23 @@ const register = asyncHandler(async (req, res) => {
 // @access  Public
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  var isAdmin=false;
+  
 
   // Check for user email
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    if(email=="admin@gmail.com"){isAdmin=true}
     res.json({
       status: 200,
       data: {
         _id: user.id,
         name: user.name,
-        email: user.email,
+        email: user.email,  
         token: generateToken(user._id),
         profilepicture: user.profilepicture,
+       isAdmin,
       },
       message: "User logged in successfully",
     });
@@ -261,4 +265,5 @@ module.exports = {
   getBookmarks,
   getUser,
   signout,
+  
 };
