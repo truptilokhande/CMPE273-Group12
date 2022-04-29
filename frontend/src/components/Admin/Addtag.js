@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import connection from "../../config.json";
-import { Navigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 function Addtag() {
   const [tagTitle, setTagTitle] = useState();
   const [tagDescription, setTagDescription] = useState();
+  const navigate = useNavigate();
 
   const handleAddTag = () => {
-    console.log("Handling add tag");
-    console.log(tagTitle);
-    console.log(tagDescription);
 
     axios
       .post(`${connection.connectionURL}/api/tag/addTag`, {
@@ -19,7 +17,7 @@ function Addtag() {
       })
       .then((response) => {
         console.log(response);
-        Navigate("/tags")
+        navigate("/tags")
       });
   };
   return (
