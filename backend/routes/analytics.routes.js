@@ -1,20 +1,15 @@
 const { Router } = require("express");
 const analyticsRoute = Router();
 const {
-  getAllTags,
-  addTag,
-  getAllQuestionWithSpecificTag,
   questionsPostedPerDay,
-  testAPI,
+  topTags,
+  topViewedQuestion,
+  reputationSortedUsers,
 } = require("../controllers/analytics.controller");
 
-analyticsRoute.get("/getAlltags", getAllTags);
-analyticsRoute.post("/addTag", addTag);
-analyticsRoute.get(
-  "/getAllQuestionWithSpecificTag/:tagName",
-  getAllQuestionWithSpecificTag
-);
 analyticsRoute.get("/questionsPostedPerDay", questionsPostedPerDay);
-analyticsRoute.get("/test", testAPI);
+analyticsRoute.get("/topTags", topTags);
+analyticsRoute.get("/topViewedQuestion", topViewedQuestion);
+analyticsRoute.get("/reputationSortedUsers", reputationSortedUsers);
 
 module.exports = analyticsRoute;

@@ -4,21 +4,7 @@ const Question = require("../models/question.model");
 const Answers = require("../models/answer.model");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
-
-exports.testAPI = async (req, res) => {
-  let pastWeekDates = [];
-
-  for (let j = 0; j < 7; j++) {
-    let currentDate = new Date(
-      Date.now() - j * 24 * 60 * 60 * 1000
-    ).toISOString();
-    let singleDate = {};
-    singleDate.date = currentDate.slice(0, 10);
-    singleDate.count = 0;
-    pastWeekDates.push(singleDate);
-  }
-  console.log(pastWeekDates);
-};
+const userModel = require("../models/user.model");
 
 exports.questionsPostedPerDay = async (req, res) => {
   try {
@@ -102,78 +88,8 @@ exports.questionsPostedPerDay = async (req, res) => {
 };
 
 exports.topTags = async (req, res) => {
-
-}
-
-exports.getAllTags = async (req, res) => {
-  console.log("handling tags");
-  const name = req.body.name;
-  const tagBody = req.body.tagBody;
-
-  let onlyToday = new Date();
-  onlyToday.setHours(0, 0, 0, 0);
-  let today = new Date();
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
   try {
     const taggedQuestionsCountAgg = [
-      {
-        $project: {
-          tags: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$tags",
-        },
-      },
-      {
-        $group: {
-          _id: "$tags.id",
-          count: {
-            $count: {},
-          },
-        },
-      },
-    ];
-
-    const taggedQuestionsCountInWeekAgg = [
-      {
-        $match: {
-          createdAt: {
-            $gte: sevenDaysAgo,
-            $lte: today,
-          },
-        },
-      },
-      {
-        $project: {
-          tags: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$tags",
-        },
-      },
-      {
-        $group: {
-          _id: "$tags.id",
-          count: {
-            $count: {},
-          },
-        },
-      },
-    ];
-
-    const taggedQuestionsInDay = [
-      {
-        $match: {
-          createdAt: {
-            $gte: onlyToday,
-          },
-        },
-      },
       {
         $project: {
           tags: 1,
@@ -198,55 +114,67 @@ exports.getAllTags = async (req, res) => {
       taggedQuestionsCountAgg
     );
 
-    const questionsTaggedInAWeek = await QuestionsDb.aggregate(
-      taggedQuestionsCountInWeekAgg
-    );
-
-    const questionsTaggedInADay = await QuestionsDb.aggregate(
-      taggedQuestionsInDay
-    );
-
     const tags = await tagsDb.find({});
-    res.status(200).send({
-      success: true,
-      tags,
-      taggedQuestionsCount,
-      questionsTaggedInADay,
-      questionsTaggedInAWeek,
-    });
+    for (let i = 0; i < tags.length; i++) {
+      for (let j = 0; j < taggedQuestionsCount.length; j++) {
+        //   console.log(taggedQuestionsCount[j]);
+        if (taggedQuestionsCount[j]._id == tags[i]._id) {
+          taggedQuestionsCount[j].name = tags[i].name;
+          break;
+        }
+      }
+    }
+    taggedQuestionsCount.sort((a, b) => b.count - a.count).slice(0, 10);
+
+    res.status(200).send({ success: true, taggedQuestionsCount });
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    res.status(500).send({ message: "some error occured" });
   }
 };
 
-exports.addTag = (req, res) => {
-  console.log("handling add Tag");
-  const tagTitle = req.body.tagTitle;
-  const tagDescription = req.body.tagDescription;
-  console.log(tagTitle);
-  console.log(tagDescription);
-
-  const tags = new tagsDb({
-    name: tagTitle,
-    tagBody: tagDescription,
-  });
-
-  tags
-    .save(tags)
-    .then((data) => {
-      console.log(data);
-      res.status(200).send({ success: true, result: data });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: "some error occured" });
-    });
+exports.reputationSortedUsers = async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    topUsers = users.sort((a, b) => b.reputation - a.reputation).slice(0, 10);
+    bottomUsers = users
+      .sort((a, b) => a.reputation - b.reputation)
+      .slice(0, 10);
+    users &&
+      res
+        .status(200)
+        .send({ success: "true", data: { topUsers, bottomUsers } });
+    !users &&
+      res
+        .status(400)
+        .send({ success: "false", message: "error fetching users" });
+  } catch (err) {
+    res.status(400).send({ success: "false", message: "error fetching users" });
+  }
 };
 
-exports.getAllQuestionWithSpecificTag = async (req, res) => {
+exports.topViewedQuestion = async (req, res) => {
   try {
-    const id = req.params.tagName;
-    const checkQuery = [
+    // fetching the questions
+    // calculate answers count and send questions when results are fetched
+    const answerAgg = [
+      {
+        $lookup: {
+          from: "answers",
+          localField: "_id",
+          foreignField: "questionId",
+          as: "qId",
+        },
+      },
+      {
+        $group: {
+          _id: "$questionId",
+          answerCount: {
+            $sum: 1,
+          },
+        },
+      },
+    ];
+    const questionsAgg = [
       {
         $lookup: {
           from: "users",
@@ -255,17 +183,39 @@ exports.getAllQuestionWithSpecificTag = async (req, res) => {
           as: "user",
         },
       },
-      {
-        $match: {
-          "tags.id": id,
-        },
-      },
     ];
-    const tag = await tagsDb.findOne({ _id: id });
+    const result = await Question.aggregate(questionsAgg);
+    const answercount = await Answers.aggregate(answerAgg);
 
-    const questions = await QuestionsDb.aggregate(checkQuery);
-    res.send({ questions, tag });
-  } catch (error) {
-    res.json(error.message);
+    // if no results fetched
+    if (!result || !answercount) {
+      res.status(400).send({
+        data: {},
+        message: "error fetching the questions",
+      });
+    }
+    sortedQuestions = result.sort((a, b) => b.views - a.views).slice(0, 10);
+    //   console.log(sortedQuestions);
+    sortedQuestionsFinal = [];
+    sortedQuestions.forEach((question) => {
+      let currentQuestion = {
+        id: question._id,
+        title: question.title,
+        views: question.views,
+      };
+      sortedQuestionsFinal.push(currentQuestion);
+    });
+
+    res.status(200).send({
+      data: { topquestions: sortedQuestionsFinal },
+      message: "fetched questions",
+    });
+  } catch (err) {
+    console.log(err);
+    // any errors in fetching the questions
+    res.status(400).send({
+      data: {},
+      message: "error fetching the questions",
+    });
   }
 };
