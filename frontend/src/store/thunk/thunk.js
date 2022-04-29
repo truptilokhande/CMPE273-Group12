@@ -34,7 +34,7 @@ export const signin = (user) => (dispatch) => {
     .then((res) => {
       // storing user id and authentication status in local storage
       localStorage.setItem("token", res.data.data.token);
-
+      
       dispatch(signinsuccess(res.data.data));
       // redirect to homepage
       window.location.href = "/homepage";

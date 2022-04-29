@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import connection from "../../config.json";
+import { Navigate } from "react-router";
 
 function Addtag() {
   const [tagTitle, setTagTitle] = useState();
@@ -18,6 +19,7 @@ function Addtag() {
       })
       .then((response) => {
         console.log(response);
+        Navigate("/tags")
       });
   };
   return (

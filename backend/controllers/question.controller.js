@@ -348,6 +348,50 @@ const addComment = async (req, res) => {
   result && res.status(200).send({ success: true, comments: result?.comments });
   !result && res.status(400).send({ success: false, message: err.message });
 };
+const getPendingQuestions = async (req, res) => {
+  console.log("in pending questions")
+  const filter={waitingForApproval:true}
+  Question.find(filter, function (err, result) {
+    if(err){
+      res.status(400).send({ success: false, message: err.message });
+    }
+    else{
+      console.log(result)
+      res.status(200).send({ success: true, data:result });
+    }
+   })
+ 
+};
+const aproove = async (req, res) => {
+  console.log("in aproove");
+  const id= req.params.id;
+  const filter={_id:id}
+  Question.find(filter,{"waitingForApproval":false}, function (err, result) {
+    if(err){
+      res.status(400).send({ success: false, message: err.message });
+    }
+    else{
+      console.log(result)
+      res.status(200).send({ success: true, data:result });
+    }
+   })
+ 
+};
+const reject = async (req, res) => {
+  console.log("in pending questions");
+  const id= req.params.id;
+  const filter={_id:id}
+  Question.deleteOne(filter, function (err, result) {
+    if(err){
+      res.status(400).send({ success: false, message: err.message });
+    }
+    else{
+      console.log(result)
+      res.status(200).send({ success: true, data:result });
+    }
+   })
+ 
+};
 
 const getHistories = async (req, res) => {
   const logID = req.params.id;
@@ -365,6 +409,9 @@ module.exports = {
   searchQuestionsByUserId,
   searchQuestionsByText,
   addComment,
+  getPendingQuestions,
+  aproove,
+  reject,
   getHistories,
 };
 
