@@ -84,13 +84,17 @@ const addquestion = async (req, res) => {
       const index = userTags.findIndex((x) => x?.tagId?.toString() === tag?.id);
       // i.e if tag is already present
       if (index != -1) {
-        const editedTags = userTags?.map((x) => {
-          if (x.tagId == tag.id) {
-            x.tagCount = x?.tagCount + 1;
+        await Users.updateOne(
+          {
+            _id: userId,
+            "tags.tagId": tag.id,
+          },
+          {
+            $inc: {
+              "tags.$.tagCount": 1,
+            },
           }
-          return x;
-        });
-        await Users.findOneAndUpdate({ _id: userId, tags: editedTags });
+        );
       }
       // if tag is not present
       else {
@@ -332,6 +336,15 @@ const addComment = async (req, res) => {
     { comments },
     { new: true }
   );
+
+  const new_log = new Logs({
+    logID: questionId,
+    what: "comment",
+    by: userId,
+    content: commentBody,
+  });
+  await new_log.save();
+
   result && res.status(200).send({ success: true, comments: result?.comments });
   !result && res.status(400).send({ success: false, message: err.message });
 };
@@ -380,6 +393,12 @@ const reject = async (req, res) => {
  
 };
 
+const getHistories = async (req, res) => {
+  const logID = req.params.id;
+  const logs = await Logs.find({ logID });
+  res.status(200).send({ logs });
+};
+
 module.exports = {
   addquestion,
   editquestion,
@@ -393,6 +412,7 @@ module.exports = {
   getPendingQuestions,
   aproove,
   reject,
+  getHistories,
 };
 
 /*
