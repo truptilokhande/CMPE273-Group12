@@ -37,23 +37,30 @@ function TopTags() {
                 <div className="mb-3 tag-content">{tag?.tagBody}</div>
 
                 <div className="d-flex row no-gutters justify-content-between tag-meta-data">
-                  <div className="col-6">
-                    {/* {taggedQuestionsCount?.find((item) => item._id === tag?._id)
-                      ?.count || 0} */}
-                    &nbsp; questions
+                  <div className="col-15">
+                    {tag.count === 1 ? (
+                      <label>
+                        {tag.count} &nbsp; question asked using this tag
+                      </label>
+                    ) : (
+                      <label>
+                        {" "}
+                        {tag.count} &nbsp; questions asked using this tag
+                      </label>
+                    )}
                   </div>
                   <div className="col-6">
                     <span>
                       {/* {taggedQuestionsCountInAday?.find(
                         (item) => item._id === tag?._id
                       )?.count || 0} */}
-                      &nbsp; asked today, &nbsp;
+                      {/* &nbsp; asked today, &nbsp; */}
                     </span>
                     <span>
                       {/* {taggedQuestionsCountInAWeek?.find(
                         (item) => item._id === tag?._id
                       )?.count || 0} */}
-                      &nbsp; this week
+                      {/* &nbsp; this week */}
                     </span>
                   </div>
                 </div>
