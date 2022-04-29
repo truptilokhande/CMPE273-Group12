@@ -101,6 +101,10 @@ exports.questionsPostedPerDay = async (req, res) => {
   }
 };
 
+exports.topTags = async (req, res) => {
+
+}
+
 exports.getAllTags = async (req, res) => {
   console.log("handling tags");
   const name = req.body.name;
