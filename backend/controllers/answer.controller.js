@@ -1,9 +1,10 @@
 const express = require("express");
 const answersDb = require("../models/answer.model");
+const commentDb = require("../models/commentModel");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 
-exports.addAnswer = (req, res) => {
+exports.addAnswer = async (req, res) => {
   console.log("handling add answer ");
   const userId = req.body.userId;
   const questionId = req.body.questionId;
@@ -14,6 +15,14 @@ exports.addAnswer = (req, res) => {
     questionId,
     answerBody,
   });
+
+  // const new_log = new Logs({
+  //   logID: questionId,
+  //   what: "answer",
+  //   by: userId,
+  //   content: answerBody,
+  // });
+  // await new_log.save();
 
   answers
     .save(answers)
@@ -29,6 +38,7 @@ exports.voteAnswer = async (req, res) => {
   const { upvote } = req.query;
   const answerId = req.body.answerId;
   const userId = req.body.userId;
+  let result;
 
   // update user upvote count
   try {
@@ -37,40 +47,89 @@ exports.voteAnswer = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
-      await answersDb.findOneAndUpdate(
-        { _id: answerId },
-        { $inc: { votes: 1 } }
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 5 } }
       );
-    } else {
+      result = await answersDb.findOneAndUpdate(
+        { _id: answerId },
+        { $inc: { votes: 1 } },
+        { new: true }
+      );
+    } else if (upvote === "0") {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
-      await answersDb.findOneAndUpdate(
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -5 } }
+      );
+      result = await answersDb.findOneAndUpdate(
         { _id: answerId },
-        { $inc: { votes: -1 } }
+        { $inc: { votes: -1 } },
+        { new: true }
+      );
+    } else if (upvote === "2") {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { downVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -5 } }
+      );
+      result = await answersDb.findOneAndUpdate(
+        { _id: answerId },
+        { $inc: { votes: -2 } },
+        { new: true }
+      );
+    } else {
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { upVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 5 } }
+      );
+      result = await answersDb.findOneAndUpdate(
+        { _id: answerId },
+        { $inc: { votes: 2 } },
+        { new: true }
       );
     }
-    res.status(200).send({ success: true, message: "Updated successfully" });
+    res.status(200).send({
+      success: true,
+      message: "Updated successfully",
+      votes: result?.votes,
+    });
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }
 };
 
 exports.addComment = async (req, res) => {
-  console.log("handling comment answer ");
   try {
-    const answerId = req.body.answerId;
+    const { answerId, userId, userName, commentBody } = req.body;
     const answer = await answersDb.findOne({ _id: answerId });
     const comments = answer?.comments || [];
-    comments.push(req.body);
+    comments.push(
+      new commentDb({
+        userId,
+        userName,
+        commentBody,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    );
 
     const result = await answersDb.findOneAndUpdate(
       { _id: answerId },
       { comments },
       { new: true }
     );
-    result && res.status(200).send({ success: true, result: answer });
+    result && res.status(200).send({ success: true, data: answer });
     !result &&
       res
         .status(400)
@@ -81,12 +140,12 @@ exports.addComment = async (req, res) => {
 };
 
 exports.setBestAnswer = async (req, res) => {
-  // const bestAnswer = req.body.markedRight;
   const id = req.body.answerId;
   const questionId = req.body.questionId;
+  const userId = req.body.userId;
+
   try {
     const answer = await answersDb.findOne({ _id: id });
-    console.log(answer)
     // checking if it is alraedy set to true
     if (answer.markedAsRight !== true) {
       // removing if there's any answer set to best previously
@@ -96,8 +155,16 @@ exports.setBestAnswer = async (req, res) => {
       );
       // adding/removing the answer as best
       await answersDb.findOneAndUpdate({ _id: id }, { markedAsRight: true });
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 15 } }
+      );
     } else {
       await answersDb.findOneAndUpdate({ _id: id }, { markedAsRight: false });
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -15 } }
+      );
     }
 
     // sending updated answers

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useMemo } from "react";
 import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -6,20 +6,59 @@ import ReactTags from "react-tag-autocomplete";
 import axios from "axios";
 import connection from "../../config.json";
 import { connect } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import S3FileUpload from "react-s3";
+
+window.Buffer = window.Buffer || require("buffer").Buffer;
 
 function AskQuestion({ user, tagsFromStore }) {
   const navigate = useNavigate();
-  const quillOptions = {
-    toolbar: [
-      //   [{ 'header': [1, 2, false] }],
-      ["bold", "italic", "underline"],
-      ["link", "image", "code-block"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["clean"],
-    ],
+  const editorRef = useRef(null);
+  const saveToServer = (file) => {
+    const config = {
+      accessKeyId: "AKIA2WX32KIUACMHTCOR",
+      secretAccessKey: "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",
+      region: "us-west-1",
+      bucketName: "etsy-lab2",
+    };
+    S3FileUpload.uploadFile(file, config)
+      .then(async (res) => {
+        console.log(res);
+        editorRef.current.getEditor().insertEmbed(null, "image", res?.location);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+  const imageHandler = () => {
+    console.log("first");
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
 
+    input.onchange = () => {
+      const file = input.files[0];
+      saveToServer(file);
+    };
+  };
+  const quillOptions = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          //   [{ 'header': [1, 2, false] }],
+          ["bold", "italic", "underline"],
+          ["link", "image", "code-block"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
   const reactTags = useRef();
   const [title, setTitle] = useState();
   const [questionbody, setQuestionBody] = useState();
@@ -117,6 +156,7 @@ function AskQuestion({ user, tagsFromStore }) {
             <ReactQuill
               placeholder={"Write something awesome..."}
               modules={quillOptions}
+              ref={editorRef}
               onChange={(val) => {
                 setQuestionBody(val);
               }}

@@ -20,7 +20,7 @@ function Users() {
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
-  
+
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/user/getAllUsers`)
@@ -32,7 +32,6 @@ function Users() {
         throw err;
       });
   }, []);
-
 
   return (
     <>
@@ -61,7 +60,7 @@ function Users() {
                 <div className="d-flex">
                   <div className="users-avatar">
                     <img
-                      src="https://www.gravatar.com/avatar/0555bd0deb416a320a0069abef08078a?s=96&amp;d=identicon&amp;r=PG&amp;f=1"
+                      src={user?.profilepicture}
                       alt="user avatar"
                       width="48"
                       height="48"
@@ -69,7 +68,7 @@ function Users() {
                     />
                   </div>
                   <div className="user-details d-flex flex-column ml-2">
-                    <a href="/userProfile" className="users-name">
+                    <a href={`/userProfile/${user._id}`} className="users-name">
                       {user?.name}
                     </a>
                     <span className="users-location">{user?.location}</span>

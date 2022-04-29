@@ -8,5 +8,4 @@ router.post("/getMessages", messageController.getMessages);
 router.post("/sendMessage", messageController.sendMessage);
 router.post("/getChatrooms", messageController.getChatrooms);
 
-
 module.exports = router;

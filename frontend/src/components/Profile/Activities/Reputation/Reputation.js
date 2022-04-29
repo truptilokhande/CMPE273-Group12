@@ -1,47 +1,79 @@
 import React from 'react'
 import BasicDetails from '../../BasicDetails/BasicDetails'
 function Reputation() {
+    const id =""
   return (
     <div>
         <BasicDetails/>
         <div class="d-flex mb48">
-         <nav class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav" role="navigation">
-            <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
-                   
-                    <li>
-                        <a class="s-navigation--item is-selected pr48 ps-relative" href="/users/2901002/jezrael?tab=answers" title="Answers this user provided" data-shortcut="A">
-                            Answers
-                        </a>
-                    </li>
-                    <li>
-                        <a class="s-navigation--item pr48 ps-relative" href="/Questions/Questionstab" title="Questions this user asked" data-shortcut="Q">
-                            Questions
-                        </a>
-                    </li>
-                    <li>
-                        <a class="s-navigation--item pr48 ps-relative" href="/UserTags/UserTags" title="Tags this user has posts in" data-shortcut="T">
-                            Tags
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a class="s-navigation--item pr48 ps-relative" href="/ActivityBadges/ActivityBadges" title="Badges this user has earned" data-shortcut="B">
-                            Badges
-                        </a>
-                    </li>
-                    <li>
-                        <a class="s-navigation--item pr48 ps-relative" href="/Bookmarkstab/Bookmarkstab" title="Questions this user has bookmarked" data-shortcut="F">
-                            Bookmarks
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a class="s-navigation--item pr48 ps-relative" href="/Reputation/Reputation" title="Reputation this user has earned" data-shortcut="R">
-                            Reputation
-                        </a>
-                    </li>
-                    
-            </ul>
+        <nav
+          class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
+          role="navigation"
+        >
+          <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
+            <li>
+              <a
+                class="s-navigation--item is-selected pr48 ps-relative"
+                href={`/Activities/${id}`}
+                title="Answers this user provided"
+                data-shortcut="A"
+              >
+                Answers
+              </a>
+            </li>
+            <li>
+              <a
+                class="s-navigation--item pr48 ps-relative"
+                href={`/Questions/Questionstab/${id}`}
+                title="Questions this user asked"
+                data-shortcut="Q"
+              >
+                Questions
+              </a>
+            </li>
+            <li>
+              <a
+                class="s-navigation--item pr48 ps-relative"
+                href={`/UserTags/${id}`}
+                title="Tags this user has posts in"
+                data-shortcut="T"
+              >
+                Tags
+              </a>
+            </li>
+
+            <li>
+              <a
+                class="s-navigation--item pr48 ps-relative"
+                href={`/ActivityBadges/${id}`}
+                title="Badges this user has earned"
+                data-shortcut="B"
+              >
+                Badges
+              </a>
+            </li>
+            <li>
+              <a
+                class="s-navigation--item pr48 ps-relative"
+                href={`/Bookmarkstab/Bookmarkstab/${id}`}
+                title="Questions this user has bookmarked"
+                data-shortcut="F"
+              >
+                Bookmarks
+              </a>
+            </li>
+
+            <li>
+              <a
+                class="s-navigation--item pr48 ps-relative"
+                href={`/Reputation/${id}`}
+                title="Reputation this user has earned"
+                data-shortcut="R"
+              >
+                Reputation
+              </a>
+            </li>
+          </ul>
         </nav>
         <section class="flex--item fl-grow1 wmx100">
     <div id="user-tab-reputation" class="js-user-tab">

@@ -1,16 +1,26 @@
 const mongoose = require("mongoose");
 
-
-const userTagSchema = new mongoose.Schema({
-  tagName: {
-    type: String,
-    required: true,
+const userTagSchema = new mongoose.Schema(
+  {
+    tagId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
+    tagName: {
+      type: String,
+      required: true,
+    },
+    tagCount: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
+    _id: false,
   },
-  tagCount: {
-    type: Number,
-    required: true,
-  },
-});
+  {
+    timestamps: false,
+  }
+);
 
 const userSchema = mongoose.Schema(
   {
@@ -57,6 +67,7 @@ const userSchema = mongoose.Schema(
       required: false,
       default: 0,
     },
+    
     tags: [userTagSchema],
     bookmarks: [mongoose.Types.ObjectId],
   },

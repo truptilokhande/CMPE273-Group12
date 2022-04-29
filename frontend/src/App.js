@@ -17,16 +17,16 @@ import ProfilePage from "./components/Profile/ProfilePage";
 import Activities from "./components/Profile/Activities/Activities";
 import Questionstab from "./components/Profile/Activities/Questions/Questionstab";
 import UserTags from "./components/Profile/Activities/UserTags/UserTags";
-import ActivityBadges from './components/Profile/Activities/ActivityBadges/ActivityBadges'
+import ActivityBadges from "./components/Profile/Activities/ActivityBadges/ActivityBadges";
 import Bookmarkstab from "./components/Profile/Activities/Bookmarkstab/Bookmarkstab";
 import Reputation from "./components/Profile/Activities/Reputation/Reputation";
 import BasicDetails from "./components/Profile/BasicDetails/BasicDetails";
 import Addtag from "./components/Admin/Addtag";
 import Aproove from "./components/Admin/Aproove";
-// import Footer from './containers/Footer/Footer';
-// import Footer from './containers/Footer/Footer';
+import { connect } from "react-redux";
+import TimeLine from "./components/QuestionOverview/TimeLine";
 
-function App() {
+function App({ isAuthenticated }) {
   return (
     <BrowserRouter>
       <Navbar />
@@ -39,25 +39,55 @@ function App() {
             <Route path="/homepage" exact element={<Homepage />} />
             <Route path="/tags" exact element={<Tags />} />
             <Route path="/users" exact element={<Users />} />
-            <Route path="/askQuestion" exact element={<AskQuestion />} />
+            <Route
+              path="/askQuestion"
+              exact
+              element={isAuthenticated ? <AskQuestion /> : <SignIn />}
+            />
             <Route path="questionOverview">
               <Route path=":id" element={<QuestionOverview />} />
             </Route>
-            <Route path="/tagOverview" exact element={<TagOverview />} />
+            <Route path="/tagOverview">
+              <Route path=":id" element={<TagOverview />} />
+            </Route>
+            <Route path="/timeline">
+              <Route path=":id" element={<TimeLine />} />
+            </Route>
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />
-            <Route path="/edit-question" exact element={<EditQuestion />} />
-            <Route path="/userProfile" exact element={<ProfilePage/>}/>
-              <Route path="/Activities" exact element={<Activities/>}/>
-              <Route path="/Questions/Questionstab" exact element={<Questionstab/>}/>
-              <Route path="/UserTags/UserTags" exact element={<UserTags/>}/>
-              <Route path="/ActivityBadges/ActivityBadges" exact element={<ActivityBadges/>}/>
-              <Route path="/Bookmarkstab/Bookmarkstab" exact element={<Bookmarkstab/>}/>
-              <Route path="/Reputation/Reputation" exact element={<Reputation/>}/>
-              <Route path="/BasicDetails" exact element={<BasicDetails/>}/>
-              <Route path="/Addtag" exact element={<Addtag/>}/>
-              <Route path="/Aproove" exact element={<Aproove/>}/>
+            <Route
+              path="/edit-question"
+              exact
+              element={isAuthenticated ? <EditQuestion /> : <SignIn />}
+            />
+            <Route path="/userProfile/:id" exact element={<ProfilePage />} />
+            <Route path="/Activities/:id" exact element={<Activities />} />
+            <Route
+              path="/Questions/Questionstab/:id"
+              exact
+              element={<Questionstab />}
+            />
+            <Route path="/UserTags/:id" exact element={<UserTags />} />
+            <Route
+              path="/ActivityBadges/:id"
+              exact
+              element={<ActivityBadges />}
+            />
+            <Route
+              path="/Bookmarkstab/Bookmarkstab/:id"
+              exact
+              element={<Bookmarkstab />}
+            />
+            <Route
+              path="/Reputation/Reputation/:id"
+              exact
+              element={<Reputation />}
+            />
+            <Route path="/BasicDetails" exact element={<BasicDetails />} />
+            <Route path="/Addtag" exact element={<Addtag />} />
+            <Route path="/Aproove" exact element={<Aproove />} />
+            <Route path="/timeline" exact element={<TimeLine />} />
           </Routes>
         </div>
       </main>
@@ -66,4 +96,8 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.isAuthenticated,
+});
+
+export default connect(mapStateToProps, null)(App);
