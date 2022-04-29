@@ -13,6 +13,7 @@ const ProfilePage = () => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
+  const [views, setViews] = useState();
 
   const [userTags, setUserTags] = useState([]);
 
@@ -27,23 +28,41 @@ const ProfilePage = () => {
       .get(`${connection.connectionURL}/api/user/getUser/${id}`)
       .then((response) => {
         setUserProfile(response?.data?.data);
+        setGoldBadges(
+          response?.data?.data?.tags
+            ?.sort(function (a, b) {
+              return b.tagCount - a.tagCount;
+            })
+            .slice(0, 6)
+        );
         setUserTags(response?.data?.data?.tags);
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
+        setViews(response?.data?.views);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
         );
+        filteredGoldTags.sort(function (a, b) {
+          return b.tagCount - a.tagCount;
+        });
+        setGoldBadges(filteredGoldTags.slice(0, 3));
+
         const filteredSilverTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
         );
+        filteredSilverTags.sort(function (a, b) {
+          return b.tagCount - a.tagCount;
+        });
+        setSilverBadges(filteredSilverTags.slice(0, 3));
+
         const filteredBronzeTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount <= 10
         );
-
-        setGoldBadges(filteredGoldTags);
-        setSilverBadges(filteredSilverTags);
-        setBronzeBadges(filteredBronzeTags);
+        filteredBronzeTags.sort(function (a, b) {
+          return b.tagCount - a.tagCount;
+        });
+        setBronzeBadges(filteredBronzeTags.slice(0, 3));
       })
       .catch((err) => {
         throw err;
@@ -63,7 +82,7 @@ const ProfilePage = () => {
                 reputation
               </div>
               <div class="flex--item md:fl-auto">
-                <div class="fs-body3 fc-dark">2.4m</div>
+                <div class="fs-body3 fc-dark">{views}</div>
                 reached
               </div>
               <div class="flex--item md:fl-auto">
@@ -120,13 +139,11 @@ const ProfilePage = () => {
                         return (
                           <li class="d-flex ai-center">
                             <a
-                              href="/help/badges/10969/react-router-dom?userid=8690857"
-                              title="gold badge: Earn at least 1000 total score for at least 200 non-community wiki answers in the react-router-dom tag"
-                              data-gps-track="profile_link.click({target:1, type:2 })"
+                              href={`/tagOverview/${goldTag?.tagId}`}
                               class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
-                              <span class="badge1"></span>&nbsp;
-                              <div class="d-inline-block truncate wmx1">
+                              <span className="badge1">●</span>
+                              <div class="d-inline-block truncate ml-1">
                                 {goldTag.tagName}
                               </div>
                             </a>
@@ -162,13 +179,11 @@ const ProfilePage = () => {
                         return (
                           <li class="d-flex ai-center">
                             <a
-                              href="/help/badges/7226/react-router?userid=8690857"
-                              title="silver badge: Earn at least 400 total score for at least 80 non-community wiki answers in the react-router tag"
-                              data-gps-track="profile_link.click({target:1, type:2 })"
+                              href={`/tagOverview/${silverTag?.tagId}`}
                               class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
-                              <span class="badge2"></span>&nbsp;
-                              <div class="d-inline-block truncate wmx1">
+                              <span className="badge2">●</span>
+                              <div class="d-inline-block truncate ml-1">
                                 {silverTag.tagName}
                               </div>
                             </a>
@@ -204,13 +219,11 @@ const ProfilePage = () => {
                         return (
                           <li class="d-flex ai-center">
                             <a
-                              href="/help/badges/10564/use-state?userid=8690857"
-                              title="bronze badge: Earn at least 100 total score for at least 20 non-community wiki answers in the use-state tag"
-                              data-gps-track="profile_link.click({target:1, type:2 })"
+                              href={`/tagOverview/${bronzeTag?.tagId}`}
                               class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
-                              <span class="badge3"></span>&nbsp;
-                              <div class="d-inline-block truncate wmx1">
+                              <span className="badge3">●</span>
+                              <div class="d-inline-block truncate ml-1">
                                 {bronzeTag.tagName}
                               </div>
                             </a>
@@ -266,6 +279,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      <TopPosts />
     </div>
   );
 };

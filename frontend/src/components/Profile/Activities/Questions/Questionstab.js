@@ -3,6 +3,7 @@ import "./Questionstab.css";
 import axios from "axios";
 import connection from "../../../../config.json";
 import BasicDetails from "../../BasicDetails/BasicDetails";
+import moment from "moment";
 
 function Questionstab() {
   const [userProfile, setUserProfile] = useState();
@@ -38,7 +39,7 @@ function Questionstab() {
     <div>
       <BasicDetails userdetails={userProfile} />
       <div class="d-flex mb48">
-      <nav
+        <nav
           class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
@@ -118,79 +119,19 @@ function Questionstab() {
                   </h2>
                 </div>
               </div>
-              <div class="flex--item">
-                <div class="d-flex ai-end">
-                  <div class="flex--item s-btn-group js-user-tab-sorts fl-shrink0 md:fl-shrink1">
-                    <a
-                      href="/users/2901002/jezrael?tab=questions&amp;sort=votes"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort is-selected js-selected"
-                      data-sort="votes"
-                    >
-                      Score
-                    </a>
-                    <a
-                      href="/users/2901002/jezrael?tab=questions&amp;sort=activity"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="activity"
-                    >
-                      Activity
-                    </a>
-                    <a
-                      href="/users/2901002/jezrael?tab=questions&amp;sort=newest"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="newest"
-                    >
-                      Newest
-                    </a>
-                    <a
-                      href="/users/2901002/jezrael?tab=questions&amp;sort=views"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="views"
-                    >
-                      Views
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="ba bc-black-100 bar-md">
               <div id="js-post-summaries">
                 {questions?.map((q) => (
-                  <div
-                    id="question-summary-53781634"
-                    class="s-post-summary s-post-summary__minimal js-post-summary"
-                    data-post-id="53781634"
-                    data-post-type-id="1"
-                  >
+                  <div class="s-post-summary s-post-summary__minimal js-post-summary">
                     <div class="s-post-summary--stats js-post-summary-stats">
-                      <div
-                        class="s-post-summary--stats-item s-post-summary--stats-item__emphasized"
-                        title="Score of 73"
-                      >
+                      <div class="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
                         <span class="s-post-summary--stats-item-number">
                           {q?.votes}
                         </span>
                         <span class="s-post-summary--stats-item-unit">
                           votes
-                        </span>
-                      </div>
-                      <div
-                        class="s-post-summary--stats-item has-answers has-accepted-answer"
-                        title="one of the answers was accepted as the correct answer"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="svg-icon iconCheckmarkSm"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 14 14"
-                        >
-                          <path d="M13 3.41 11.59 2 5 8.59 2.41 6 1 7.41l4 4 8-8Z"></path>
-                        </svg>{" "}
-                        <span class="s-post-summary--stats-item-number">2</span>
-                        <span class="s-post-summary--stats-item-unit">
-                          answers
                         </span>
                       </div>
                       <div
@@ -215,6 +156,11 @@ function Questionstab() {
                           {q.title}
                         </a>
                       </h3>
+                      {
+                      q?.waitingForApproval
+                      ? <p>waiting for approval</p>
+                      : null
+                      }
                       <div class="s-post-summary--meta">
                         {q.tags.map((tag) => (
                           <div class="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
@@ -237,10 +183,15 @@ function Questionstab() {
                           <time class="s-user-card--time">
                             asked{" "}
                             <span
-                              title="2018-12-14 14:30:27Z"
                               class="relativetime"
                             >
-                              {q.createdAt}
+                              {moment(q?.question?.[0]?.createdAt).format(
+                                "MMMM DD,YYYY"
+                              )}{" "}
+                              at{" "}
+                              {moment(q?.question?.[0]?.createdAt).format(
+                                "h:mm"
+                              )}
                             </span>
                           </time>
                         </div>

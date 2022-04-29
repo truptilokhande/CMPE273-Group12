@@ -22,3 +22,13 @@ export const getUserSuccess = (value) => ({
   type: "SET_USER_IN_STORE",
   payload: value,
 });
+
+export const increasereputation = (value) => ({
+  type: "INCREMENT_REPUTATION",
+  payload: value,
+});
+
+export const decrementreputation = (value) => ({
+  type: "DECREMENT_REPUTATION",
+  payload: value,
+});

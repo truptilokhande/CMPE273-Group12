@@ -11,8 +11,12 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import S3FileUpload from "react-s3";
+import {
+  increasereputation,
+  decrementreputation,
+} from "../../store/actions/actions";
 
-function QuestionOverview({ user }) {
+function QuestionOverview({ user, incrementReputation, decrementReputation }) {
   const relativeTime = new RelativeTime();
   const [question, setQuestion] = useState();
   const [usercomment, setComment] = useState();
@@ -200,14 +204,18 @@ function QuestionOverview({ user }) {
         });
         if (upordownvotevalue === 1) {
           setQuestionUpVoted(!isQuestionUpvoted);
+          incrementReputation(10);
         } else {
           setQuestionDownVoted(!isQuestionDownVoted);
+          decrementReputation(10);
         }
         if (valuetobeincrementedordecremented === 2) {
           setQuestionUpVoted(!isQuestionUpvoted);
+          incrementReputation(10);
         }
         if (valuetobeincrementedordecremented === 3) {
           setQuestionDownVoted(!isQuestionDownVoted);
+          decrementReputation(10);
         }
       })
       .catch((err) => {
@@ -272,6 +280,7 @@ function QuestionOverview({ user }) {
           upordownvotevalue === 1
         ) {
           setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+          incrementReputation(5);
         }
         // upvote is active and downvote button is not active and upvote is clicked
         else if (
@@ -283,6 +292,7 @@ function QuestionOverview({ user }) {
             isAnswerupvoted.splice(index, 1);
           }
           setAnswerupvoted([...isAnswerupvoted]);
+          decrementReputation(5);
         }
         // upvote is active and downvote button is not active and downvote is clicked
         else if (
@@ -295,6 +305,7 @@ function QuestionOverview({ user }) {
           }
           setAnswerupvoted(isAnswerupvoted);
           setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+          decrementReputation(5);
         }
         // upvote and downvote button are not active and down is clicked
         else if (
@@ -302,6 +313,7 @@ function QuestionOverview({ user }) {
           upordownvotevalue === 0
         ) {
           setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+          decrementReputation(5);
         }
         // upvote is active and downvote button is not active and downvote is clicked
         else if (
@@ -315,6 +327,7 @@ function QuestionOverview({ user }) {
             isAnswerdownvoted.splice(index, 1);
           }
           setAnswerdownvoted([...isAnswerdownvoted]);
+          decrementReputation(5);
         }
         // upvote is not active and downvote button is active and upvote is clicked
         else {
@@ -326,6 +339,7 @@ function QuestionOverview({ user }) {
           }
           setAnswerdownvoted(isAnswerdownvoted);
           setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+          incrementReputation(5);
         }
       })
       .catch((err) => {
@@ -333,14 +347,20 @@ function QuestionOverview({ user }) {
       });
   };
 
-  const markAnswerAsAsRight = (id) => {
+  const markAnswerAsAsRight = (id, markedAsRight) => {
     axios
       .post(`${connection.connectionURL}/api/answer/set-best-answer`, {
+        userId: user?._id,
         questionId: question?._id,
         answerId: id,
       })
       .then((response) => {
         setAnswers([...response?.data?.data]);
+        if (markedAsRight) {
+          decrementReputation(15);
+        } else {
+          incrementReputation(15);
+        }
       })
       .catch((err) => {
         throw err;
@@ -472,7 +492,10 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <a className="post-issue-button mx-auto my-1" href={`/timeline/${question?._id}`}>
+              <a
+                className="post-issue-button mx-auto my-1"
+                href={`/timeline/${question?._id}`}
+              >
                 <svg
                   aria-hidden="true"
                   className="mln2 mr0 svg-icon iconHistory"
@@ -692,7 +715,7 @@ function QuestionOverview({ user }) {
                     <button
                       className="text-center correct-answer"
                       onClick={() => {
-                        markAnswerAsAsRight(answer?._id);
+                        markAnswerAsAsRight(answer?._id, answer?.markedAsRight);
                       }}
                     >
                       <svg
@@ -872,4 +895,10 @@ function QuestionOverview({ user }) {
 const mapStateToProps = (state) => ({
   user: state.user,
 });
-export default connect(mapStateToProps, null)(QuestionOverview);
+
+const mapDispatchToProps = (dispatch) => ({
+  incrementReputation: (val) => dispatch(increasereputation(val)),
+  decrementReputation: (val) => dispatch(decrementreputation(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuestionOverview);

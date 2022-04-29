@@ -7,6 +7,10 @@ import connection from "../../../../config.json";
 function ActivityBadges() {
   const [userProfile, setUserProfile] = useState();
   const [userTags, setUserTags] = useState([]);
+  const [goldBadges, setGoldBadges] = useState([]);
+  const [silverBadges, setSilverBadges] = useState([]);
+  const [bronzeBadges, setBronzeBadges] = useState([]);
+
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
   useEffect(() => {
@@ -15,6 +19,21 @@ function ActivityBadges() {
       .then((response) => {
         setUserProfile(response?.data?.data);
         setUserTags(response?.data?.data?.tags);
+
+        const filteredGoldTags = response?.data?.data?.tags?.filter(
+          (tag) => tag?.tagCount > 20
+        );
+        setGoldBadges(filteredGoldTags.length);
+
+        const filteredSilverTags = response?.data?.data?.tags?.filter(
+          (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
+        );
+        setSilverBadges(filteredSilverTags.length);
+
+        const filteredBronzeTags = response?.data?.data?.tags?.filter(
+          (tag) => tag?.tagCount <= 10
+        );
+        setBronzeBadges(filteredBronzeTags.length);
       })
       .catch((err) => {
         throw err;
@@ -23,9 +42,9 @@ function ActivityBadges() {
 
   return (
     <div>
-      <BasicDetails userdetails={userProfile}/>
+      <BasicDetails userdetails={userProfile} />
       <div class="d-flex mb48">
-      <nav
+        <nav
           class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
@@ -96,61 +115,67 @@ function ActivityBadges() {
         </nav>
         <section class="flex--item fl-grow1 wmx100">
           <div id="user-tab-badges" class="js-user-tab">
-            <div class="d-flex ai-end jc-space-between mb8 fw-wrap">
-              <div class="flex--item fl-grow1">
-                <div class="d-flex fd-column">
-                  <h2 class="flex--item fs-title mb0">{userTags.length} Badges</h2>
-                </div>
-              </div>
-              <div class="flex--item">
-                <div class="d-flex ai-end">
-                  <div class="flex--item s-btn-group js-user-tab-sorts fl-shrink0 md:fl-shrink1">
-                    <a
-                      href="/users/2930622/g-rafael?tab=badges&amp;sort=recent"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort is-selected js-selected"
-                      data-sort="recent"
-                    >
-                      Recent
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=badges&amp;sort=class"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="class"
-                    >
-                      Class
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=badges&amp;sort=name"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="name"
-                    >
-                      Name
-                    </a>
-                  </div>
-                </div>
-              </div>
+            <div class="mb-3">
+              <h2>{userTags.length} Badges</h2>
             </div>
 
-            <div>
-              <div class="d-grid g16 grid__4 lg:grid__3 md:grid__2 sm:grid__1 py8">
-                {userTags?.map((userTags) => {
-                  return (
-                    <div class="grid--item">
-                      <div class="d-flex ai-center jc-start">
-                        <div class="flex--item mbn4">
-                          <a
-                            href="/help/badges/13/yearling?userid=2930622"
-                            title="silver badge: Active member for a year, earning at least 200 reputation"
-                            class="badgeclass"
-                          >
-                            <span class="badge2"></span>&nbsp;{userTags.tagName}
-                          </a>
-                        </div>
-                        <div class="flex--item ml4"></div>
-                      </div>
-                    </div>
-                  );
-                })}
+            <div class="row">
+              {userTags?.map((userTag) => {
+                return (
+                  <div class="col-2">
+                    <a href={`/tagOverview/${userTag?.tagId}`} className="tag">
+                      {userTag?.tagCount <= 10 ? (
+                        <span className="badge3">●</span>
+                      ) : null}
+                      {userTag?.tagCount >= 10 && userTag?.tagCount <= 15 ? (
+                        <span className="badge2">●</span>
+                      ) : null}
+                      {userTag?.tagCount >= 10 &&
+                      userTag?.tagCount >= 15 &&
+                      userTag?.tagCount <= 20 ? (
+                        <span className="badge1">●</span>
+                      ) : null}
+                      <span className="ml-1">{userTag?.tagName}</span>
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="row">
+              {bronzeBadges <= 2 &&
+              silverBadges > 2 &&
+              silverBadges < 5 &&
+              goldBadges >= 5 ? (
+                <div class="col-2">
+                  <a href="/" className="tag">
+                    curious
+                  </a>
+                </div>
+              ) : null}
+              {bronzeBadges <= 2 &&
+              silverBadges > 2 &&
+              silverBadges < 5 &&
+              goldBadges >= 5 ? (
+                <div class="col-2">
+                  <a href="/" className="tag">
+                    Helpfulness
+                  </a>
+                </div>
+              ) : null}
+              <div class="col-2">
+                <a href="/" className="tag">
+                  popular
+                </a>
+              </div>
+              <div class="col-2">
+                <a href="/" className="tag">
+                  sportsmanship
+                </a>
+              </div>
+              <div class="col-2">
+                <a href="/" className="tag">
+                  critic
+                </a>
               </div>
             </div>
 

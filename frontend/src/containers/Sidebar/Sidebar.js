@@ -1,7 +1,11 @@
 import React from "react";
 import "./Sidebar.css";
-
+import { signinsuccess } from "../../store/actions/actions";
+import { useSelector } from "react-redux";
 function Sidebar() {
+  const data=useSelector(signinsuccess)
+  const isAdmin=data?.payload?.user?.isAdmin
+
   return (
     <>
       <div className="sidebar-wrapper">
@@ -26,7 +30,24 @@ function Sidebar() {
                 Users
               </a>
             </li>
-          </ul>
+         </ul>
+          {isAdmin?(
+          <div>
+          <ul className="sidebar-navigation pt-4">
+           <li>
+              <a href="/Addtag" className="side-bar-menu-item">
+                Add tag
+              </a>
+            </li>
+            <li>
+              <a href="/Aproove" className="side-bar-menu-item">
+                Review questions
+              </a>
+            </li>
+         </ul>
+           </div> 
+            
+          ):(<span></span>)}
         </div>
       </div>
     </>

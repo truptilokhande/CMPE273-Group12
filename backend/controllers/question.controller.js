@@ -84,13 +84,17 @@ const addquestion = async (req, res) => {
       const index = userTags.findIndex((x) => x?.tagId?.toString() === tag?.id);
       // i.e if tag is already present
       if (index != -1) {
-        const editedTags = userTags?.map((x) => {
-          if (x.tagId == tag.id) {
-            x.tagCount = x?.tagCount + 1;
+        await Users.updateOne(
+          {
+            _id: userId,
+            "tags.tagId": tag.id,
+          },
+          {
+            $inc: {
+              "tags.$.tagCount": 1,
+            },
           }
-          return x;
-        });
-        await Users.findOneAndUpdate({ _id: userId, tags: editedTags });
+        );
       }
       // if tag is not present
       else {
@@ -180,6 +184,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: 1 } },
@@ -189,6 +197,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $dec: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -200,6 +212,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: -2 } },
@@ -209,6 +225,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -332,8 +352,61 @@ const addComment = async (req, res) => {
     { comments },
     { new: true }
   );
+
+  const new_log = new Logs({
+    logID: questionId,
+    what: "comment",
+    by: userId,
+    content: commentBody,
+  });
+  await new_log.save();
+
   result && res.status(200).send({ success: true, comments: result?.comments });
   !result && res.status(400).send({ success: false, message: err.message });
+};
+const getPendingQuestions = async (req, res) => {
+  console.log("in pending questions");
+  const filter = { waitingForApproval: true };
+  Question.find(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+const aproove = async (req, res) => {
+  console.log("in aproove");
+  const id = req.params.id;
+  const filter = { _id: id };
+  Question.find(filter, { waitingForApproval: false }, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+const reject = async (req, res) => {
+  console.log("in pending questions");
+  const id = req.params.id;
+  const filter = { _id: id };
+  Question.deleteOne(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+
+const getHistories = async (req, res) => {
+  const logID = req.params.id;
+  const logs = await Logs.find({ logID });
+  res.status(200).send({ logs });
 };
 
 module.exports = {
@@ -346,6 +419,10 @@ module.exports = {
   searchQuestionsByUserId,
   searchQuestionsByText,
   addComment,
+  getPendingQuestions,
+  aproove,
+  reject,
+  getHistories,
 };
 
 /*

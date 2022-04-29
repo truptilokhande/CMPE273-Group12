@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import "./BasicDetails.css";
-import RelativeTime from "@yaireo/relative-time";
 import moment from "moment";
 
 function BasicDetails({ userdetails }) {
@@ -17,28 +16,6 @@ function BasicDetails({ userdetails }) {
                 alt="user avatar"
                 width="128"
                 height="128"
-                class="bar-sm bar-md d-block"
-              ></img>
-            </div>
-          </div>
-          <div class="d-none md:d-block sm:d-none js-usermini-avatar-container">
-            <div class="bar-md bs-sm">
-              <img
-                src={userdetails?.profilepicture}
-                alt="user avatar"
-                width="96"
-                height="96"
-                class="bar-sm bar-md d-block"
-              ></img>
-            </div>
-          </div>
-          <div class="d-none sm:d-block js-usermini-avatar-container">
-            <div class="bar-md bs-sm">
-              <img
-                src={userdetails?.profilepicture}
-                alt="user avatar"
-                width="64"
-                height="64"
                 class="bar-sm bar-md d-block"
               ></img>
             </div>
@@ -93,13 +70,17 @@ function BasicDetails({ userdetails }) {
                   </svg>
                 </div>
                 <div class="flex--item ml-1">
-                  Last seen :{" "}
-                  {moment(userdetails?.updatedAt).format("MMMM DD,YYYY")} at{" "}
-                  {moment(userdetails?.updatedAt).format("h:mm")}
+                  Last seen : {moment(new Date()).format("MMMM DD,YYYY")} at{" "}
+                  {moment(new Date()).format("h:mm")}
                 </div>
               </div>
             </li>
           </ul>
+          {userdetails?.location && (
+            <>
+              location: <p>{userdetails?.location}</p>
+            </>
+          )}
         </div>
       </div>
       <div class="d-flex ai-center jc-space-between fw-wrap mb16 js-user-header">

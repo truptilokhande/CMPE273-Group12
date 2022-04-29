@@ -4,7 +4,7 @@ const commentDb = require("../models/commentModel");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 
-exports.addAnswer = (req, res) => {
+exports.addAnswer = async (req, res) => {
   console.log("handling add answer ");
   const userId = req.body.userId;
   const questionId = req.body.questionId;
@@ -15,6 +15,14 @@ exports.addAnswer = (req, res) => {
     questionId,
     answerBody,
   });
+
+  // const new_log = new Logs({
+  //   logID: questionId,
+  //   what: "answer",
+  //   by: userId,
+  //   content: answerBody,
+  // });
+  // await new_log.save();
 
   answers
     .save(answers)
@@ -39,6 +47,10 @@ exports.voteAnswer = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 5 } }
+      );
       result = await answersDb.findOneAndUpdate(
         { _id: answerId },
         { $inc: { votes: 1 } },
@@ -48,6 +60,10 @@ exports.voteAnswer = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -5 } }
       );
       result = await answersDb.findOneAndUpdate(
         { _id: answerId },
@@ -59,6 +75,10 @@ exports.voteAnswer = async (req, res) => {
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -5 } }
+      );
       result = await answersDb.findOneAndUpdate(
         { _id: answerId },
         { $inc: { votes: -2 } },
@@ -68,6 +88,10 @@ exports.voteAnswer = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 5 } }
       );
       result = await answersDb.findOneAndUpdate(
         { _id: answerId },
@@ -116,12 +140,12 @@ exports.addComment = async (req, res) => {
 };
 
 exports.setBestAnswer = async (req, res) => {
-  // const bestAnswer = req.body.markedRight;
   const id = req.body.answerId;
   const questionId = req.body.questionId;
+  const userId = req.body.userId;
+
   try {
     const answer = await answersDb.findOne({ _id: id });
-    console.log(answer);
     // checking if it is alraedy set to true
     if (answer.markedAsRight !== true) {
       // removing if there's any answer set to best previously
@@ -131,8 +155,16 @@ exports.setBestAnswer = async (req, res) => {
       );
       // adding/removing the answer as best
       await answersDb.findOneAndUpdate({ _id: id }, { markedAsRight: true });
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 15 } }
+      );
     } else {
       await answersDb.findOneAndUpdate({ _id: id }, { markedAsRight: false });
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -15 } }
+      );
     }
 
     // sending updated answers

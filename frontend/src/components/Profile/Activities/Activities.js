@@ -121,55 +121,27 @@ function Activities() {
                   </h2>
                 </div>
               </div>
-              <div class="flex--item">
-                <div class="d-flex ai-end">
-                  <div class="flex--item s-btn-group js-user-tab-sorts fl-shrink0 md:fl-shrink1">
-                    <a
-                      href="/users/2901002/jezrael?tab=answers&amp;sort=votes"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort is-selected js-selected"
-                      data-sort="votes"
-                    >
-                      Score
-                    </a>
-                    <a
-                      href="/users/2901002/jezrael?tab=answers&amp;sort=activity"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="activity"
-                    >
-                      Activity
-                    </a>
-                    <a
-                      href="/users/2901002/jezrael?tab=answers&amp;sort=newest"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="newest"
-                    >
-                      Newest
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="ba bc-black-100 bar-md">
               <div id="js-post-summaries">
                 {answers?.map((ans) => (
-                  <div
-                    id="answer-id-30359308"
-                    class="s-post-summary s-post-summary__minimal js-post-summary"
-                    data-post-id="30359308"
-                    data-post-type-id="2"
-                  >
+                  <div class="s-post-summary s-post-summary__minimal js-post-summary">
                     <div class="s-post-summary--stats js-post-summary-stats">
-                      <div
-                        class="s-post-summary--stats-item s-post-summary--stats-item__emphasized"
-                        title="Score of 1845"
-                      >
+                      <div class="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
                         <span class="s-post-summary--stats-item-number">
+                        </span>
+                        <div className="d-flex flex-column">
+                          <span class="s-post-summary--stats-item-unit">
                           {ans?.question[0]?.votes}
-                        </span>
-                        <span class="s-post-summary--stats-item-unit">
-                          votes
-                        </span>
+                            <span className="ml-1">votes</span>
+                          </span>
+                          {
+                          ans?.markedAsRight
+                          ? <div>marked as right</div>
+                          : null
+                          }
+                        </div>
                       </div>
                     </div>
                     <div class="s-post-summary--content">

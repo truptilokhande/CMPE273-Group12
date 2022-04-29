@@ -46,7 +46,7 @@ function Homepage({ setTagsInstore, isAuthenticated, user }) {
             ? new Date(a.updatedAt)
             : new Date(a.createdAt);
         const t2 =
-          new Date(a.createdAt) < new Date(b.updatedAt)
+          new Date(b.createdAt) < new Date(b.updatedAt)
             ? new Date(b.updatedAt)
             : new Date(b.createdAt);
         return t2 - t1;
