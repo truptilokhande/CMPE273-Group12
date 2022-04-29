@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import "./QuestionOverview.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -8,18 +9,28 @@ import parse from "html-react-parser";
 import RelativeTime from "@yaireo/relative-time";
 import moment from "moment";
 import { connect } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import S3FileUpload from "react-s3";
+import {
+  increasereputation,
+  decrementreputation,
+} from "../../store/actions/actions";
 
-function QuestionOverview({ user }) {
+function QuestionOverview({ user, incrementReputation, decrementReputation }) {
   const relativeTime = new RelativeTime();
   const [question, setQuestion] = useState();
   const [usercomment, setComment] = useState();
   const [userdetails, setUserdetails] = useState();
   const [answers, setAnswers] = useState();
   const [answerBody, setAnswerBody] = useState();
-  const [addCommentToQuestion, setAddCommentToQuestion] = useState(false);
-  const [addCommentToAnswer, setAddCommentToAnswer] = useState(false);
+  const [commentAdded, setCommentAdded] = useState(false);
+  const [isQuestionUpvoted, setQuestionUpVoted] = useState(false);
+  const [isQuestionDownVoted, setQuestionDownVoted] = useState(false);
+  const [isAnswerupvoted, setAnswerupvoted] = useState([]);
+  const [isAnswerdownvoted, setAnswerdownvoted] = useState([]);
+  const [questionCommentContent, setQuestionCommentContent] = useState();
   const navigate = useNavigate();
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const url = window.location.pathname;
@@ -36,14 +47,86 @@ function QuestionOverview({ user }) {
       });
   }, []);
 
-  const modules = {
-    toolbar: [
-      ["bold", "italic", "underline"],
-      ["link", "image", "code-block"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["clean"],
-    ],
+  useEffect(() => {
+    addEventListeners();
+  }, [answers]);
+
+  const addEventListeners = () => {
+    answers?.forEach((answer) => {
+      const show = document.getElementById(`show-${answer._id}`);
+      const hide = document.getElementById(`hide-${answer._id}`);
+      const form = document.getElementById(`form-${answer._id}`);
+      const textarea = document.getElementById(`textarea-${answer._id}`);
+
+      show.addEventListener("click", function () {
+        form.style = "display: block";
+        textarea.style = "animation: riseHeight 1s .1s normal forwards";
+        hide.style = "display: block";
+        show.disabled = true;
+      });
+
+      hide.addEventListener("click", function () {
+        form.style = "display: none";
+        hide.style = "display: none";
+        show.disabled = false;
+      });
+    });
+    document.addEventListener("DOMContentLoaded", function (event) {
+      var scrollpos = localStorage.getItem("scrollpos");
+      if (scrollpos) window.scrollTo(0, scrollpos);
+    });
+
+    window.onbeforeunload = function (e) {
+      localStorage.setItem("scrollpos", window.scrollY);
+    };
   };
+
+  const saveToServer = (file) => {
+    const config = {
+      accessKeyId: "AKIA2WX32KIUACMHTCOR",
+      secretAccessKey: "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",
+      region: "us-west-1",
+      bucketName: "etsy-lab2",
+    };
+    S3FileUpload.uploadFile(file, config)
+      .then(async (res) => {
+        console.log(res);
+        editorRef.current.getEditor().insertEmbed(null, "image", res?.location);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      const file = input.files[0];
+      saveToServer(file);
+    };
+  };
+
+  const quillOptions = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          //   [{ 'header': [1, 2, false] }],
+          ["bold", "italic", "underline"],
+          ["link", "image", "code-block"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
 
   const postAnswer = () => {
     const answer = {
@@ -64,43 +147,120 @@ function QuestionOverview({ user }) {
   const postCommentToAnswer = (id) => {
     const comment = {
       userId: user?._id,
+      userName: user?.name,
       answerId: id,
       commentBody: usercomment,
     };
     axios
       .post(`${connection.connectionURL}/api/answer/add-comment`, comment)
       .then((response) => {
-        window.location.reload(true);
+        const result = answers.map((x) => {
+          const item = x?._id === id;
+          const comments = response?.data?.data?.comments;
+          return item ? { ...x, comments } : x;
+        });
+        setAnswers([...result]);
+        document.location.reload(true);
       })
       .catch((err) => {
         throw err;
       });
   };
 
-  const upvoteordownvoteQuestion = (param) => {
+  const upvoteordownvoteQuestion = (upordownvotevalue) => {
+    let valuetobeincrementedordecremented;
+    if (upordownvotevalue === 1) {
+      // upvoted
+      if (isQuestionDownVoted) {
+        // check if already up voted then we need to remove upvote and downvote too.
+        valuetobeincrementedordecremented = 3;
+      } else {
+        // check if already upvoted
+        valuetobeincrementedordecremented = isQuestionUpvoted ? 0 : 1;
+      }
+    } else {
+      // downvoted
+      if (isQuestionUpvoted) {
+        // check if already up voted then we need to remove upvote and downvote too.
+        valuetobeincrementedordecremented = 2;
+      } else {
+        // check if already downvoted.
+        valuetobeincrementedordecremented = isQuestionDownVoted ? 1 : 0;
+      }
+    }
+
     axios
       .post(
-        `${connection.connectionURL}/api/question/voteQuestion?upvote=${param}`,
+        `${connection.connectionURL}/api/question/voteQuestion?upvote=${valuetobeincrementedordecremented}`,
         {
           userId: user?._id,
           questionId: question?._id,
         }
       )
-      .then(() => {
+      .then((response) => {
         setQuestion({
           ...question,
-          votes: param === 1 ? question?.votes + 1 : question?.votes - 1,
+          votes: response?.data?.vote,
         });
+        if (upordownvotevalue === 1) {
+          setQuestionUpVoted(!isQuestionUpvoted);
+          incrementReputation(10);
+        } else {
+          setQuestionDownVoted(!isQuestionDownVoted);
+          decrementReputation(10);
+        }
+        if (valuetobeincrementedordecremented === 2) {
+          setQuestionUpVoted(!isQuestionUpvoted);
+          incrementReputation(10);
+        }
+        if (valuetobeincrementedordecremented === 3) {
+          setQuestionDownVoted(!isQuestionDownVoted);
+          decrementReputation(10);
+        }
       })
       .catch((err) => {
         throw err;
       });
   };
 
-  const upvoteordownvoteAnswer = (answerId, param) => {
+  const upvoteordownvoteAnswer = (answerId, upordownvotevalue) => {
+    let valuetobeincrementedordecremented;
+    if (upordownvotevalue === 1) {
+      // user has clicked upvote if value is 1
+      // checking if answers down vote array has answerid i.e checking if user has already downvoted
+      if (isAnswerdownvoted.some((item) => item === answerId)) {
+        // sending 3 as code to BE, BE will remove the down vote and add the upvote i.e increment votes by 2
+        valuetobeincrementedordecremented = 3;
+      } else {
+        // this executes when user didn't downvote anytime.
+        // checks if user upvoted anytime -> if so we need to downvote the question
+        // checks if user didn't upvoted anytime ->  need to up the question
+        valuetobeincrementedordecremented = isAnswerupvoted.some(
+          (item) => item === answerId
+        )
+          ? 0
+          : 1;
+      }
+    } else {
+      // user has clicked downvote if value is 0
+      // checking if answers up vote array has answerid i.e checking if user has already upvoted
+      if (isAnswerupvoted.some((item) => item === answerId)) {
+        // sending 2 as code to BE, BE will remove the up vote and down the upvote i.e decrement votes by 2
+        valuetobeincrementedordecremented = 2;
+      } else {
+        // this executes when user didn't up anytime.
+        // checks if user downvoted anytime -> if so we need to upvote the question
+        // checks if user didn't downvote anytime ->  need to downvote the question
+        valuetobeincrementedordecremented = isAnswerdownvoted.some(
+          (item) => item === answerId
+        )
+          ? 1
+          : 0;
+      }
+    }
     axios
       .post(
-        `${connection.connectionURL}/api/answer/vote-answer?upvote=${param}`,
+        `${connection.connectionURL}/api/answer/vote-answer?upvote=${valuetobeincrementedordecremented}`,
         {
           userId: user?._id,
           answerId,
@@ -109,44 +269,135 @@ function QuestionOverview({ user }) {
       .then((response) => {
         const res = answers.map((i) => {
           if (i._id === answerId) {
-            return { ...i, votes: param === 1 ? i.votes + 1 : i.votes - 1 };
+            return { ...i, votes: response?.data?.votes };
           }
           return i;
         });
         setAnswers([...res]);
+        // upvote and downvote button are not active and upvote is clicked
+        if (
+          valuetobeincrementedordecremented === 1 &&
+          upordownvotevalue === 1
+        ) {
+          setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+          incrementReputation(5);
+        }
+        // upvote is active and downvote button is not active and upvote is clicked
+        else if (
+          upordownvotevalue === 1 &&
+          valuetobeincrementedordecremented === 0
+        ) {
+          const index = isAnswerupvoted.findIndex((item) => item === answerId);
+          if (index !== -1) {
+            isAnswerupvoted.splice(index, 1);
+          }
+          setAnswerupvoted([...isAnswerupvoted]);
+          decrementReputation(5);
+        }
+        // upvote is active and downvote button is not active and downvote is clicked
+        else if (
+          valuetobeincrementedordecremented === 2 &&
+          upordownvotevalue === 0
+        ) {
+          const index = isAnswerupvoted.findIndex((item) => item === answerId);
+          if (index !== -1) {
+            isAnswerupvoted.splice(index, 1);
+          }
+          setAnswerupvoted(isAnswerupvoted);
+          setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+          decrementReputation(5);
+        }
+        // upvote and downvote button are not active and down is clicked
+        else if (
+          valuetobeincrementedordecremented === 0 &&
+          upordownvotevalue === 0
+        ) {
+          setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
+          decrementReputation(5);
+        }
+        // upvote is active and downvote button is not active and downvote is clicked
+        else if (
+          valuetobeincrementedordecremented === 1 &&
+          upordownvotevalue === 0
+        ) {
+          const index = isAnswerdownvoted.findIndex(
+            (item) => item === answerId
+          );
+          if (index !== -1) {
+            isAnswerdownvoted.splice(index, 1);
+          }
+          setAnswerdownvoted([...isAnswerdownvoted]);
+          decrementReputation(5);
+        }
+        // upvote is not active and downvote button is active and upvote is clicked
+        else {
+          const index = isAnswerdownvoted.findIndex(
+            (item) => item === answerId
+          );
+          if (index !== -1) {
+            isAnswerdownvoted.splice(index, 1);
+          }
+          setAnswerdownvoted(isAnswerdownvoted);
+          setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
+          incrementReputation(5);
+        }
       })
       .catch((err) => {
         throw err;
       });
   };
 
-  const markAnswerAsAsRight = (id) => {
+  const markAnswerAsAsRight = (id, markedAsRight) => {
     axios
       .post(`${connection.connectionURL}/api/answer/set-best-answer`, {
+        userId: user?._id,
         questionId: question?._id,
         answerId: id,
       })
       .then((response) => {
         setAnswers([...response?.data?.data]);
+        if (markedAsRight) {
+          decrementReputation(15);
+        } else {
+          incrementReputation(15);
+        }
       })
       .catch((err) => {
         throw err;
       });
   };
 
-  const bookmarkQuestion = ()=>{
+  const bookmarkQuestion = () => {
     axios
-    .post(`${connection.connectionURL}/api/question/bookmark`, {
-      questionId: question?._id,
-      userId: user?._id,
-    })
-    .then((response) => {
-      setUserdetails({...response?.data?.result});
-    })
-    .catch((err) => {
-      throw err;
-    });
-  }
+      .post(`${connection.connectionURL}/api/question/bookmark`, {
+        questionId: question?._id,
+        userId: user?._id,
+      })
+      .then((response) => {
+        setUserdetails({ ...response?.data?.result });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
+  const addCommentToQuestion = () => {
+    axios
+      .post(`${connection.connectionURL}/api/question/addComment`, {
+        questionId: question?._id,
+        userId: user?._id,
+        userName: user?.name,
+        commentBody: questionCommentContent,
+      })
+      .then((response) => {
+        const comments = response?.data?.comments;
+        setQuestion({ ...question, comments });
+        setCommentAdded(false);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
 
   return (
     <>
@@ -178,7 +429,9 @@ function QuestionOverview({ user }) {
           <div className="vote-cell col-1">
             <div className="voting-container d-flex justify-content-center flex-column align-items-stretch">
               <button
-                className="vote-up-button voting-container-button"
+                className={`vote-up-button voting-container-button ${
+                  isQuestionUpvoted ? "upvoted-btn" : ""
+                }`}
                 onClick={() => {
                   upvoteordownvoteQuestion(1);
                 }}
@@ -198,7 +451,9 @@ function QuestionOverview({ user }) {
               </div>
 
               <button
-                className="vote-down-button voting-container-button"
+                className={`vote-down-button voting-container-button ${
+                  isQuestionDownVoted ? "downvoted-btn" : ""
+                }`}
                 onClick={() => {
                   upvoteordownvoteQuestion(0);
                 }}
@@ -213,7 +468,12 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <button className="bookmark-button voting-container-button" onClick={()=>{bookmarkQuestion()}}>
+              <button
+                className="bookmark-button voting-container-button"
+                onClick={() => {
+                  bookmarkQuestion();
+                }}
+              >
                 <svg
                   aria-hidden="true"
                   className="iconBookmark"
@@ -232,7 +492,10 @@ function QuestionOverview({ user }) {
                 </svg>
               </button>
 
-              <a className="post-issue-button mx-auto my-1" href="/">
+              <a
+                className="post-issue-button mx-auto my-1"
+                href={`/timeline/${question?._id}`}
+              >
                 <svg
                   aria-hidden="true"
                   className="mln2 mr0 svg-icon iconHistory"
@@ -246,12 +509,12 @@ function QuestionOverview({ user }) {
             </div>
           </div>
           <div className="question-layout col-11">
-            <div className="question-content">
+            <div className="question-content question-wrapper-content">
               {parse(question?.questionbody || "")}
             </div>
             <div className="question-tags d-flex flex-wrap">
               {question?.tags?.map((tag) => (
-                <a href="/" className="tag">
+                <a href={`/tagOverview/${tag?.id}`} className="tag">
                   {tag?.name}
                 </a>
               ))}
@@ -261,11 +524,16 @@ function QuestionOverview({ user }) {
 
         <div className="question-overview-user-profile d-flex justify-content-between">
           <div className="ml-4">
-            <button className="edit-question" onClick={()=>{
-              navigate('/edit-question', { state: { question } });
-            }}>
-              edit question
-            </button>
+            {userdetails?._id === user?._id ? (
+              <button
+                className="edit-question"
+                onClick={() => {
+                  navigate("/edit-question", { state: { question } });
+                }}
+              >
+                edit question
+              </button>
+            ) : null}
           </div>
 
           <div className="user-info-wrapper">
@@ -279,7 +547,7 @@ function QuestionOverview({ user }) {
               </div>
               <div className="user-avatar">
                 <img
-                  src="https://www.gravatar.com/avatar/d812ca76337577d1eefe44dc80877e6f?s=64&amp;d=identicon&amp;r=PG&amp;f=1"
+                  src={userdetails?.profilepicture}
                   alt="user avatar"
                   width="32"
                   height="32"
@@ -306,68 +574,58 @@ function QuestionOverview({ user }) {
 
         <div className="question-comments mt-4">
           <ul className="comments-list">
-            <li className="comment m-2">
-              <div className="comment-text  js-comment-text-and-form">
-                <div className="comment-body js-comment-edit-hide">
-                  <span className="comment-copy">
-                    Hi. Please take the time to read this post on
-                  </span>
+            {question?.comments?.map((comment) => (
+              <li className="comment m-2">
+                <div className="comment-text  js-comment-text-and-form">
+                  <div className="comment-body js-comment-edit-hide">
+                    <span className="comment-copy">{comment?.commentBody}</span>
 
-                  <div className="d-inline-flex align-items-center">
-                    &nbsp;–&nbsp;
-                    <a href="/" className="comment-user">
-                      jezrael
-                    </a>
+                    <div className="d-inline-flex align-items-center">
+                      &nbsp;–&nbsp;
+                      <a href="/" className="comment-user">
+                        {comment?.userName}
+                      </a>
+                    </div>
+                    <span className="comment-date">
+                      <span>
+                        {moment(comment?.createdAt).format("MMMM DD,YYYY")} at{" "}
+                        {moment(comment?.createdAt).format("h:mm")}
+                      </span>
+                    </span>
                   </div>
-                  <span className="comment-date">
-                    <span>27 mins ago</span>
-                  </span>
                 </div>
-              </div>
-            </li>
-            <li className="comment m-2">
-              <div className="comment-text  js-comment-text-and-form">
-                <div className="comment-body js-comment-edit-hide">
-                  <span className="comment-copy">
-                    Hi. Please take the time to read this post on
-                  </span>
-
-                  <div className="d-inline-flex align-items-center">
-                    &nbsp;–&nbsp;
-                    <a href="/" className="comment-user">
-                      jezrael
-                    </a>
-                  </div>
-                  <span className="comment-date">
-                    <span>27 mins ago</span>
-                  </span>
-                </div>
-              </div>
-            </li>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div className="add-comment-question mt-4">
-          {!addCommentToQuestion && (
+          {!commentAdded && (
             <button
               className="add-comment-link"
               onClick={() => {
-                setAddCommentToQuestion(true);
+                setCommentAdded(true);
               }}
             >
               Add a comment
             </button>
           )}
-          {addCommentToQuestion && (
+          {commentAdded && (
             <div className="comment-wrapper row no-gutters mt-4">
               <div className="col-8 mr-2">
-                <textarea className="w-100"></textarea>
+                <textarea
+                  className="w-100"
+                  onChange={(e) => {
+                    setQuestionCommentContent(e.target.value);
+                  }}
+                ></textarea>
               </div>
               <div className="col-2">
                 <button
                   className="add-comment-button"
                   onClick={() => {
-                    setAddCommentToQuestion(true);
+                    addCommentToQuestion();
+                    setCommentAdded(true);
                   }}
                 >
                   Add a comment
@@ -389,7 +647,13 @@ function QuestionOverview({ user }) {
               <div className="vote-cell col-1">
                 <div className="voting-container d-flex justify-content-center flex-column align-items-stretch">
                   <button
-                    className="vote-up-button voting-container-button"
+                    className={`vote-up-button voting-container-button answer-up-${
+                      answer._id
+                    } ${
+                      isAnswerupvoted.some((item) => item === answer._id)
+                        ? "active-up-vote"
+                        : ""
+                    }`}
                     onClick={() => {
                       upvoteordownvoteAnswer(answer?._id, 1);
                     }}
@@ -409,7 +673,13 @@ function QuestionOverview({ user }) {
                   </div>
 
                   <button
-                    className="vote-down-button voting-container-button"
+                    className={`vote-down-button voting-container-button answer-down-${
+                      answer._id
+                    } ${
+                      isAnswerdownvoted.some((item) => item === answer._id)
+                        ? "active-up-vote"
+                        : ""
+                    }`}
                     onClick={() => {
                       upvoteordownvoteAnswer(answer?._id, 0);
                     }}
@@ -445,7 +715,7 @@ function QuestionOverview({ user }) {
                     <button
                       className="text-center correct-answer"
                       onClick={() => {
-                        markAnswerAsAsRight(answer?._id);
+                        markAnswerAsAsRight(answer?._id, answer?.markedAsRight);
                       }}
                     >
                       <svg
@@ -496,7 +766,7 @@ function QuestionOverview({ user }) {
                   </div>
                   <div className="user-avatar">
                     <img
-                      src="https://www.gravatar.com/avatar/d812ca76337577d1eefe44dc80877e6f?s=64&amp;d=identicon&amp;r=PG&amp;f=1"
+                      src={answer?.user[0]?.profilepicture}
                       alt="user avatar"
                       width="32"
                       height="32"
@@ -523,80 +793,68 @@ function QuestionOverview({ user }) {
 
             <div className="question-comments mt-4">
               <ul className="comments-list">
-                <li className="comment m-2">
-                  <div className="comment-text  js-comment-text-and-form">
-                    <div className="comment-body js-comment-edit-hide">
-                      <span className="comment-copy">
-                        Hi. Please take the time to read this post on
-                      </span>
+                {answer?.comments?.map((comment) => (
+                  <li className="comment m-2">
+                    <div className="comment-text  js-comment-text-and-form">
+                      <div className="comment-body js-comment-edit-hide">
+                        <span className="comment-copy">
+                          {comment?.commentBody}
+                        </span>
 
-                      <div className="d-inline-flex align-items-center">
-                        &nbsp;–&nbsp;
-                        <a href="/" className="comment-user">
-                          jezrael
-                        </a>
+                        <div className="d-inline-flex align-items-center">
+                          &nbsp;–&nbsp;
+                          <a href="/" className="comment-user">
+                            {comment?.userName}
+                          </a>
+                        </div>
+                        <span className="comment-date">
+                          <span>
+                            {moment(comment?.createdAt).format("MMMM DD,YYYY")}{" "}
+                            at {moment(comment?.createdAt).format("h:mm")}
+                          </span>
+                        </span>
                       </div>
-                      <span className="comment-date">
-                        <span>27 mins ago</span>
-                      </span>
                     </div>
-                  </div>
-                </li>
-                <li className="comment m-2">
-                  <div className="comment-text  js-comment-text-and-form">
-                    <div className="comment-body js-comment-edit-hide">
-                      <span className="comment-copy">
-                        Hi. Please take the time to read this post on
-                      </span>
-
-                      <div className="d-inline-flex align-items-center">
-                        &nbsp;–&nbsp;
-                        <a href="/" className="comment-user">
-                          jezrael
-                        </a>
-                      </div>
-                      <span className="comment-date">
-                        <span>27 mins ago</span>
-                      </span>
-                    </div>
-                  </div>
-                </li>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="add-comment-question mt-4 mb-2">
-              {!addCommentToAnswer && (
-                <button
-                  className="add-comment-link"
-                  onClick={() => {
-                    setAddCommentToAnswer(true);
-                  }}
-                >
+              <>
+                <button className="add-comment-link" id={`show-${answer._id}`}>
                   Add a comment
                 </button>
-              )}
-              {addCommentToAnswer && (
-                <div className="comment-wrapper row no-gutters mt-4">
-                  <div className="col-8 mr-2">
-                    <textarea
-                      className="w-100"
-                      onChange={(e) => {
-                        setComment(e.target.value);
-                      }}
-                    ></textarea>
-                  </div>
-                  <div className="col-2">
-                    <button
-                      className="add-comment-button"
-                      onClick={() => {
-                        postCommentToAnswer(answer?._id);
-                      }}
-                    >
-                      Add a comment
-                    </button>
-                  </div>
+                <button id={`hide-${answer._id}`} style={{ display: "none" }}>
+                  X
+                </button>
+              </>
+
+              <form
+                id={`form-${answer._id}`}
+                className="comment-wrapper row no-gutters mt-4"
+                style={{ display: "none" }}
+              >
+                <div className="col-8 mr-2">
+                  <textarea
+                    className="w-100"
+                    id={`textarea-${answer._id}`}
+                    onChange={(e) => {
+                      setComment(e.target.value);
+                    }}
+                  ></textarea>
                 </div>
-              )}
+                <div className="col-2">
+                  <button
+                    className="add-comment-button"
+                    onClick={() => {
+                      postCommentToAnswer(answer?._id);
+                    }}
+                  >
+                    Add a comment
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         ))}
@@ -610,7 +868,8 @@ function QuestionOverview({ user }) {
         <div className="d-flex position-relative">
           <ReactQuill
             placeholder={"Write something awesome..."}
-            modules={modules}
+            modules={quillOptions}
+            ref={editorRef}
             onChange={(val) => {
               setAnswerBody(val);
             }}
@@ -636,4 +895,10 @@ function QuestionOverview({ user }) {
 const mapStateToProps = (state) => ({
   user: state.user,
 });
-export default connect(mapStateToProps, null)(QuestionOverview);
+
+const mapDispatchToProps = (dispatch) => ({
+  incrementReputation: (val) => dispatch(increasereputation(val)),
+  decrementReputation: (val) => dispatch(decrementreputation(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuestionOverview);

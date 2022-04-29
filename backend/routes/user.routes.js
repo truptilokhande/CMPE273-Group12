@@ -6,9 +6,13 @@ const userController = require("../controllers/user.controller");
 
 router.post("/register", userController.register);
 router.post("/login", userController.login);
-router.get("/getProfile", userController.getProfile);
+
 router.get("/getAllUsers", userController.getAllUsers);
-router.get("/getUser", userController.getUser);
+router.get("/getUser/:id", userController.getUser);
+router.get("/getTopposts/:id",userController.getTopposts);
+router.get("/getQuestions/:id",userController.getQuestions);
+router.get("/getAnswers/:id",userController.getAnswers);
+router.get("/getBookmarks/:id",userController.getBookmarks);
 router.get("/signout", userController.signout);
 
 module.exports = router;

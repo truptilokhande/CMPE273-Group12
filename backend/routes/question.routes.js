@@ -11,6 +11,9 @@ router.get("/searchQuestionsByText/:searchkey", questionController.searchQuestio
 router.post("/voteQuestion", questionController.voteQuestion);
 router.post("/editquestion", questionController.editquestion);
 router.post("/bookmark", questionController.bookmarkQuestion);
-
+router.post("/addComment", questionController.addComment);
+router.get("/getPendingQuestions", questionController.getPendingQuestions);
+router.post("/aproove/:id", questionController.aproove);
+router.post("/reject/:id", questionController.reject);
 
 module.exports = router;
