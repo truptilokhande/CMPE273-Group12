@@ -165,8 +165,6 @@ function Bookmarkstab() {
                   <div
                     id="question-summary-53781634"
                     class="s-post-summary s-post-summary__minimal js-post-summary"
-                    data-post-id="53781634"
-                    data-post-type-id="1"
                   >
                     <div class="s-post-summary--stats js-post-summary-stats">
                       <div
@@ -178,24 +176,6 @@ function Bookmarkstab() {
                         </span>
                         <span class="s-post-summary--stats-item-unit">
                           votes
-                        </span>
-                      </div>
-                      <div
-                        class="s-post-summary--stats-item has-answers has-accepted-answer"
-                        title="one of the answers was accepted as the correct answer"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="svg-icon iconCheckmarkSm"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 14 14"
-                        >
-                          <path d="M13 3.41 11.59 2 5 8.59 2.41 6 1 7.41l4 4 8-8Z"></path>
-                        </svg>{" "}
-                        <span class="s-post-summary--stats-item-number">2</span>
-                        <span class="s-post-summary--stats-item-unit">
-                          answers
                         </span>
                       </div>
                       <div
