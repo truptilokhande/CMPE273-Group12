@@ -104,26 +104,6 @@ function UserTags() {
                   </h2>
                 </div>
               </div>
-              <div class="flex--item">
-                <div class="d-flex ai-end">
-                  <div class="flex--item s-btn-group js-user-tab-sorts fl-shrink0 md:fl-shrink1">
-                    <a
-                      href="/users/2930622/g-rafael?tab=tags&amp;sort=votes"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort is-selected js-selected"
-                      data-sort="votes"
-                    >
-                      Score
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=tags&amp;sort=name"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="name"
-                    >
-                      Name
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="ba bc-black-100 bar-md">
@@ -132,7 +112,7 @@ function UserTags() {
                   <div class="d-flex ai-center jc-space-between gs16 fw-wrap">
                     <div class="flex--item ws-nowrap">
                       <a
-                        href="/search?q=user:2930622+[docker]"
+                        href={`/tagOverview/${tag?.tagId}`}
                         class="post-tag js-gps-track"
                       >
                         {tag?.tagName}
@@ -144,10 +124,6 @@ function UserTags() {
                           <div class="fs-body3 mr4">{tag?.tagCount}</div>
                           <div class="fc-light tt-lowercase">Score</div>
                         </div>
-                        {/* <div class="flex--item d-flex ai-center">
-                          <div class="fs-body3 mr4">2</div>
-                          <div class="fc-light">posts</div>
-                        </div> */}
                       </div>
                     </div>
                   </div>
