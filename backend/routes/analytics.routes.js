@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const analyticsRoute = Router();
+const { authenticateUser } = require('../middleware/authMiddleware')
 const {
   questionsPostedPerDay,
   topTags,
@@ -7,9 +8,9 @@ const {
   reputationSortedUsers,
 } = require("../controllers/analytics.controller");
 
-analyticsRoute.get("/questionsPostedPerDay", questionsPostedPerDay);
-analyticsRoute.get("/topTags", topTags);
-analyticsRoute.get("/topViewedQuestion", topViewedQuestion);
-analyticsRoute.get("/reputationSortedUsers", reputationSortedUsers);
+analyticsRoute.get("/questionsPostedPerDay", authenticateUser, questionsPostedPerDay);
+analyticsRoute.get("/topTags", authenticateUser, topTags);
+analyticsRoute.get("/topViewedQuestion", authenticateUser, topViewedQuestion);
+analyticsRoute.get("/reputationSortedUsers", authenticateUser, reputationSortedUsers);
 
 module.exports = analyticsRoute;

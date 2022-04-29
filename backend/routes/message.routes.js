@@ -1,11 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 const messageController = require("../controllers/message.controller.js");
-// middleware TODO
-// const { authenticateUser } = require('../middleware/authMiddleware');
+const { authenticateUser } = require('../middleware/authMiddleware');
 
-router.post("/getMessages", messageController.getMessages);
-router.post("/sendMessage", messageController.sendMessage);
-router.post("/getChatrooms", messageController.getChatrooms);
+router.post("/getMessages", authenticateUser, messageController.getMessages);
+router.post("/sendMessage", authenticateUser, messageController.sendMessage);
+router.post("/getChatrooms", authenticateUser, messageController.getChatrooms);
 
 module.exports = router;
