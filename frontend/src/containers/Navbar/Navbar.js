@@ -6,7 +6,7 @@ import axios from "axios";
 import connection from "../../config.json";
 import { useNavigate } from "react-router-dom";
 
-function Navbar({ isAuthenticated, user }) {
+function Navbar({ isAuthenticated, user, reputation }) {
   const navigate = useNavigate();
 
   const signout = () => {
@@ -152,7 +152,7 @@ function Navbar({ isAuthenticated, user }) {
                 </a>
                 <div className="user-details p-0">
                   <div className="reputation-wrapper pl-2">
-                    <span className="reputation-score">753</span>
+                    <span className="reputation-score">{reputation}</span>
                     <span>
                       <span className="badge2">●</span>
                       <span className="badgecount">3</span>
@@ -226,6 +226,7 @@ function Navbar({ isAuthenticated, user }) {
 const mapStateToProps = (state) => ({
   isAuthenticated: state.isAuthenticated,
   user: state.user,
+  reputation: state.reputation,
 });
 
 export default connect(mapStateToProps, null)(Navbar);

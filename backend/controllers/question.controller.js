@@ -184,6 +184,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: 1 } },
@@ -193,6 +197,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $dec: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -204,6 +212,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: -2 } },
@@ -213,6 +225,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -349,48 +365,42 @@ const addComment = async (req, res) => {
   !result && res.status(400).send({ success: false, message: err.message });
 };
 const getPendingQuestions = async (req, res) => {
-  console.log("in pending questions")
-  const filter={waitingForApproval:true}
+  console.log("in pending questions");
+  const filter = { waitingForApproval: true };
   Question.find(filter, function (err, result) {
-    if(err){
+    if (err) {
       res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
     }
-    else{
-      console.log(result)
-      res.status(200).send({ success: true, data:result });
-    }
-   })
- 
+  });
 };
 const aproove = async (req, res) => {
   console.log("in aproove");
-  const id= req.params.id;
-  const filter={_id:id}
-  Question.find(filter,{"waitingForApproval":false}, function (err, result) {
-    if(err){
+  const id = req.params.id;
+  const filter = { _id: id };
+  Question.find(filter, { waitingForApproval: false }, function (err, result) {
+    if (err) {
       res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
     }
-    else{
-      console.log(result)
-      res.status(200).send({ success: true, data:result });
-    }
-   })
- 
+  });
 };
 const reject = async (req, res) => {
   console.log("in pending questions");
-  const id= req.params.id;
-  const filter={_id:id}
+  const id = req.params.id;
+  const filter = { _id: id };
   Question.deleteOne(filter, function (err, result) {
-    if(err){
+    if (err) {
       res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
     }
-    else{
-      console.log(result)
-      res.status(200).send({ success: true, data:result });
-    }
-   })
- 
+  });
 };
 
 const getHistories = async (req, res) => {
