@@ -80,23 +80,25 @@ const register = asyncHandler(async (req, res) => {
 // @access  Public
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  var isAdmin=false;
-  
+  let isAdmin = false;
 
   // Check for user email
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
-    if(email=="admin@gmail.com"){isAdmin=true}
+    if (email == "admin@gmail.com") {
+      isAdmin = true;
+    }
     res.json({
       status: 200,
       data: {
         _id: user.id,
         name: user.name,
-        email: user.email,  
+        email: user.email,
         token: generateToken(user._id),
         profilepicture: user.profilepicture,
-       isAdmin,
+        isAdmin,
+        reputation: user?.reputation,
       },
       message: "User logged in successfully",
     });
@@ -170,11 +172,19 @@ const getUser = asyncHandler(async (req, res) => {
     }
   });
 
+  const userQuestions = await question.find(filter1);
+
   const user = User.findOne(filter, function (err, result) {
     if (err) {
       res.status(400).send({ success: false, message: "error fetching user" });
     } else {
-      res.status(200).send({ success: true, data: result, qc: qc, ac: ac });
+      res.status(200).send({
+        success: true,
+        data: result,
+        qc: qc,
+        ac: ac,
+        views: userQuestions?.reduce((n, { views }) => n + views, 0),
+      });
     }
   });
 });
@@ -199,6 +209,7 @@ const getTopposts = asyncHandler(async (req, res) => {
       {
         $project: {
           question: 1,
+          markedAsRight: 1,
         },
       },
       {
@@ -265,5 +276,4 @@ module.exports = {
   getBookmarks,
   getUser,
   signout,
-  
 };
