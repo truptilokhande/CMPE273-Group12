@@ -25,6 +25,11 @@ import Addtag from "./components/Admin/Addtag";
 import Aproove from "./components/Admin/Aproove";
 import { connect } from "react-redux";
 import TimeLine from "./components/QuestionOverview/TimeLine";
+import QuestionAnalytics from "./components/Analytics/QuestionAnalytics";
+import TopQuestions from "./components/Analytics/TopQuestions";
+import TopTags from "./components/Analytics/TopTags";
+import HighReputedUsers from "./components/Analytics/HighReputedUsers";
+import LowReputedUsers from "./components/Analytics/LowReputedUsers";
 
 function App({ isAuthenticated }) {
   return (
@@ -88,6 +93,28 @@ function App({ isAuthenticated }) {
             <Route path="/Addtag" exact element={<Addtag />} />
             <Route path="/Aproove" exact element={<Aproove />} />
             <Route path="/timeline" exact element={<TimeLine />} />
+            <Route
+              path="/questionAnalytics"
+              exact
+              element={<QuestionAnalytics />}
+            />
+            <Route
+              path="/topViewedQuestions"
+              exact
+              element={<TopQuestions />}
+            ></Route>
+
+            <Route path="/topTags" exact element={<TopTags />}></Route>
+            <Route
+              path="/highReputedUsers"
+              exact
+              element={<HighReputedUsers />}
+            ></Route>
+            <Route
+              path="/lowReputedUsers"
+              exact
+              element={<LowReputedUsers />}
+            ></Route>
           </Routes>
         </div>
       </main>
