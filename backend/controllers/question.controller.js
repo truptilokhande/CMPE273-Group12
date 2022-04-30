@@ -79,7 +79,7 @@ const addquestion = async (req, res) => {
 
     // add tags to the user profile and update score for the tag.
     const user = await Users.findOne({ _id: userId }).lean();
-    const userTags = user?.tags || []; // [{tagId,tagName,tagCount}]
+    const userTags = user?.tags; // [{tagId,tagName,tagCount}]
     tags.forEach(async (tag) => {
       // check if tag is already present in user profile userTags.
       const index = userTags.findIndex((x) => x?.tagId === tag?.id);
@@ -104,17 +104,7 @@ const addquestion = async (req, res) => {
           tagName: tag?.name,
         };
         userTags.push(newTag);
-        await Users.updateOne(
-          {
-            _id: userId,
-            "tags.tagId": tag.id,
-          },
-          {
-            $set: {
-              tags: userTags,
-            },
-          }
-        );
+        await Users.findByIdAndUpdate({ _id: userId }, { tags: userTags });
       }
     });
 

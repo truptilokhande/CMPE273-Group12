@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Chart } from "react-chartjs-2";
 import LineChart from "./LineChart";
 import { QuestionsData } from "./Data";
 import connection from "../../config.json";
