@@ -3,9 +3,9 @@ const answersDb = require("../models/answer.model");
 const commentDb = require("../models/commentModel");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
+const mysqlConf = require("../database/sqlconnection").mysqlpool;
 
 exports.addAnswer = async (req, res) => {
-  console.log("handling add answer ");
   const userId = req.body.userId;
   const questionId = req.body.questionId;
   const answerBody = req.body.answerBody;
@@ -16,18 +16,21 @@ exports.addAnswer = async (req, res) => {
     answerBody,
   });
 
-  // const new_log = new Logs({
-  //   logID: questionId,
-  //   what: "answer",
-  //   by: userId,
-  //   content: answerBody,
-  // });
-  // await new_log.save();
-
   answers
     .save(answers)
     .then((data) => {
-      res.status(200).send({ success: true, result: data });
+      const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${questionId}','answer','${userId}','${answerBody}','${new Date(
+        Date.now()
+      ).toISOString()}')`;
+      mysqlConf.getConnection(async (err, connection) => {
+        try {
+          await connection.query(query);
+          res.status(200).send({ success: true, result: data });
+        } catch (err) {
+          console.log(err);
+        }
+        connection.release();
+      });
     })
     .catch((err) => {
       res.status(500).send({ message: "some error occured" });
@@ -38,6 +41,7 @@ exports.voteAnswer = async (req, res) => {
   const { upvote } = req.query;
   const answerId = req.body.answerId;
   const userId = req.body.userId;
+  const title = req.body.title;
   let result;
 
   // update user upvote count
@@ -99,11 +103,41 @@ exports.voteAnswer = async (req, res) => {
         { new: true }
       );
     }
-    res.status(200).send({
-      success: true,
-      message: "Updated successfully",
-      votes: result?.votes,
-    });
+    if (upvote === "0" || upvote === "2") {
+      const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${userId}','downvote answer','${userId}','${title}','${new Date(
+        Date.now()
+      ).toISOString()}')`;
+      mysqlConf.getConnection(async (err, connection) => {
+        try {
+          await connection.query(query);
+          res.status(200).send({
+            success: true,
+            message: "Updated successfully",
+            votes: result?.votes,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        connection.release();
+      });
+    } else {
+      const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${userId}','upvote answer','${userId}','${title}','${new Date(
+        Date.now()
+      ).toISOString()}')`;
+      mysqlConf.getConnection(async (err, connection) => {
+        try {
+          await connection.query(query);
+          res.status(200).send({
+            success: true,
+            message: "Updated successfully",
+            votes: result?.votes,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        connection.release();
+      });
+    }
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }

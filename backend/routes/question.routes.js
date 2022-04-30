@@ -15,5 +15,6 @@ router.post("/addComment", questionController.addComment);
 router.get("/getPendingQuestions", questionController.getPendingQuestions);
 router.post("/aproove/:id", questionController.aproove);
 router.post("/reject/:id", questionController.reject);
+router.get("/getHistories/:id", questionController.getHistories);
 
 module.exports = router;

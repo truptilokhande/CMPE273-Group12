@@ -84,11 +84,7 @@ function App({ isAuthenticated }) {
               exact
               element={<Bookmarkstab />}
             />
-            <Route
-              path="/Reputation/Reputation/:id"
-              exact
-              element={<Reputation />}
-            />
+            <Route path="/Reputation/:id" exact element={<Reputation />} />
             <Route path="/BasicDetails" exact element={<BasicDetails />} />
             <Route path="/Addtag" exact element={<Addtag />} />
             <Route path="/Aproove" exact element={<Aproove />} />
