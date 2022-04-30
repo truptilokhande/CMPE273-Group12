@@ -104,7 +104,7 @@ const addquestion = async (req, res) => {
           tagName: tag?.name,
         };
         userTags.push(newTag);
-        await Users.findOneAndUpdate({ _id: userId, tags: userTags });
+        await Users.findByIdAndUpdate({ _id: userId }, { tags: userTags });
       }
     });
 
@@ -422,12 +422,12 @@ const getPendingQuestions = async (req, res) => {
 const aproove = async (req, res) => {
   const _id = req.params.id;
   try {
-  const question = await Question.findOne({_id, waitingForApproval: true});
-  console.log(question, 'question');
-  question.waitingForApproval = false;
-  result = await question.save();
-  res.status(200).send({ success: true, data: result });
-  } catch(err) {
+    const question = await Question.findOne({ _id, waitingForApproval: true });
+    console.log(question, "question");
+    question.waitingForApproval = false;
+    result = await question.save();
+    res.status(200).send({ success: true, data: result });
+  } catch (err) {
     res.status(400).send({ success: false, message: err.message });
   }
 };
