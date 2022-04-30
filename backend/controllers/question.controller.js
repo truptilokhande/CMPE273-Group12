@@ -420,17 +420,16 @@ const getPendingQuestions = async (req, res) => {
 };
 
 const aproove = async (req, res) => {
-  console.log("in aproove");
-  const id = req.params.id;
-  const filter = { _id: id };
-  Question.find(filter, { waitingForApproval: false }, function (err, result) {
-    if (err) {
-      res.status(400).send({ success: false, message: err.message });
-    } else {
-      console.log(result);
-      res.status(200).send({ success: true, data: result });
-    }
-  });
+  const _id = req.params.id;
+  try {
+  const question = await Question.findOne({_id, waitingForApproval: true});
+  console.log(question, 'question');
+  question.waitingForApproval = false;
+  result = await question.save();
+  res.status(200).send({ success: true, data: result });
+  } catch(err) {
+    res.status(400).send({ success: false, message: err.message });
+  }
 };
 
 const reject = async (req, res) => {
