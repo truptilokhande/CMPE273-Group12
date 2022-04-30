@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const commentSchema = require("./commentModel");
+const questionSchema=require("./question.model");
 
 const answerSchema = new mongoose.Schema(
   {
@@ -8,7 +9,7 @@ const answerSchema = new mongoose.Schema(
       required: true,
     },
     questionId: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Types.ObjectId, ref: questionSchema ,
       required: true,
     },
     answerBody: {

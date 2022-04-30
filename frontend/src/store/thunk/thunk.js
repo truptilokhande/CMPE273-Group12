@@ -2,11 +2,13 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
 import axios from "axios";
+
 import connection from "../../config.json";
 import {
   signupSuccess,
   signinsuccess,
   getAllTagsSuccess,
+  getUserSuccess,
   // setUser,
 } from "../actions/actions";
 
@@ -32,7 +34,7 @@ export const signin = (user) => (dispatch) => {
     .then((res) => {
       // storing user id and authentication status in local storage
       localStorage.setItem("token", res.data.data.token);
-
+      
       dispatch(signinsuccess(res.data.data));
       // redirect to homepage
       window.location.href = "/homepage";
@@ -52,4 +54,15 @@ export const getTags = () => (dispatch) => {
     .catch((err) => {
       throw err;
     });
+};
+
+export const getUser=(id)=>(dispatch)=>{
+  axios.defaults.withCredentials=true;
+  axios.get(`${connection.connectionURL}/api/user/getUser`,id)
+  .then((res)=>{
+    dispatch(getUserSuccess(res.data.user));
+  })
+  .catch((err)=>{
+    throw err;
+  });
 };

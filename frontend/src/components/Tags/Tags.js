@@ -26,6 +26,8 @@ function Tags() {
         setTags(response?.data?.tags);
         setTagsInitial(response?.data?.tags);
         setTagsCount(response?.data?.taggedQuestionsCount);
+        setTagsCountInADay(response?.data?.questionsTaggedInADay);
+        setTagsCountInAWeek(response?.data?.questionsTaggedInAWeek);
         sortTags("popular");
       })
       .catch((err) => {
@@ -36,6 +38,9 @@ function Tags() {
   const [tags, setTags] = useState();
   const [tagsInitial, setTagsInitial] = useState();
   const [taggedQuestionsCount, setTagsCount] = useState();
+  const [taggedQuestionsCountInAday, setTagsCountInADay] = useState();
+  const [taggedQuestionsCountInAWeek, setTagsCountInAWeek] = useState();
+
   const [sort, setSort] = useState("popular");
 
   const sortTags = (criteria) => {
@@ -125,7 +130,7 @@ function Tags() {
               <div className="tag-content-wrapper">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <div className="">
-                    <a href="/tagOverview" className="tag">
+                    <a href={`/tagOverview/${tag?._id}`} className="tag">
                       {tag?.name}
                     </a>
                   </div>
@@ -136,12 +141,22 @@ function Tags() {
                 <div className="d-flex row no-gutters justify-content-between tag-meta-data">
                   <div className="col-6">
                     {taggedQuestionsCount?.find((item) => item._id === tag?._id)
-                      ?.count || 0}{" "}
-                    questions
+                      ?.count || 0}
+                    &nbsp; questions
                   </div>
                   <div className="col-6">
-                    {" "}
-                    <span>759 asked today</span>, <span>4450 this week</span>{" "}
+                    <span>
+                      {taggedQuestionsCountInAday?.find(
+                        (item) => item._id === tag?._id
+                      )?.count || 0}
+                      &nbsp; asked today, &nbsp;
+                    </span>
+                    <span>
+                      {taggedQuestionsCountInAWeek?.find(
+                        (item) => item._id === tag?._id
+                      )?.count || 0}
+                      &nbsp; this week
+                    </span>
                   </div>
                 </div>
               </div>

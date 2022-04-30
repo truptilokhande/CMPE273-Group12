@@ -118,6 +118,27 @@ exports.sendMessage = async (req, res) =>  {
       });
   }
 
+  exports.getChatrooms = async(req, res) => {
+    const senderID = req.body.senderID;
+    // const receiverID = req.body.receiverID;
+
+    const myquery = { users: { $in: [senderID] } };
+  
+  await Chatroom.find(myquery)
+    .then((result) => {
+      console.log("sending response");
+      if (result.length == 0) {
+          console.log("No chatroom available");
+          res.status(200).send("No chatrooms available")
+      }
+      else{
+          res.status(200).send(result)
+      }
+    }).catch((err) =>{
+console.log(err);
+    })
+
+}
   
   exports.getChatrooms = async (req, res) => {
     const senderID = req.body.senderID;

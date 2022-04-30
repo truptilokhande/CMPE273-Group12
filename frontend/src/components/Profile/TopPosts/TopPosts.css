@@ -1,15 +1,26 @@
 .top-posts {
-	border-style: solid;
-	border-radius: 10px;
-	border-color: #acb2b8;
-	margin-left: 30px;
-	height: 150px;
-	width: 700px;
-	margin-top: 10px;
+  border-style: solid;
+  border-radius: 10px;
+  border-color: #acb2b8;
+  margin-left: 30px;
+  height: 150px;
+  width: 700px;
+  margin-top: 10px;
 }
 .questionlink {
-	font-size: medium;
-	margin: 10px;
-	text-decoration: none;
-	background-color: #fafafb;
+  font-size: medium;
+  margin: 10px;
+  text-decoration: none;
+  background-color: #fafafb;
+}
+.w-auto {
+  width: auto;
+  margin: 0;
+  padding: 3px;
+  background-color: green;
+  border-radius: 3px;
+}
+
+.count {
+  color: white !important;
 }

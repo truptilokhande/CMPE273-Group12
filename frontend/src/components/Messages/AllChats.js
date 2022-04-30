@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import "./Chats.css";
 //var allchats_array=[{chatRoomID:1,users:["user1","user2"]},{chatRoomID:2,users:["user3","user1"]},{chatRoomID:3,users:["user1","user4"]}]
 
 import ChatListItems from './ChatListItems';
@@ -33,7 +34,7 @@ function AllChats(){
       alert(val);
   }
   return(
-  <div>
+  <div class="allchats">
 
     All Your Chats
       <br></br>

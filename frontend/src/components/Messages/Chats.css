@@ -1,0 +1,38 @@
+.allchats {
+    width:600px;
+    height:390px;
+    left:300px;
+    background-color:rgb(240, 240, 240);
+    padding-top:25px;
+    padding-left:200px;
+    margin-left: 60px;
+}
+.container {
+    width:400px;
+    height:390px;
+    background-color:rgb(51, 58, 51);
+    padding-top:25px;
+    padding-left:60px;
+    padding-right:15px;
+    margin-left: 150px;
+}
+.messagebox {
+  
+    margin-left: 250px;
+}
+.messagehead {
+  
+    margin-left: 280px;
+}
+/* white is sender */
+.sender {
+
+
+    padding-left:6px;
+    padding-top:30px;
+ 
+}
+.receiver {
+  
+    padding-left:150px;
+}

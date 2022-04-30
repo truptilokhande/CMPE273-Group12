@@ -6,7 +6,7 @@ import axios from "axios";
 import connection from "../../config.json";
 import { useNavigate } from "react-router-dom";
 
-function Navbar({ isAuthenticated }) {
+function Navbar({ isAuthenticated, user, reputation }) {
   const navigate = useNavigate();
 
   const signout = () => {
@@ -97,36 +97,36 @@ function Navbar({ isAuthenticated }) {
             }}
           />
           <div
-            class="js-search-hints px-4"
+            className="js-search-hints px-4"
             aria-describedby="Tips for searching"
           >
-            <div class="js-search-hints-text d-flex">
-              <div class="flex-grow-1">
-                <div class="mb-3">
-                  <span class="search-criteria mr-2">[tag]</span>
-                  <span class="search-criteria-description">
+            <div className="js-search-hints-text d-flex">
+              <div className="flex-grow-1">
+                <div className="mb-3">
+                  <span className="search-criteria mr-2">[tag]</span>
+                  <span className="search-criteria-description">
                     search within a tag
                   </span>
                 </div>
-                <div class="mb12">
-                  <span class="search-criteria mr-2">user:1234</span>
-                  <span class="search-criteria-description">
+                <div className="mb12">
+                  <span className="search-criteria mr-2">user:1234</span>
+                  <span className="search-criteria-description">
                     search by author
                   </span>
                 </div>
-                <div class="mb12">
-                  <span class="search-criteria mr-2">"words here"</span>
-                  <span class="search-criteria-description">exact phrase</span>
+                <div className="mb12">
+                  <span className="search-criteria mr-2">"words here"</span>
+                  <span className="search-criteria-description">exact phrase</span>
                 </div>
               </div>
-              <div class="flex-grow-1">
-                <div class="mb-3">
-                  <span class="search-criteria mr-2">is:question</span>
-                  <span class="search-criteria-description">type of post</span>
+              <div className="flex-grow-1">
+                <div className="mb-3">
+                  <span className="search-criteria mr-2">is:question</span>
+                  <span className="search-criteria-description">type of post</span>
                 </div>
-                <div class="">
-                  <span class="search-criteria mr-2">isaccepted:yes</span>
-                  <span class="search-criteria-description">
+                <div className="">
+                  <span className="search-criteria mr-2">isaccepted:yes</span>
+                  <span className="search-criteria-description">
                     search within status
                   </span>
                 </div>
@@ -142,7 +142,7 @@ function Navbar({ isAuthenticated }) {
                 <a href="/user" className="navbar-user-card">
                   <div className="navbar-avatar">
                     <img
-                      src="https://www.gravatar.com/avatar/0555bd0deb416a320a0069abef08078a?s=96&amp;d=identicon&amp;r=PG&amp;f=1"
+                      src={user?.profilepicture}
                       alt="user avatar"
                       width="24"
                       height="24"
@@ -152,7 +152,7 @@ function Navbar({ isAuthenticated }) {
                 </a>
                 <div className="user-details p-0">
                   <div className="reputation-wrapper pl-2">
-                    <span className="reputation-score">753</span>
+                    <span className="reputation-score">{reputation}</span>
                     <span>
                       <span className="badge2">●</span>
                       <span className="badgecount">3</span>
@@ -225,6 +225,8 @@ function Navbar({ isAuthenticated }) {
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.isAuthenticated,
+  user: state.user,
+  reputation: state.reputation,
 });
 
 export default connect(mapStateToProps, null)(Navbar);

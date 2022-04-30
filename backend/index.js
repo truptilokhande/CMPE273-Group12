@@ -7,12 +7,12 @@ const config = require("./config/config.json");
 const mongoose = require("mongoose");
 const connectDB = require("./database/connection");
 
-
 const answerRoutes = require("./routes/answer.routes");
 const userRoutes = require("./routes/user.routes");
 const tagRoutes = require("./routes/tag.routes");
 const questionRoutes = require("./routes/question.routes");
 const messageRoutes = require("./routes/message.routes");
+const analyticsRoute = require("./routes/analytics.routes");
 
 //set up cors
 app.use(cors({ origin: config.frontEndUrl, credentials: true }));
@@ -54,12 +54,12 @@ connectDB();
 // app.use(questionRoutes);
 // app.use("/api/v1/", answerRoutes);
 
-
 app.use("/api/answer/", answerRoutes);
 app.use("/api/user/", userRoutes);
 app.use("/api/tag/", tagRoutes);
 app.use("/api/question/", questionRoutes);
 app.use("/api/messages/", messageRoutes);
+app.use("/api/analytics/", analyticsRoute);
 
 // starting the server
 app.listen(PORT, () => {
