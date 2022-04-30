@@ -3,6 +3,7 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   tags: null,
+  reputation: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -11,6 +12,7 @@ const reducer = (state = initialState, action) => {
       ...state,
       isAuthenticated: true,
       user: action.payload,
+      reputation: action.payload?.reputation,
     };
   }
   if (action.type === "SIGN_IN_SUCCESS") {
@@ -18,6 +20,7 @@ const reducer = (state = initialState, action) => {
       ...state,
       isAuthenticated: true,
       user: action.payload,
+      reputation: action.payload?.reputation,
     };
   }
 
@@ -38,6 +41,18 @@ const reducer = (state = initialState, action) => {
     return {
       ...state,
       tags: action.payload,
+    };
+  }
+  if (action.type === "INCREMENT_REPUTATION") {
+    return {
+      ...state,
+      reputation: state.reputation + parseInt(action.payload),
+    };
+  }
+  if (action.type === "DECREMENT_REPUTATION") {
+    return {
+      ...state,
+      tags: state.reputation + parseInt(action.payload),
     };
   }
 

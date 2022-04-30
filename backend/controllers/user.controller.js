@@ -7,6 +7,8 @@ const answer = require("../models/answer.model");
 const config = require("../config/config.json");
 const { query } = require("express");
 const expressAsyncHandler = require("express-async-handler");
+const QuestionDb = require("../models/question.model");
+const mongoose = require("mongoose");
 const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/28a48027ee89f30d8681f415ea164f70.png",
@@ -50,8 +52,7 @@ const register = asyncHandler(async (req, res) => {
     name,
     email,
     password: hashedPassword,
-    profilepicture:
-      userProfileDefaultImages[Math.floor(Math.random() * (0 - 6 + 1)) + 1],
+    profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
   });
 
   if (user) {
@@ -79,11 +80,15 @@ const register = asyncHandler(async (req, res) => {
 // @access  Public
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  let isAdmin = false;
 
   // Check for user email
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    if (email == "admin@gmail.com") {
+      isAdmin = true;
+    }
     res.json({
       status: 200,
       data: {
@@ -92,6 +97,8 @@ const login = asyncHandler(async (req, res) => {
         email: user.email,
         token: generateToken(user._id),
         profilepicture: user.profilepicture,
+        isAdmin,
+        reputation: user?.reputation,
       },
       message: "User logged in successfully",
     });
@@ -143,122 +150,114 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/users/getUser
 // @access  Public
 const getUser = asyncHandler(async (req, res) => {
-  
-    const userid=req.params.id;
-    filter1={userId:userid}
-    filter={_id:userid}
-    var qc=0;
-    var ac=0;
-    answer.countDocuments( filter1, function(err2,res2){
-      if(err2){
-        console.log(err2);
+  const userid = req.params.id;
+  filter1 = { userId: userid };
+  filter = { _id: userid };
+  var qc = 0;
+  var ac = 0;
+  answer.countDocuments(filter1, function (err2, res2) {
+    if (err2) {
+      console.log(err2);
+    } else {
+      ac = String(res2);
+    }
+  });
 
-      }else{
-        console.log("ac"+res2);
-        ac=res2; 
-      }
-    })
-   //console.log("ac"+ac);
-    // console.log("q"+questioncount);
-    question.countDocuments( filter1, function(err1,res1){
-      if(err1){
-        console.log(err1);
+  question.countDocuments(filter1, function (err1, res1) {
+    if (err1) {
+      console.log(err1);
+    } else {
+      console.log(res1);
+      qc = String(res1);
+    }
+  });
 
-      }else{
-        console.log(res1);
-        qc=String(res1); 
-      }
-    })
-    
-    const user =  User.findOne(filter, function(err, result){
-      if(err) {
-        console.log(err);
-        res.status(400).send({ success: false, message: "error fetching user" });}
-      else{
-    console.log(result)
-    res.status(200).send({ success: true, data: result,qc:qc,ac:ac });
-    
- 
-    
-      }
-    })
-});
-// const getToptags = asyncHandler(async(req,res)=>{
-//   const userid=req.params.id;
-//   filter={_id:userid}
-//   try{
-//     const tags= User.find({query},{tags:1})
-//     res.status(200).send({ success: true, data: tags });
-//   }
-//   catch{
-//     res.status(400).send({ success: "false", message: "error fetching tags" });
-//   }
-// })
-const getTopposts = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  console.log("inside posts");
-  let ansposts;
-  let quesposts;
-  filter={userId:userid}
-  
-      answer.find(filter).populate("questionId").limit(3)
-      .then((result)=>{
-          console.log(result);
-          ansposts=result;
-          question.find(filter).limit(3)
-            .then((result1)=>{
-            console.log(result1);
-            quesposts=result1;
-            res.status(200).send({ success: true, data1: ansposts,data2: quesposts });
-    }).catch((err1)=>{console.log(err1);})
-      }).catch((err)=>{console.log(err);})
-      
-      
-      
-  
-  
+  const userQuestions = await question.find(filter1);
+
+  const user = User.findOne(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: "error fetching user" });
+    } else {
+      res.status(200).send({
+        success: true,
+        data: result,
+        qc: qc,
+        ac: ac,
+        views: userQuestions?.reduce((n, { views }) => n + views, 0),
+      });
+    }
+  });
 });
 
-const getQuestions = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const questions=question.find({filter},{_id:1,title});
-        res.status(200).send({ success: true, data : questions});
+const getTopposts = asyncHandler(async (req, res) => {
+  try {
+    const userid = req.params.id;
+    const answersagg = [
+      {
+        $lookup: {
+          from: "questions",
+          localField: "questionId",
+          foreignField: "_id",
+          as: "question",
+        },
+      },
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(userid),
+        },
+      },
+      {
+        $project: {
+          question: 1,
+          markedAsRight: 1,
+        },
+      },
+      {
+        $limit: 3,
+      },
+    ];
+    const quesposts = await QuestionDb.find({ userId: userid }).limit(3);
+    const answerposts = await answer.aggregate(answersagg);
+    res.status(200).send({ quesposts, answerposts });
+  } catch (err) {
+    res.status(400).send("error retriving user questions and answers");
   }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching questions" });
+});
 
+const getQuestions = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const questions = question.find({ filter }, { _id: 1, title });
+    res.status(200).send({ success: true, data: questions });
+  } catch {
+    res
+      .status(400)
+      .send({ success: false, message: "error fetching questions" });
   }
-})
-const getAnswers = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const questions=answers.find({filter}).populate(questionId);
-        res.status(200).send({ success: true, data : questions});
+});
+
+const getAnswers = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const questions = answer.find({ filter }).populate(questionId);
+    res.status(200).send({ success: true, data: questions });
+  } catch (err) {
+    res.status(400).send({ success: false, message: "error fetching Answers" });
   }
-  catch{
-        res.status(400).send({ success: false, message: "error fetching Answers" });
+});
 
+const getBookmarks = asyncHandler(async (req, res) => {
+  const userid = req.params.id;
+  filter = { userId: userid };
+  try {
+    const bookmarks = user.find({ filter }, { bookmarks: 1 });
+    res.status(200).send({ success: true, data: bookmarks });
+  } catch {
+    res.status(400).send({ success: false, message: "error fetching Answers" });
   }
-})
-const getBookmarks = asyncHandler(async(req,res)=>{
-  const userid=req.params.id;
-  filter={userId:userid}
-  try{
-        const bookmarks=user.find({filter},{bookmarks:1})
-        res.status(200).send({ success: true, data : bookmarks});
-  }
-  catch{
-        res.status(400).send({ success: false, message : "error fetching Answers" });
-
-  }
-
-})
-
-
-
+});
 
 // Generate JWT
 const generateToken = (id) => {
@@ -272,6 +271,9 @@ module.exports = {
   login,
   getTopposts,
   getAllUsers,
+  getQuestions,
+  getAnswers,
+  getBookmarks,
   getUser,
   signout,
 };

@@ -140,3 +140,30 @@ exports.addTag = (req, res) => {
       res.status(500).send({ message: "some error occured" });
     });
 };
+
+exports.getAllQuestionWithSpecificTag = async (req, res) => {
+  try {
+    const id = req.params.tagName;
+    const checkQuery = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $match: {
+          "tags.id": id,
+        },
+      },
+    ];
+    const tag = await tagsDb.findOne({ _id: id });
+
+    const questions = await QuestionsDb.aggregate(checkQuery);
+    res.send({ questions, tag });
+  } catch (error) {
+    res.json(error.message);
+  }
+};

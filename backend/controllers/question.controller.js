@@ -64,23 +64,54 @@ const addquestion = async (req, res) => {
   const { userId, title, tags, questionbody } = req.body;
 
   try {
+    // check if it has image before saving.
+    const checkQuestionBodyHasImage = questionbody.match(/<img/);
+
     const newQuestion = new Question({
       userId,
       title,
       tags,
       questionbody,
+      waitingForApproval: !!checkQuestionBodyHasImage,
     });
-    // check if it has image
     const result = await newQuestion.save();
-    if (!result) {
-      res.status(400).send({
-        message: "error posting question",
-      });
-    }
-    res.status(200).send({
-      data: result,
-      message: "posted question successfully",
+
+    // add tags to the user profile and update score for the tag.
+    const user = await Users.findOne({ _id: userId }).lean();
+    const userTags = user?.tags; // [{tagId,tagName,tagCount}]
+    tags.forEach(async (tag) => {
+      // check if tag is already present in user profile userTags.
+      const index = userTags.findIndex((x) => x?.tagId?.toString() === tag?.id);
+      // i.e if tag is already present
+      if (index != -1) {
+        await Users.updateOne(
+          {
+            _id: userId,
+            "tags.tagId": tag.id,
+          },
+          {
+            $inc: {
+              "tags.$.tagCount": 1,
+            },
+          }
+        );
+      }
+      // if tag is not present
+      else {
+        const newTag = {
+          tagId: tag?.id,
+          tagName: tag?.name,
+        };
+        userTags.push(newTag);
+        await Users.findOneAndUpdate({ _id: userId, tags: userTags });
+      }
     });
+
+    !result && res.status(400).send({ message: "error posting question" });
+    result &&
+      res
+        .status(200)
+        .send({ data: result, message: "posted question successfully" });
   } catch (err) {
     res.status(400).send({
       message: "error posting question",
@@ -153,6 +184,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: 1 } },
@@ -162,6 +197,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $dec: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -173,6 +212,10 @@ const voteQuestion = async (req, res) => {
         { _id: userId },
         { $inc: { downVoteCount: 1 } }
       );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: -10 } }
+      );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
         { $inc: { votes: -2 } },
@@ -182,6 +225,10 @@ const voteQuestion = async (req, res) => {
       await Users.findOneAndUpdate(
         { _id: userId },
         { $inc: { upVoteCount: 1 } }
+      );
+      await Users.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { reputation: 10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -305,8 +352,61 @@ const addComment = async (req, res) => {
     { comments },
     { new: true }
   );
+
+  const new_log = new Logs({
+    logID: questionId,
+    what: "comment",
+    by: userId,
+    content: commentBody,
+  });
+  await new_log.save();
+
   result && res.status(200).send({ success: true, comments: result?.comments });
   !result && res.status(400).send({ success: false, message: err.message });
+};
+const getPendingQuestions = async (req, res) => {
+  console.log("in pending questions");
+  const filter = { waitingForApproval: true };
+  Question.find(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+const aproove = async (req, res) => {
+  console.log("in aproove");
+  const id = req.params.id;
+  const filter = { _id: id };
+  Question.find(filter, { waitingForApproval: false }, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+const reject = async (req, res) => {
+  console.log("in pending questions");
+  const id = req.params.id;
+  const filter = { _id: id };
+  Question.deleteOne(filter, function (err, result) {
+    if (err) {
+      res.status(400).send({ success: false, message: err.message });
+    } else {
+      console.log(result);
+      res.status(200).send({ success: true, data: result });
+    }
+  });
+};
+
+const getHistories = async (req, res) => {
+  const logID = req.params.id;
+  const logs = await Logs.find({ logID });
+  res.status(200).send({ logs });
 };
 
 module.exports = {
@@ -319,6 +419,10 @@ module.exports = {
   searchQuestionsByUserId,
   searchQuestionsByText,
   addComment,
+  getPendingQuestions,
+  aproove,
+  reject,
+  getHistories,
 };
 
 /*
@@ -327,10 +431,7 @@ whenever user asks the question, we nedd to check if user has that tag already p
 if present we need to increment the count for that tag
 if not we need to add as new tag for the user
 
-2. user upvotes the answer/question, upvotes count should be increased
-3. downvotes the answer/question, downvote count should be increased
-
-4. when user signs in increase count
+4. when user signs in store logged in info.
 
 1. number of questions asked
 2. number of answers answered

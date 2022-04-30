@@ -24,6 +24,12 @@ import BasicDetails from "./components/Profile/BasicDetails/BasicDetails";
 import Addtag from "./components/Admin/Addtag";
 import Aproove from "./components/Admin/Aproove";
 import { connect } from "react-redux";
+import TimeLine from "./components/QuestionOverview/TimeLine";
+import QuestionAnalytics from "./components/Analytics/QuestionAnalytics";
+import TopQuestions from "./components/Analytics/TopQuestions";
+import TopTags from "./components/Analytics/TopTags";
+import HighReputedUsers from "./components/Analytics/HighReputedUsers";
+import LowReputedUsers from "./components/Analytics/LowReputedUsers";
 
 function App({ isAuthenticated }) {
   return (
@@ -46,7 +52,12 @@ function App({ isAuthenticated }) {
             <Route path="questionOverview">
               <Route path=":id" element={<QuestionOverview />} />
             </Route>
-            <Route path="/tagOverview" exact element={<TagOverview />} />
+            <Route path="/tagOverview">
+              <Route path=":id" element={<TagOverview />} />
+            </Route>
+            <Route path="/timeline">
+              <Route path=":id" element={<TimeLine />} />
+            </Route>
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />
@@ -56,31 +67,54 @@ function App({ isAuthenticated }) {
               element={isAuthenticated ? <EditQuestion /> : <SignIn />}
             />
             <Route path="/userProfile/:id" exact element={<ProfilePage />} />
-            <Route path="/Activities" exact element={<Activities />} />
+            <Route path="/Activities/:id" exact element={<Activities />} />
             <Route
-              path="/Questions/Questionstab"
+              path="/Questions/Questionstab/:id"
               exact
               element={<Questionstab />}
             />
-            <Route path="/UserTags/UserTags" exact element={<UserTags />} />
+            <Route path="/UserTags/:id" exact element={<UserTags />} />
             <Route
-              path="/ActivityBadges/ActivityBadges"
+              path="/ActivityBadges/:id"
               exact
               element={<ActivityBadges />}
             />
             <Route
-              path="/Bookmarkstab/Bookmarkstab"
+              path="/Bookmarkstab/Bookmarkstab/:id"
               exact
               element={<Bookmarkstab />}
             />
             <Route
-              path="/Reputation/Reputation"
+              path="/Reputation/Reputation/:id"
               exact
               element={<Reputation />}
             />
             <Route path="/BasicDetails" exact element={<BasicDetails />} />
             <Route path="/Addtag" exact element={<Addtag />} />
             <Route path="/Aproove" exact element={<Aproove />} />
+            <Route path="/timeline" exact element={<TimeLine />} />
+            <Route
+              path="/questionAnalytics"
+              exact
+              element={<QuestionAnalytics />}
+            />
+            <Route
+              path="/topViewedQuestions"
+              exact
+              element={<TopQuestions />}
+            ></Route>
+
+            <Route path="/topTags" exact element={<TopTags />}></Route>
+            <Route
+              path="/highReputedUsers"
+              exact
+              element={<HighReputedUsers />}
+            ></Route>
+            <Route
+              path="/lowReputedUsers"
+              exact
+              element={<LowReputedUsers />}
+            ></Route>
           </Routes>
         </div>
       </main>
