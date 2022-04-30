@@ -117,47 +117,6 @@ function Bookmarkstab() {
                   </h2>
                 </div>
               </div>
-              <div class="flex--item">
-                <div class="d-flex ai-end">
-                  <div class="flex--item s-btn-group js-user-tab-sorts fl-shrink0 md:fl-shrink1">
-                    <a
-                      href="/users/2930622/g-rafael?tab=bookmarks&amp;sort=votes"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort is-selected js-selected"
-                      data-sort="votes"
-                    >
-                      Score
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=bookmarks&amp;sort=activity"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="activity"
-                    >
-                      Activity
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=bookmarks&amp;sort=newest"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="newest"
-                    >
-                      Newest
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=bookmarks&amp;sort=views"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="views"
-                    >
-                      Views
-                    </a>
-                    <a
-                      href="/users/2930622/g-rafael?tab=bookmarks&amp;sort=added"
-                      class="as-center s-btn s-btn__muted s-btn__outlined s-btn__xs js-user-tab-sort"
-                      data-sort="added"
-                    >
-                      Added
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="ba bc-black-100 bar-md">
               <div id="js-post-summaries">
