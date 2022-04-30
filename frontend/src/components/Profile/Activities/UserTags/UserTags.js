@@ -24,15 +24,15 @@ function UserTags() {
   return (
     <div>
       <BasicDetails userdetails={userProfile} />
-      <div class="d-flex mb48">
+      <div className="d-flex mb48">
       <nav
-          class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
+          className="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
-          <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
+          <ul className="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
             <li>
               <a
-                class="s-navigation--item is-selected pr48 ps-relative"
+                className="s-navigation--item is-selected pr48 ps-relative"
                 href={`/Activities/${id}`}
                 title="Answers this user provided"
                 data-shortcut="A"
@@ -42,7 +42,7 @@ function UserTags() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Questions/Questionstab/${id}`}
                 title="Questions this user asked"
                 data-shortcut="Q"
@@ -52,7 +52,7 @@ function UserTags() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/UserTags/${id}`}
                 title="Tags this user has posts in"
                 data-shortcut="T"
@@ -63,7 +63,7 @@ function UserTags() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/ActivityBadges/${id}`}
                 title="Badges this user has earned"
                 data-shortcut="B"
@@ -73,7 +73,7 @@ function UserTags() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Bookmarkstab/Bookmarkstab/${id}`}
                 title="Questions this user has bookmarked"
                 data-shortcut="F"
@@ -84,7 +84,7 @@ function UserTags() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Reputation/${id}`}
                 title="Reputation this user has earned"
                 data-shortcut="R"
@@ -94,35 +94,35 @@ function UserTags() {
             </li>
           </ul>
         </nav>
-        <section class="flex--item fl-grow1 wmx100">
-          <div id="user-tab-tags" class="js-user-tab">
-            <div class="d-flex ai-end jc-space-between mb8 fw-wrap">
-              <div class="flex--item fl-grow1">
-                <div class="d-flex fd-column">
-                  <h2 class="flex--item fs-title mb0">
+        <section className="flex--item fl-grow1 wmx100">
+          <div id="user-tab-tags" className="js-user-tab">
+            <div className="d-flex ai-end jc-space-between mb8 fw-wrap">
+              <div className="flex--item fl-grow1">
+                <div className="d-flex fd-column">
+                  <h2 className="flex--item fs-title mb0">
                     {userProfile?.tags?.length} Tags
                   </h2>
                 </div>
               </div>
             </div>
 
-            <div class="ba bc-black-100 bar-md">
+            <div className="ba bc-black-100 bar-md">
               {userProfile?.tags?.map((tag) => (
-                <div class="p12 bb bc-black-075">
-                  <div class="d-flex ai-center jc-space-between gs16 fw-wrap">
-                    <div class="flex--item ws-nowrap">
+                <div className="p12 bb bc-black-075">
+                  <div className="d-flex ai-center jc-space-between gs16 fw-wrap">
+                    <div className="flex--item ws-nowrap">
                       <a
                         href={`/tagOverview/${tag?.tagId}`}
-                        class="post-tag js-gps-track"
+                        className="post-tag js-gps-track"
                       >
                         {tag?.tagName}
                       </a>
                     </div>
-                    <div class="flex--item">
-                      <div class="d-flex gsx gs16">
-                        <div class="flex--item d-flex ai-center mr-2">
-                          <div class="fs-body3 mr4">{tag?.tagCount}</div>
-                          <div class="fc-light tt-lowercase">Score</div>
+                    <div className="flex--item">
+                      <div className="d-flex gsx gs16">
+                        <div className="flex--item d-flex ai-center mr-2">
+                          <div className="fs-body3 mr4">{tag?.tagCount}</div>
+                          <div className="fc-light tt-lowercase">Score</div>
                         </div>
                       </div>
                     </div>
@@ -132,7 +132,7 @@ function UserTags() {
             </div>
 
             <div>
-              <div class="js-user-tab-paging"></div>
+              <div className="js-user-tab-paging"></div>
             </div>
           </div>
         </section>

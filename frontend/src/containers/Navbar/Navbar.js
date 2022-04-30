@@ -97,36 +97,36 @@ function Navbar({ isAuthenticated, user, reputation }) {
             }}
           />
           <div
-            class="js-search-hints px-4"
+            className="js-search-hints px-4"
             aria-describedby="Tips for searching"
           >
-            <div class="js-search-hints-text d-flex">
-              <div class="flex-grow-1">
-                <div class="mb-3">
-                  <span class="search-criteria mr-2">[tag]</span>
-                  <span class="search-criteria-description">
+            <div className="js-search-hints-text d-flex">
+              <div className="flex-grow-1">
+                <div className="mb-3">
+                  <span className="search-criteria mr-2">[tag]</span>
+                  <span className="search-criteria-description">
                     search within a tag
                   </span>
                 </div>
-                <div class="mb12">
-                  <span class="search-criteria mr-2">user:1234</span>
-                  <span class="search-criteria-description">
+                <div className="mb12">
+                  <span className="search-criteria mr-2">user:1234</span>
+                  <span className="search-criteria-description">
                     search by author
                   </span>
                 </div>
-                <div class="mb12">
-                  <span class="search-criteria mr-2">"words here"</span>
-                  <span class="search-criteria-description">exact phrase</span>
+                <div className="mb12">
+                  <span className="search-criteria mr-2">"words here"</span>
+                  <span className="search-criteria-description">exact phrase</span>
                 </div>
               </div>
-              <div class="flex-grow-1">
-                <div class="mb-3">
-                  <span class="search-criteria mr-2">is:question</span>
-                  <span class="search-criteria-description">type of post</span>
+              <div className="flex-grow-1">
+                <div className="mb-3">
+                  <span className="search-criteria mr-2">is:question</span>
+                  <span className="search-criteria-description">type of post</span>
                 </div>
-                <div class="">
-                  <span class="search-criteria mr-2">isaccepted:yes</span>
-                  <span class="search-criteria-description">
+                <div className="">
+                  <span className="search-criteria mr-2">isaccepted:yes</span>
+                  <span className="search-criteria-description">
                     search within status
                   </span>
                 </div>

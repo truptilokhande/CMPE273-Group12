@@ -43,15 +43,15 @@ function ActivityBadges() {
   return (
     <div>
       <BasicDetails userdetails={userProfile} />
-      <div class="d-flex mb48">
+      <div className="d-flex mb48">
         <nav
-          class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
+          className="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
-          <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
+          <ul className="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
             <li>
               <a
-                class="s-navigation--item is-selected pr48 ps-relative"
+                className="s-navigation--item is-selected pr48 ps-relative"
                 href={`/Activities/${id}`}
                 title="Answers this user provided"
                 data-shortcut="A"
@@ -61,7 +61,7 @@ function ActivityBadges() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Questions/Questionstab/${id}`}
                 title="Questions this user asked"
                 data-shortcut="Q"
@@ -71,7 +71,7 @@ function ActivityBadges() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/UserTags/${id}`}
                 title="Tags this user has posts in"
                 data-shortcut="T"
@@ -82,7 +82,7 @@ function ActivityBadges() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/ActivityBadges/${id}`}
                 title="Badges this user has earned"
                 data-shortcut="B"
@@ -92,7 +92,7 @@ function ActivityBadges() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Bookmarkstab/Bookmarkstab/${id}`}
                 title="Questions this user has bookmarked"
                 data-shortcut="F"
@@ -103,7 +103,7 @@ function ActivityBadges() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Reputation/${id}`}
                 title="Reputation this user has earned"
                 data-shortcut="R"
@@ -113,16 +113,16 @@ function ActivityBadges() {
             </li>
           </ul>
         </nav>
-        <section class="flex--item fl-grow1 wmx100">
-          <div id="user-tab-badges" class="js-user-tab">
-            <div class="mb-3">
+        <section className="flex--item fl-grow1 wmx100">
+          <div id="user-tab-badges" className="js-user-tab">
+            <div className="mb-3">
               <h2>{userTags.length} Badges</h2>
             </div>
 
-            <div class="row">
+            <div className="row">
               {userTags?.map((userTag) => {
                 return (
-                  <div class="col-2">
+                  <div className="col-2">
                     <a href={`/tagOverview/${userTag?.tagId}`} className="tag">
                       {userTag?.tagCount <= 10 ? (
                         <span className="badge3">●</span>
@@ -146,7 +146,7 @@ function ActivityBadges() {
               silverBadges > 2 &&
               silverBadges < 5 &&
               goldBadges >= 5 ? (
-                <div class="col-2">
+                <div className="col-2">
                   <a href="/" className="tag">
                     curious
                   </a>
@@ -156,23 +156,23 @@ function ActivityBadges() {
               silverBadges > 2 &&
               silverBadges < 5 &&
               goldBadges >= 5 ? (
-                <div class="col-2">
+                <div className="col-2">
                   <a href="/" className="tag">
                     Helpfulness
                   </a>
                 </div>
               ) : null}
-              <div class="col-2">
+              <div className="col-2">
                 <a href="/" className="tag">
                   popular
                 </a>
               </div>
-              <div class="col-2">
+              <div className="col-2">
                 <a href="/" className="tag">
                   sportsmanship
                 </a>
               </div>
-              <div class="col-2">
+              <div className="col-2">
                 <a href="/" className="tag">
                   critic
                 </a>
@@ -180,7 +180,7 @@ function ActivityBadges() {
             </div>
 
             <div>
-              <div class="js-user-tab-paging"></div>
+              <div className="js-user-tab-paging"></div>
             </div>
           </div>
         </section>
