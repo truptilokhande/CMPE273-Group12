@@ -11,14 +11,31 @@ function ActivityBadges() {
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
 
+  const [curious, setCurious] = useState();
+  const [helpfulness, setHelpfulness] = useState();
+  const [popular, setPopular] = useState(0);
+  const [sportsmanship, setSportsmanship] = useState(0);
+  const [critic, setCritic] = useState(0);
+  const [notable, setNotable] = useState(0);
+  const [famous, setFamous] = useState(0);
+  const [pundit, setPundit] = useState(0);
+
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`)
       .then((response) => {
+        console.log(response?.data?.data);
         setUserProfile(response?.data?.data);
         setUserTags(response?.data?.data?.tags);
+        setCurious(response?.data?.qc);
+        setHelpfulness(response?.data?.ac);
+        setPopular(response?.data?.data?.reputation);
+        setSportsmanship(response?.data?.data?.upVoteCount);
+        setCritic(response?.data?.data?.downVoteCount);
+        setNotable(response?.data?.views);
+        setFamous(response?.data?.views);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -120,65 +137,124 @@ function ActivityBadges() {
             </div>
 
             <div className="row">
-              {userTags?.map((userTag) => {
-                return (
-                  <div className="col-2">
-                    <a href={`/tagOverview/${userTag?.tagId}`} className="tag">
-                      {userTag?.tagCount <= 10 ? (
-                        <span className="badge3">●</span>
-                      ) : null}
-                      {userTag?.tagCount >= 10 && userTag?.tagCount <= 15 ? (
-                        <span className="badge2">●</span>
-                      ) : null}
-                      {userTag?.tagCount >= 10 &&
-                      userTag?.tagCount >= 15 &&
-                      userTag?.tagCount <= 20 ? (
-                        <span className="badge1">●</span>
-                      ) : null}
-                      <span className="ml-1">{userTag?.tagName}</span>
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="row">
-              {bronzeBadges <= 2 &&
-              silverBadges > 2 &&
-              silverBadges < 5 &&
-              goldBadges >= 5 ? (
-                <div className="col-2">
-                  <a href="/" className="tag">
-                    curious
-                  </a>
-                </div>
-              ) : null}
-              {bronzeBadges <= 2 &&
-              silverBadges > 2 &&
-              silverBadges < 5 &&
-              goldBadges >= 5 ? (
-                <div className="col-2">
-                  <a href="/" className="tag">
-                    Helpfulness
-                  </a>
-                </div>
-              ) : null}
               <div className="col-2">
                 <a href="/" className="tag">
-                  popular
+                  {curious <= 2 ? <span className="badge3">●</span> : null}
+                  {curious > 2 && curious < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {curious >= 5 ? <span className="badge1">●</span> : null}
+                  Curious
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {helpfulness <= 2 ? <span className="badge3">●</span> : null}
+                  {helpfulness > 2 && helpfulness < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {helpfulness >= 5 ? <span className="badge1">●</span> : null}
+                  Helpfulness
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {popular <= 2 ? <span className="badge3">●</span> : null}
+                  {popular > 2 && popular < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {popular >= 5 ? <span className="badge1">●</span> : null}
+                  Popular
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {sportsmanship <= 2 ? (
+                    <span className="badge3">●</span>
+                  ) : null}
+                  {sportsmanship > 2 && sportsmanship < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {sportsmanship >= 5 ? (
+                    <span className="badge1">●</span>
+                  ) : null}
+                  Sportsmanship
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {critic <= 2 ? <span className="badge3">●</span> : null}
+                  {critic > 2 && critic < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {critic >= 5 ? <span className="badge1">●</span> : null}
+                  Critic
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {notable <= 2 ? <span className="badge3">●</span> : null}
+                  {notable > 2 && notable < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {notable >= 5 && notable <= 15 ? (
+                    <span className="badge1">●</span>
+                  ) : null}
+                  Notable Question
+                </a>
+              </div>
+
+              <div className="col-2">
+                <a href="/" className="tag">
+                  {famous > 15 ? (
+                    <span className="badge1">●</span>
+                  ) : (
+                    <span className="badge3">●</span>
+                  )}
+                  Famous Question
                 </a>
               </div>
               <div className="col-2">
                 <a href="/" className="tag">
-                  sportsmanship
+                  {pundit <= 2 ? <span className="badge3">●</span> : null}
+                  {pundit > 2 && pundit < 5 ? (
+                    <span className="badge2">●</span>
+                  ) : null}
+                  {pundit >= 5 ? <span className="badge1">●</span> : null}
+                  Pundit
                 </a>
               </div>
               <div className="col-2">
-                <a href="/" className="tag">
-                  critic
-                </a>
+                {userTags?.map((userTag) => {
+                  return (
+                    <div className="col-2">
+                      <a
+                        href={`/tagOverview/${userTag?.tagId}`}
+                        className="tag"
+                      >
+                        {userTag?.tagCount <= 10 ? (
+                          <span className="badge3">●</span>
+                        ) : null}
+                        {userTag?.tagCount >= 10 && userTag?.tagCount <= 15 ? (
+                          <span className="badge2">●</span>
+                        ) : null}
+                        {userTag?.tagCount > 20 ? (
+                          <span className="badge1">●</span>
+                        ) : null}
+                        <span className="ml-1">{userTag?.tagName}</span>
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
+            {/* <div className="row"></div> */}
             <div>
               <div className="js-user-tab-paging"></div>
             </div>
