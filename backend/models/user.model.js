@@ -15,7 +15,6 @@ const userTagSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
-    _id: false,
   },
   {
     timestamps: false,
