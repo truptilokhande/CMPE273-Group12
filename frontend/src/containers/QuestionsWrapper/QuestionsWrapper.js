@@ -4,10 +4,12 @@ import RelativeTime from "@yaireo/relative-time";
 function QuestionsWrapper({ ...props }) {
   const relativeTime = new RelativeTime();
   const getTime = (createdTime, updatedTime) => {
-    if (new Date(createdTime) < new Date(updatedTime)) {
-      return relativeTime.from(new Date(updatedTime));
+    if (createdTime && updatedTime) {
+      if (new Date(createdTime) < new Date(updatedTime)) {
+        return relativeTime.from(new Date(updatedTime));
+      }
+      return relativeTime.from(new Date(createdTime));
     }
-    return relativeTime.from(new Date(createdTime));
   };
   return (
     <>
