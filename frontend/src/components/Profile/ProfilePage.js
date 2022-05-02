@@ -8,24 +8,29 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
+import { Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 
 const ProfilePage = ({user}) => {
+  console.log(user)
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
   const [views, setViews] = useState();
-
+  const [creatednewchat,setNewChat] = useState(false)
   const [userTags, setUserTags] = useState([]);
 
   const [goldBadges, setGoldBadges] = useState([]);
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
+  const [receivername, setReceiverName] = useState("");
   const [sender,setSenderID] = useState(user?._id);
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
+    setReceiverID(id)
+    console.log("rec",id)
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`)
       .then((response) => {
@@ -71,16 +76,21 @@ const ProfilePage = ({user}) => {
       });
   }, []);
   function startnewchat() {
-       console.log(receiver,"sender",sender)
+       console.log("receiid",receiver,"sender",sender,user.name,userProfile.name,user,userProfile)
+
        axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
       /*    change this to sender ID from store */
             senderID: sender,
             receiverID:receiver,
+            receiverName:userProfile.name,
+            senderName:user.name,
             message:"",
             
             })
             .then(res =>{
               console.log("%%%",res)
+              setNewChat(true)
+              console.log("%%%%%%%%%%%%%%%%%%%%%%%%%",creatednewchat)
             }).catch(err => {console.log(err)})
         
     
@@ -90,13 +100,14 @@ const ProfilePage = ({user}) => {
       <BasicDetails userdetails={userProfile}></BasicDetails>
       {/* start a new chat block */}
       <div>
-      <input
+      {/* <input
           type="text" data-testid="username" 
           onChange={(event) => {
-            setReceiverID(event.target.value);
+            setReceiverName(event.target.value);
           }} placeholder="receiverID"
-        ></input>
+        ></input> */}
         <button onClick={startnewchat}>Start Chat</button>
+        {creatednewchat&&<Navigate to="/allchats" />} 
             <br></br>
       </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">

@@ -39,6 +39,8 @@ res.send(err)
 exports.sendMessage = async (req, res) =>  {
     const senderID = req.body.senderID;
     const receiverID = req.body.receiverID;
+    const receiverName = req.body.receiverName;
+    const senderName = req.body.senderName;
     const mainMessage = req.body.message;
     const timestamp = Date.now();
     console.log(timestamp);
@@ -52,9 +54,11 @@ exports.sendMessage = async (req, res) =>  {
           console.log("create new chat room");
           const chatRoomID = Date.now();
           const users = [senderID, receiverID];
+          const usernames = [senderName, receiverName];
           const chatRoom = {
             chatRoomID,
             users,
+            usernames,
           };
           const newChatRoom = new Chatroom(chatRoom);
           newChatRoom
@@ -72,16 +76,24 @@ exports.sendMessage = async (req, res) =>  {
                 message,
                 timestamp,
               };
-              const saveMessage = new Message(sentmessage);
-              saveMessage
-                .save()
-                .then((result) => {
-                  console.log(result);
-                  res.status(200).send("Message saved.");
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
+              if(message){
+                const saveMessage = new Message(sentmessage);
+                saveMessage
+                  .save()
+                  .then((result) => {
+                    console.log(result);
+                    res.status(200).send("Message saved.");
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+
+              }
+              else{
+              res.status(200).send("No Message Received");
+
+              }
+                
             })
             .catch((err) => {
               console.log(err);
@@ -100,16 +112,24 @@ exports.sendMessage = async (req, res) =>  {
             message,
             timestamp,
           };
-          const saveMessage = new Message(sentmessage);
-          saveMessage
-            .save()
-            .then((result) => {
-              console.log(result);
-              res.status(200).send("Message saved.");
-            })
-            .catch((err3) => {
-              res.status(500).send(err3);
-            });
+          if(message){
+            const saveMessage = new Message(sentmessage);
+            saveMessage
+              .save()
+              .then((result) => {
+                console.log(result);
+                res.status(200).send("Message saved.");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+
+          }
+          else{
+          res.status(200).send("No Message Received");
+
+          }
+
         }
       })
       .catch((err) => {
