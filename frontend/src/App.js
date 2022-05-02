@@ -23,6 +23,10 @@ import Reputation from "./components/Profile/Activities/Reputation/Reputation";
 import BasicDetails from "./components/Profile/BasicDetails/BasicDetails";
 import Addtag from "./components/Admin/Addtag";
 import Aproove from "./components/Admin/Aproove";
+import Chat from "./components/Messages/Chat";
+import AllChats from "./components/Messages/AllChats";
+// import Footer from './containers/Footer/Footer';
+// import Footer from './containers/Footer/Footer';
 import { connect } from "react-redux";
 import TimeLine from "./components/QuestionOverview/TimeLine";
 import QuestionAnalytics from "./components/Analytics/QuestionAnalytics";
@@ -61,6 +65,19 @@ function App({ isAuthenticated }) {
             <Route path="/search" exact element={<SearchPage />} />
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />
+            <Route path="/edit-question" exact element={<EditQuestion />} />
+            <Route path="/userProfile" exact element={<ProfilePage/>}/>
+              <Route path="/Activities" exact element={<Activities/>}/>
+              <Route path="/Questions/Questionstab" exact element={<Questionstab/>}/>
+              <Route path="/UserTags/UserTags" exact element={<UserTags/>}/>
+              <Route path="/ActivityBadges/ActivityBadges" exact element={<ActivityBadges/>}/>
+              <Route path="/Bookmarkstab/Bookmarkstab" exact element={<Bookmarkstab/>}/>
+              <Route path="/Reputation/Reputation" exact element={<Reputation/>}/>
+              <Route path="/BasicDetails" exact element={<BasicDetails/>}/>
+              <Route path="/Addtag" exact element={<Addtag/>}/>
+              <Route path="/Aproove" exact element={<Aproove/>}/>
+              <Route path="/chat" exact element={<Chat/>}/>
+              <Route path="/allchats" exact element={<AllChats/>}/>
             <Route
               path="/edit-question"
               exact

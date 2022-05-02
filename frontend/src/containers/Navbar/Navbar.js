@@ -165,7 +165,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
                 </div>
               </li>
               <li className="mx-3 align-self-end mt-2">
-                <a href="/myMessages" className="navbar-messages">
+                <a href="/allchats" className="navbar-messages">
                   <svg
                     className="iconInbox"
                     width="20"

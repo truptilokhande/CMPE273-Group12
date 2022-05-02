@@ -17,4 +17,6 @@ router.post("/aproove/:id", questionController.aproove);
 router.post("/reject/:id", questionController.reject);
 router.get("/getHistories/:id", questionController.getHistories);
 
+router.post("/editquestion", questionController.editquestion);
+router.get("/getquestion/:questionId", questionController.getquestion);
 module.exports = router;

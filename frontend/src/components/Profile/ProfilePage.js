@@ -8,8 +8,9 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
+import { connect } from "react-redux";
 
-const ProfilePage = () => {
+const ProfilePage = ({user}) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
@@ -20,7 +21,8 @@ const ProfilePage = () => {
   const [goldBadges, setGoldBadges] = useState([]);
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
-
+  const [receiver, setReceiverID] = useState("");
+  const [sender,setSenderID] = useState(user?._id);
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
@@ -68,10 +70,35 @@ const ProfilePage = () => {
         throw err;
       });
   }, []);
-
+  function startnewchat() {
+       console.log(receiver,"sender",sender)
+       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
+      /*    change this to sender ID from store */
+            senderID: sender,
+            receiverID:receiver,
+            message:"",
+            
+            })
+            .then(res =>{
+              console.log("%%%",res)
+            }).catch(err => {console.log(err)})
+        
+    
+      };
   return (
     <div>
       <BasicDetails userdetails={userProfile}></BasicDetails>
+      {/* start a new chat block */}
+      <div>
+      <input
+          type="text" data-testid="username" 
+          onChange={(event) => {
+            setReceiverID(event.target.value);
+          }} placeholder="receiverID"
+        ></input>
+        <button onClick={startnewchat}>Start Chat</button>
+            <br></br>
+      </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
         <div className="m-3">
           <div className="fs-title mb8">Stats</div>
@@ -283,5 +310,8 @@ const ProfilePage = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
 
-export default ProfilePage;
+export default connect(mapStateToProps, null)(ProfilePage);
