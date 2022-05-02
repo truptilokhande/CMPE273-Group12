@@ -2,24 +2,27 @@
 import { useEffect } from 'react';
 import axios from "axios";
 import { useState } from "react";
-
+import { connect } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import "./Chats.css";
-//var allchats_array=[{chatRoomID:1,users:["user1","user2"]},{chatRoomID:2,users:["user3","user1"]},{chatRoomID:3,users:["user1","user4"]}]
+import connection from "../../config.json";
 
 import ChatListItems from './ChatListItems';
 console.log("chat")
 var my_id = "1"
-function AllChats(){
-  console.log("chat")
+function AllChats({ user}){
+  console.log("chat",user._id,typeof(user._id))
     const [allchats_array, set_allchats_array] = useState([]);    
+    const [no_chats, set_nochats] = useState("");  
     useEffect(() => {
-        axios.post('http://localhost:3001'+'/api/messages/getChatrooms',{
-        senderID: "1",
+        axios.post(`${connection.connectionURL}/api/messages/getChatrooms`,{
+        senderID: user._id,
         })
         .then(res =>{
           console.log("allchats",res)
+          {res.data=="No chatrooms available"?set_nochats(res.data):
           set_allchats_array(res.data)
+        }
         }).catch(err => {console.log(err)})
     
     
@@ -42,22 +45,18 @@ function AllChats(){
       <br></br>
     <form >
     <ul className='list-group mb-4'>
- 
-
+ <div>{no_chats}</div>
 
  <div className="block col-2" >
- <table class="center">
- <tr>
-
-         
- 
- </tr>
+    
+<table class="center">
 
  { allchats_array.map(item => (
    <ChatListItems users={item.users} senderID={my_id}/>
 ))} 
 </table>   
-</div> 
+</div>
+
 
 
 
@@ -69,4 +68,8 @@ function AllChats(){
   
 }
 
-export default AllChats;
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
+
+export default connect(mapStateToProps, null)(AllChats);

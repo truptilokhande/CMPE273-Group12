@@ -12,8 +12,8 @@
     height:390px;
     background-color:rgb(51, 58, 51);
     padding-top:25px;
-    padding-left:60px;
-    padding-right:15px;
+    padding-left:20px;
+    padding-right:25px;
     margin-left: 150px;
 }
 .messagebox {
@@ -34,5 +34,5 @@
 }
 .receiver {
   
-    padding-left:150px;
+    padding-left:180px;
 }

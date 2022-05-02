@@ -2,6 +2,8 @@ import React from 'react'
 import {useState,useEffect} from 'react'
 import { Navigate } from 'react-router-dom';
 import axios from "axios";
+import connection from "../../config.json";
+
 function ChatListItems(props){
   const [receiverID, setReceiverID] = useState("");
   const [receivername, setReceiverName] = useState("");
@@ -11,7 +13,7 @@ function ChatListItems(props){
         {props.users[0]==props.senderID ? setReceiverID(props.users[1]) :setReceiverID(props.users[0])}
     }, 1);
     console.log(props.users,props.senderID,receiverID)
-    axios.post('http://localhost:3001'+'/api/messages/getreceivernames',{
+    axios.post(`${connection.connectionURL}/api/messages/getreceivernames`,{
         receiverID:receiverID,
         
         })

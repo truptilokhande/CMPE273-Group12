@@ -8,8 +8,9 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
+import { connect } from "react-redux";
 
-const ProfilePage = () => {
+const ProfilePage = ({user}) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
@@ -21,6 +22,7 @@ const ProfilePage = () => {
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
+  const [sender,setSenderID] = useState(user?._id);
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
@@ -69,10 +71,10 @@ const ProfilePage = () => {
       });
   }, []);
   function startnewchat() {
-       console.log(receiver)
-       axios.post('http://localhost:3001'+'/api/messages/sendMessage',{
+       console.log(receiver,"sender",sender)
+       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
       /*    change this to sender ID from store */
-            senderID: "1",
+            senderID: sender,
             receiverID:receiver,
             message:"",
             
@@ -308,5 +310,8 @@ const ProfilePage = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
 
-export default ProfilePage;
+export default connect(mapStateToProps, null)(ProfilePage);

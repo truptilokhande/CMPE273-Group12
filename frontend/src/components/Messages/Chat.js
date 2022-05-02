@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import {Link} from 'react-router-dom';
 import "./Chats.css";
+import connection from "../../config.json";
 //var message_array=[{senderID:1,receiverID:2,message:"hi",timestamp:"123"},{senderID:2,receiverID:1,message:"hello",timestamp:"123"},{senderID:1,receiverID:2,message:"thx",timestamp:"123"}]
 
 function Chat(){
@@ -11,9 +12,9 @@ function Chat(){
     const senderID = localStorage.getItem("sender");
     const receiverID = localStorage.getItem("receiver");
     useEffect(() => {
-        axios.post('http://localhost:3001'+'/api/messages/getMessages',{
-        senderID: senderID,
-        receiverID:receiverID,
+        axios.post(`${connection.connectionURL}/api/messages/getMessages`,{
+        senderID: receiverID,
+        receiverID:senderID,
         
         })
         .then(res =>{
@@ -27,9 +28,9 @@ console.log(message_array)
 function sendnewmessage(e){
     e.preventDefault();
 console.log(message_text)
-    axios.post('http://localhost:3001'+'/api/messages/sendMessage',{
-        senderID: senderID,
-        receiverID:receiverID,
+    axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
+        senderID: receiverID,
+        receiverID:senderID,
         message:message_text,
         
         })
@@ -67,7 +68,7 @@ console.log(message_text)
  <tr> 
     {item.senderID=="1" ?<div class="sender"> <td style={{textAlign: "left",}}><span  style={{
         backgroundColor:  'white',borderRadius: '5px',width: "900px",padding: "10px"
-      }}>{item.message}<br></br></span></td></div>  :<div class="receiver"><td style={{textAlign: "right",}}><span  style={{
+      }}>{item.message}<br></br></span></td></div>  :<div class="receiver"><td style={{textAlign: "right",}}><br></br><span  style={{
         backgroundColor:  'cornsilk',borderRadius: '5px',padding: "10px"
       }}>{item.message}<br></br></span></td></div> }
 
