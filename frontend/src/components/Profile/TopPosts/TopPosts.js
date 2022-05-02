@@ -63,8 +63,8 @@ function TopPosts(user) {
   return (
     <div className="top-posts">
       <div className="d-flex flex-row">
-        <section class="flex--item fl-grow1 wmx100">
-          <div id="user-tab-answers" class="js-user-tab">
+        <section className="flex--item fl-grow1 wmx100">
+          <div id="user-tab-answers" className="js-user-tab">
             <div className="row flex jc-space-between flex-row">
               <div
                 className="d-flex flex-row filter-btn-wrappers my-3 ml-3"
@@ -128,25 +128,25 @@ function TopPosts(user) {
                 </div>
               </div>
             </div>
-            <div class="ba bc-black-100 bar-md mb-4">
+            <div className="ba bc-black-100 bar-md mb-4">
               <div id="js-post-summaries">
                 {questions?.map((post) => (
                   <div
                     id="answer-id-30359308"
-                    class="s-post-summary s-post-summary__minimal js-post-summary"
+                    className="s-post-summary s-post-summary__minimal js-post-summary"
                   >
-                    <div class="s-post-summary--stats js-post-summary-stats w-auto">
-                      <div class="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
-                        <span class="s-post-summary--stats-item-number count">
+                    <div className="s-post-summary--stats js-post-summary-stats w-auto">
+                      <div className="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
+                        <span className="s-post-summary--stats-item-number count">
                           {post?.votes || post?.question?.[0]?.votes || 0}
                         </span>
                       </div>
                     </div>
-                    <div class="s-post-summary--content">
-                      <h3 class="s-post-summary--content-title">
+                    <div className="s-post-summary--content">
+                      <h3 className="s-post-summary--content-title">
                         <a
                           href="/questions/123198/how-to-copy-files/30359308#30359308"
-                          class="answer-hyperlink "
+                          className="answer-hyperlink "
                         >
                           {post?.title || post?.question?.[0]?.title}
                         </a>

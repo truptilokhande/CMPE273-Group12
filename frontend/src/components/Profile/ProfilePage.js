@@ -8,8 +8,9 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
+import { connect } from "react-redux";
 
-const ProfilePage = () => {
+const ProfilePage = ({user}) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
@@ -20,7 +21,8 @@ const ProfilePage = () => {
   const [goldBadges, setGoldBadges] = useState([]);
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
-
+  const [receiver, setReceiverID] = useState("");
+  const [sender,setSenderID] = useState(user?._id);
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
@@ -68,29 +70,54 @@ const ProfilePage = () => {
         throw err;
       });
   }, []);
-
+  function startnewchat() {
+       console.log(receiver,"sender",sender)
+       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
+      /*    change this to sender ID from store */
+            senderID: sender,
+            receiverID:receiver,
+            message:"",
+            
+            })
+            .then(res =>{
+              console.log("%%%",res)
+            }).catch(err => {console.log(err)})
+        
+    
+      };
   return (
     <div>
       <BasicDetails userdetails={userProfile}></BasicDetails>
+      {/* start a new chat block */}
+      <div>
+      <input
+          type="text" data-testid="username" 
+          onChange={(event) => {
+            setReceiverID(event.target.value);
+          }} placeholder="receiverID"
+        ></input>
+        <button onClick={startnewchat}>Start Chat</button>
+            <br></br>
+      </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
         <div className="m-3">
-          <div class="fs-title mb8">Stats</div>
-          <div class="s-card fc-light bar-md">
-            <div class="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
-              <div class="flex--item md:fl-auto">
-                <div class="fs-body3 fc-dark">{userProfile?.reputation}</div>
+          <div className="fs-title mb8">Stats</div>
+          <div className="s-card fc-light bar-md">
+            <div className="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
+              <div className="flex--item md:fl-auto">
+                <div className="fs-body3 fc-dark">{userProfile?.reputation}</div>
                 reputation
               </div>
-              <div class="flex--item md:fl-auto">
-                <div class="fs-body3 fc-dark">{views}</div>
+              <div className="flex--item md:fl-auto">
+                <div className="fs-body3 fc-dark">{views}</div>
                 reached
               </div>
-              <div class="flex--item md:fl-auto">
-                <div class="fs-body3 fc-dark">{answerCount}</div>
+              <div className="flex--item md:fl-auto">
+                <div className="fs-body3 fc-dark">{answerCount}</div>
                 answers
               </div>
-              <div class="flex--item md:fl-auto">
-                <div class="fs-body3 fc-dark">{questionscount}</div>
+              <div className="flex--item md:fl-auto">
+                <div className="fs-body3 fc-dark">{questionscount}</div>
                 questions
               </div>
             </div>
@@ -104,50 +131,50 @@ const ProfilePage = () => {
               <button className="editdetbutton">edit details</button>
             </div>
           </div>
-          <div class="grid--item">
-            <div class="d-flex ai-center jc-space-between mb8">
-              <div class="flex--item fs-title">Badges</div>
+          <div className="grid--item">
+            <div className="d-flex ai-center jc-space-between mb8">
+              <div className="flex--item fs-title">Badges</div>
               <a
                 href="/users/8690857/drew-reese?tab=badges"
-                class="s-link s-link__muted flex--item js-gps-track"
+                className="s-link s-link__muted flex--item js-gps-track"
                 data-gps-track="profile_link.click({ target: 1, type: 2 })"
               >
                 View all badges
               </a>
             </div>
 
-            <div class="d-flex flex__fl-equal fw-wrap gs24">
-              <div class="flex--item s-card bar-md">
-                <div class="d-flex fd-column jc-space-between h100 g12">
-                  <div class="d-flex ai-center">
-                    <div class="flex--item mr12">
+            <div className="d-flex flex__fl-equal fw-wrap gs24">
+              <div className="flex--item s-card bar-md">
+                <div className="d-flex fd-column jc-space-between h100 g12">
+                  <div className="d-flex ai-center">
+                    <div className="flex--item mr12">
                       <img
                         src={goldTag}
                         style={{ height: "48px", width: "48px" }}
                       ></img>
                     </div>
-                    <div class="flex--item fl1">
-                      <div class="fs-title fw-bold fc-black-800">
+                    <div className="flex--item fl1">
+                      <div className="fs-title fw-bold fc-black-800">
                         {goldBadges.length}
                       </div>
-                      <div class="fs-caption">gold badges</div>
+                      <div className="fs-caption">gold badges</div>
                     </div>
                   </div>
-                  <div class="flex--item mt-auto">
-                    <ul class="list-reset d-grid g8">
+                  <div className="flex--item mt-auto">
+                    <ul className="list-reset d-grid g8">
                       {goldBadges?.map((goldTag) => {
                         return (
-                          <li class="d-flex ai-center">
+                          <li className="d-flex ai-center">
                             <a
                               href={`/tagOverview/${goldTag?.tagId}`}
-                              class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
+                              className="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
                               <span className="badge1">●</span>
-                              <div class="d-inline-block truncate ml-1">
+                              <div className="d-inline-block truncate ml-1">
                                 {goldTag.tagName}
                               </div>
                             </a>
-                            {/* <div class="flex--item ml-auto fc-medium fs-fine ws-nowrap">
+                            {/* <div className="flex--item ml-auto fc-medium fs-fine ws-nowrap">
                               Mar 17
                             </div> */}
                           </li>
@@ -157,37 +184,37 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              <div class="flex--item s-card bar-md">
-                <div class="d-flex fd-column jc-space-between h100 g12">
-                  <div class="d-flex ai-center">
-                    <div class="flex--item mr12">
+              <div className="flex--item s-card bar-md">
+                <div className="d-flex fd-column jc-space-between h100 g12">
+                  <div className="d-flex ai-center">
+                    <div className="flex--item mr12">
                       <img
                         src={silverTag}
                         style={{ height: "48px", width: "48px" }}
                       ></img>
                     </div>
-                    <div class="flex--item fl1">
-                      <div class="fs-title fw-bold fc-black-800">
+                    <div className="flex--item fl1">
+                      <div className="fs-title fw-bold fc-black-800">
                         {silverBadges.length}
                       </div>
-                      <div class="fs-caption">silver badges</div>
+                      <div className="fs-caption">silver badges</div>
                     </div>
                   </div>
-                  <div class="flex--item mt-auto">
-                    <ul class="list-reset d-grid g8">
+                  <div className="flex--item mt-auto">
+                    <ul className="list-reset d-grid g8">
                       {silverBadges?.map((silverTag) => {
                         return (
-                          <li class="d-flex ai-center">
+                          <li className="d-flex ai-center">
                             <a
                               href={`/tagOverview/${silverTag?.tagId}`}
-                              class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
+                              className="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
                               <span className="badge2">●</span>
-                              <div class="d-inline-block truncate ml-1">
+                              <div className="d-inline-block truncate ml-1">
                                 {silverTag.tagName}
                               </div>
                             </a>
-                            {/* <div class="flex--item ml-auto fc-medium fs-fine ws-nowrap">
+                            {/* <div className="flex--item ml-auto fc-medium fs-fine ws-nowrap">
                               Dec 22
                             </div> */}
                           </li>
@@ -197,37 +224,37 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              <div class="flex--item s-card bar-md">
-                <div class="d-flex fd-column jc-space-between h100 g12">
-                  <div class="d-flex ai-center">
-                    <div class="flex--item mr12">
+              <div className="flex--item s-card bar-md">
+                <div className="d-flex fd-column jc-space-between h100 g12">
+                  <div className="d-flex ai-center">
+                    <div className="flex--item mr12">
                       <img
                         src={bronzeTag}
                         style={{ height: "48px", width: "48px" }}
                       ></img>
                     </div>
-                    <div class="flex--item fl1">
-                      <div class="fs-title fw-bold fc-black-800">
+                    <div className="flex--item fl1">
+                      <div className="fs-title fw-bold fc-black-800">
                         {bronzeBadges.length}
                       </div>
-                      <div class="fs-caption">bronze badges</div>
+                      <div className="fs-caption">bronze badges</div>
                     </div>
                   </div>
-                  <div class="flex--item mt-auto">
-                    <ul class="list-reset d-grid g8">
+                  <div className="flex--item mt-auto">
+                    <ul className="list-reset d-grid g8">
                       {bronzeBadges?.map((bronzeTag) => {
                         return (
-                          <li class="d-flex ai-center">
+                          <li className="d-flex ai-center">
                             <a
                               href={`/tagOverview/${bronzeTag?.tagId}`}
-                              class="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
+                              className="badge-tag d-flex ai-center m0 mr4 lh-md fs-fine js-gps-track"
                             >
                               <span className="badge3">●</span>
-                              <div class="d-inline-block truncate ml-1">
+                              <div className="d-inline-block truncate ml-1">
                                 {bronzeTag.tagName}
                               </div>
                             </a>
-                            {/* <div class="flex--item ml-auto fc-medium fs-fine ws-nowrap">
+                            {/* <div className="flex--item ml-auto fc-medium fs-fine ws-nowrap">
                               Jul 22
                             </div> */}
                           </li>
@@ -239,36 +266,36 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
-          <div id="top-tags" class="top-tags grid--item">
-            <div class="d-flex ai-center jc-space-between mb8">
-              <div class="flex--item fs-title">Top tags</div>
-              <a href="/tags" class="s-link s-link__muted js-gps-track">
+          <div id="top-tags" className="top-tags grid--item">
+            <div className="d-flex ai-center jc-space-between mb8">
+              <div className="flex--item fs-title">Top tags</div>
+              <a href="/tags" className="s-link s-link__muted js-gps-track">
                 View all tags
               </a>
             </div>
-            <div class="s-card bar-md p0 w-100">
+            <div className="s-card bar-md p0 w-100">
               {userTags.map((tag) => (
-                <div class="p12 bb bc-black-075">
-                  <div class="d-flex ai-center gs12 fw-wrap">
-                    <div class="flex--item ws-nowrap">
+                <div className="p12 bb bc-black-075">
+                  <div className="d-flex ai-center gs12 fw-wrap">
+                    <div className="flex--item ws-nowrap">
                       <a
                         href={`/tagOverview/${tag?.tagId}`}
-                        class="s-tag js-gps-track"
+                        className="s-tag js-gps-track"
                       >
                         {tag?.tagName}
                       </a>
                       <a
                         href="/help/badges/5357/reactjs"
-                        class="badge-tag bg-transparent bc-transparent m0"
+                        className="badge-tag bg-transparent bc-transparent m0"
                       >
-                        <span class="badge1"></span>
+                        <span className="badge1"></span>
                       </a>
                     </div>
-                    <div class="flex--item ml-auto">
-                      <div class="d-flex gsx gs16">
-                        <div class="flex--item d-flex ai-center">
-                          <div class="fs-body3 mr4">{tag?.tagCount}</div>
-                          <div class="fc-light tt-lowercase">Score</div>
+                    <div className="flex--item ml-auto">
+                      <div className="d-flex gsx gs16">
+                        <div className="flex--item d-flex ai-center">
+                          <div className="fs-body3 mr4">{tag?.tagCount}</div>
+                          <div className="fc-light tt-lowercase">Score</div>
                         </div>
                       </div>
                     </div>
@@ -283,5 +310,8 @@ const ProfilePage = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
 
-export default ProfilePage;
+export default connect(mapStateToProps, null)(ProfilePage);

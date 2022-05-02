@@ -8,8 +8,6 @@ const userModel = require("../models/user.model");
 
 exports.questionsPostedPerDay = async (req, res) => {
   try {
-    // fetching the questions
-    // calculate answers count and send questions when results are fetched
     const answerAgg = [
       {
         $lookup: {
@@ -52,7 +50,7 @@ exports.questionsPostedPerDay = async (req, res) => {
     //creating dictionary to count number of question posted for last 7 days
     let pastWeekDates = [];
 
-    for (let j = 0; j < 7; j++) {
+    for (let j = 6; j >= 0; j--) {
       let currentDate = new Date(
         Date.now() - j * 24 * 60 * 60 * 1000
       ).toISOString();
@@ -77,6 +75,7 @@ exports.questionsPostedPerDay = async (req, res) => {
       data: { result: pastWeekDates },
       message: "fetched questions",
     });
+    console.log(pastWeekDates);
   } catch (err) {
     console.log(err);
     // any errors in fetching the questions
@@ -203,7 +202,7 @@ exports.topViewedQuestion = async (req, res) => {
         title: question.title,
         views: question.views,
       };
-      sortedQuestionsFinal.push(currentQuestion);
+      sortedQuestionsFinal.push(question);
     });
 
     res.status(200).send({

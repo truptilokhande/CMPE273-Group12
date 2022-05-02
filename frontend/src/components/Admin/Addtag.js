@@ -9,7 +9,6 @@ function Addtag() {
   const navigate = useNavigate();
 
   const handleAddTag = () => {
-
     axios
       .post(`${connection.connectionURL}/api/tag/addTag`, {
         tagTitle,
@@ -17,50 +16,63 @@ function Addtag() {
       })
       .then((response) => {
         console.log(response);
-        navigate("/tags")
+        navigate("/tags");
       });
   };
   return (
     <div>
       <h2>Add a Tag</h2>
-      <div className="d-flex position-relative">
-        <label>Tag Name :</label>
-        <input
-          id="tagitle"
-          name="tagtitle"
-          type="text"
-          maxlength="300"
-          placeholder="python"
-          className="tagtitle"
-          style={{ marginLeft: "20px" }}
-          data-min-length="15"
-          data-max-length="150"
-          onChange={(e) => setTagTitle(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label>Tag descrption :</label>
-        <input
-          id="tagdescription"
-          name="tagdescription"
-          type="textarea"
-          length="300px"
-          className="tagdescription"
-          data-min-length="15"
-          data-max-length="150"
-          style={{ margin: "20px" }}
-          onChange={(e) => setTagDescription(e.target.value)}
-        />
-      </div>
-      <button
-        onClick={handleAddTag}
-        type="submit"
-        className="addtag"
-        style={{ borderRadius: "5px" }}
-      >
-        submit
-      </button>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <label>Tag Name :</label>
+            </td>
+            <td>
+              <input
+                id="tagitle"
+                name="tagtitle"
+                type="text"
+                maxlength="300"
+                placeholder="Python"
+                className="tagtitle"
+                style={{ marginLeft: "20px" }}
+                data-min-length="15"
+                data-max-length="150"
+                onChange={(e) => setTagTitle(e.target.value)}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label>Tag descrption :</label>
+            </td>
+            <td>
+              <input
+                id="tagdescription"
+                name="tagdescription"
+                type="textarea"
+                length="300px"
+                className="tagdescription"
+                data-min-length="15"
+                data-max-length="150"
+                style={{ margin: "20px" }}
+                onChange={(e) => setTagDescription(e.target.value)}
+              />
+            </td>
+          </tr>
+          <tr>
+            <button
+              onClick={handleAddTag}
+              type="submit"
+              className="addtag"
+              style={{ borderRadius: "5px" }}
+            >
+              submit
+            </button>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

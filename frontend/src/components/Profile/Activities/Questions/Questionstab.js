@@ -38,15 +38,15 @@ function Questionstab() {
   return (
     <div>
       <BasicDetails userdetails={userProfile} />
-      <div class="d-flex mb48">
+      <div className="d-flex mb48">
         <nav
-          class="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
+          className="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
-          <ul class="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
+          <ul className="ps-sticky t64 s-navigation s-navigation__muted s-navigation__vertical">
             <li>
               <a
-                class="s-navigation--item is-selected pr48 ps-relative"
+                className="s-navigation--item is-selected pr48 ps-relative"
                 href={`/Activities/${id}`}
                 title="Answers this user provided"
                 data-shortcut="A"
@@ -56,7 +56,7 @@ function Questionstab() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Questions/Questionstab/${id}`}
                 title="Questions this user asked"
                 data-shortcut="Q"
@@ -66,7 +66,7 @@ function Questionstab() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/UserTags/${id}`}
                 title="Tags this user has posts in"
                 data-shortcut="T"
@@ -77,7 +77,7 @@ function Questionstab() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/ActivityBadges/${id}`}
                 title="Badges this user has earned"
                 data-shortcut="B"
@@ -87,7 +87,7 @@ function Questionstab() {
             </li>
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Bookmarkstab/Bookmarkstab/${id}`}
                 title="Questions this user has bookmarked"
                 data-shortcut="F"
@@ -98,7 +98,7 @@ function Questionstab() {
 
             <li>
               <a
-                class="s-navigation--item pr48 ps-relative"
+                className="s-navigation--item pr48 ps-relative"
                 href={`/Reputation/${id}`}
                 title="Reputation this user has earned"
                 data-shortcut="R"
@@ -109,49 +109,49 @@ function Questionstab() {
           </ul>
         </nav>
 
-        <section class="flex--item fl-grow1 wmx100">
-          <div id="user-tab-questions" class="js-user-tab">
-            <div class="d-flex ai-end jc-space-between mb8 fw-wrap">
-              <div class="flex--item fl-grow1">
-                <div class="d-flex fd-column">
-                  <h2 class="flex--item fs-title mb0">
+        <section className="flex--item fl-grow1 wmx100">
+          <div id="user-tab-questions" className="js-user-tab">
+            <div className="d-flex ai-end jc-space-between mb8 fw-wrap">
+              <div className="flex--item fl-grow1">
+                <div className="d-flex fd-column">
+                  <h2 className="flex--item fs-title mb0">
                     {questions?.length} Questions
                   </h2>
                 </div>
               </div>
             </div>
 
-            <div class="ba bc-black-100 bar-md">
+            <div className="ba bc-black-100 bar-md">
               <div id="js-post-summaries">
                 {questions?.map((q) => (
-                  <div class="s-post-summary s-post-summary__minimal js-post-summary">
-                    <div class="s-post-summary--stats js-post-summary-stats">
-                      <div class="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
-                        <span class="s-post-summary--stats-item-number">
+                  <div className="s-post-summary s-post-summary__minimal js-post-summary">
+                    <div className="s-post-summary--stats js-post-summary-stats">
+                      <div className="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
+                        <span className="s-post-summary--stats-item-number">
                           {q?.votes}
                         </span>
-                        <span class="s-post-summary--stats-item-unit">
+                        <span className="s-post-summary--stats-item-unit">
                           votes
                         </span>
                       </div>
                       <div
-                        class="s-post-summary--stats-item is-hot"
+                        className="s-post-summary--stats-item is-hot"
                         title="40585 views"
                       >
-                        <span class="s-post-summary--stats-item-number">
+                        <span className="s-post-summary--stats-item-number">
                           {q?.views}
                         </span>
-                        <span class="s-post-summary--stats-item-unit">
+                        <span className="s-post-summary--stats-item-unit">
                           views
                         </span>
                       </div>
                     </div>
 
-                    <div class="s-post-summary--content">
-                      <h3 class="s-post-summary--content-title">
+                    <div className="s-post-summary--content">
+                      <h3 className="s-post-summary--content-title">
                         <a
                           href="/questions/53781634/aggregation-in-pandas"
-                          class="s-link"
+                          className="s-link"
                         >
                           {q.title}
                         </a>
@@ -161,12 +161,12 @@ function Questionstab() {
                       ? <p>waiting for approval</p>
                       : null
                       }
-                      <div class="s-post-summary--meta">
+                      <div className="s-post-summary--meta">
                         {q.tags.map((tag) => (
-                          <div class="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
+                          <div className="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
                             <a
                               href="/questions/tagged/python"
-                              class="post-tag flex--item mt0 js-tagname-python"
+                              className="post-tag flex--item mt0 js-tagname-python"
                               title="show questions tagged 'python'"
                               rel="tag"
                             >
@@ -175,15 +175,15 @@ function Questionstab() {
                           </div>
                         ))}
 
-                        <div class="s-user-card s-user-card__minimal">
-                          <div class="s-user-card--info">
-                            <div class="s-user-card--link d-flex gs4"></div>
+                        <div className="s-user-card s-user-card__minimal">
+                          <div className="s-user-card--info">
+                            <div className="s-user-card--link d-flex gs4"></div>
                           </div>
 
-                          <time class="s-user-card--time">
+                          <time className="s-user-card--time">
                             asked{" "}
                             <span
-                              class="relativetime"
+                              className="relativetime"
                             >
                               {moment(q?.question?.[0]?.createdAt).format(
                                 "MMMM DD,YYYY"

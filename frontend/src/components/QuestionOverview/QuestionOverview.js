@@ -195,6 +195,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         {
           userId: user?._id,
           questionId: question?._id,
+          title:question?.title
         }
       )
       .then((response) => {
@@ -223,7 +224,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       });
   };
 
-  const upvoteordownvoteAnswer = (answerId, upordownvotevalue) => {
+  const upvoteordownvoteAnswer = (answerId, upordownvotevalue,title) => {
     let valuetobeincrementedordecremented;
     if (upordownvotevalue === 1) {
       // user has clicked upvote if value is 1
@@ -264,6 +265,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         {
           userId: user?._id,
           answerId,
+          title
         }
       )
       .then((response) => {
@@ -655,7 +657,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                         : ""
                     }`}
                     onClick={() => {
-                      upvoteordownvoteAnswer(answer?._id, 1);
+                      upvoteordownvoteAnswer(answer?._id, 1,answer?.answerBody);
                     }}
                   >
                     <svg
@@ -681,7 +683,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                         : ""
                     }`}
                     onClick={() => {
-                      upvoteordownvoteAnswer(answer?._id, 0);
+                      upvoteordownvoteAnswer(answer?._id, 0,answer?.answerBody);
                     }}
                   >
                     <svg
@@ -732,21 +734,6 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                       </svg>
                     </button>
                   ) : null}
-
-                  <a
-                    className="post-issue-button mx-auto my-1"
-                    href="/posts/71759002/timeline"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      className="mln2 mr0 svg-icon iconHistory"
-                      width="19"
-                      height="18"
-                      viewBox="0 0 19 18"
-                    >
-                      <path d="M3 9a8 8 0 1 1 3.73 6.77L8.2 14.3A6 6 0 1 0 5 9l3.01-.01-4 4-4-4h3L3 9Zm7-4h1.01L11 9.36l3.22 2.1-.6.93L10 10V5Z"></path>
-                    </svg>
-                  </a>
                 </div>
               </div>
               <div className="question-layout col-11">

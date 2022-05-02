@@ -174,6 +174,68 @@ const getUser = asyncHandler(async (req, res) => {
 
   const userQuestions = await question.find(filter1);
 
+  const commentsQuestionCountAgg = [
+    {
+      $project: {
+        comments: 1,
+      },
+    },
+    {
+      $unwind: {
+        path: "$comments",
+      },
+    },
+    {
+      $group: {
+        _id: "$comments.userId",
+        count: {
+          $count: {},
+        },
+      },
+    },
+  ];
+
+  const commentsAnswersCountAgg = [
+    {
+      $project: {
+        comments: 1,
+      },
+    },
+    {
+      $unwind: {
+        path: "$comments",
+      },
+    },
+    {
+      $group: {
+        _id: "$comments.userId",
+        count: {
+          $count: {},
+        },
+      },
+    },
+  ];
+
+  console.log("---------------commentsCountAgg----------------------");
+  const commentsInQuesCount = await question.aggregate(
+    commentsQuestionCountAgg
+  );
+  const count = commentsInQuesCount.find((x) => x._id === userid);
+  console.log(commentsInQuesCount);
+
+  const commentsInAnsCount = await answer.aggregate(commentsAnswersCountAgg);
+  // console.log(commentsInAnsCount);
+
+  const ansComments = commentsInAnsCount.filter(
+    (x) => x._id.toString() === userid
+  );
+  // console.log(ansComments);
+
+  const queComments = commentsInQuesCount.filter(
+    (x) => x._id.toString() === userid
+  );
+  console.log(queComments);
+
   const user = User.findOne(filter, function (err, result) {
     if (err) {
       res.status(400).send({ success: false, message: "error fetching user" });

@@ -2,6 +2,7 @@ const Question = require("../models/question.model");
 const Answers = require("../models/answer.model");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
+const mysqlConf = require("../database/sqlconnection").mysqlpool;
 
 const getQuestions = async (req, res) => {
   try {
@@ -77,13 +78,17 @@ const addquestion = async (req, res) => {
     const result = await newQuestion.save();
 
     // add tags to the user profile and update score for the tag.
-    const user = await Users.findOne({ _id: userId }).lean();
+    const user = await Users.findOne({ _id: userId });
     const userTags = user?.tags; // [{tagId,tagName,tagCount}]
-    tags.forEach(async (tag) => {
+
+    console.log("-------------------user tags 1------------------------");
+    tags.map(async (tag) => {
       // check if tag is already present in user profile userTags.
-      const index = userTags.findIndex((x) => x?.tagId?.toString() === tag?.id);
+      console.log("-------------------user tags------------------------");
+      console.log(tag);
+      const indexValue = userTags.find((x) => x?.tagName === tag.name);
       // i.e if tag is already present
-      if (index != -1) {
+      if (indexValue) {
         await Users.updateOne(
           {
             _id: userId,
@@ -103,7 +108,7 @@ const addquestion = async (req, res) => {
           tagName: tag?.name,
         };
         userTags.push(newTag);
-        await Users.findOneAndUpdate({ _id: userId, tags: userTags });
+        await Users.findByIdAndUpdate({ _id: userId }, { tags: userTags });
       }
     });
 
@@ -176,6 +181,7 @@ const voteQuestion = async (req, res) => {
   const { upvote } = req.query;
   const questionId = req.body.questionId;
   const userId = req.body.userId;
+  const title = req.body.title;
   let result;
   // update user upvote count
   try {
@@ -236,11 +242,42 @@ const voteQuestion = async (req, res) => {
         { new: true }
       );
     }
-    res.status(200).send({
-      success: true,
-      message: "Updated successfully",
-      vote: result?.votes,
-    });
+
+    if (upvote === "0" || upvote === "2") {
+      const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${userId}','downvote question','${userId}','${title}','${new Date(
+        Date.now()
+      ).toISOString()}')`;
+      mysqlConf.getConnection(async (err, connection) => {
+        try {
+          await connection.query(query);
+          res.status(200).send({
+            success: true,
+            message: "Updated successfully",
+            vote: result?.votes,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        connection.release();
+      });
+    } else {
+      const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${userId}','upvote question','${userId}','${title}','${new Date(
+        Date.now()
+      ).toISOString()}')`;
+      mysqlConf.getConnection(async (err, connection) => {
+        try {
+          await connection.query(query);
+          res.status(200).send({
+            success: true,
+            message: "Updated successfully",
+            vote: result?.votes,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        connection.release();
+      });
+    }
   } catch (err) {
     res.status(400).send({ success: false, message: "Can't update" });
   }
@@ -338,34 +375,43 @@ const searchQuestionsByText = async (req, res) => {
 };
 
 const addComment = async (req, res) => {
-  const { questionId, userId, userName, commentBody } = req.body;
-  const question = await Question.findOne({ _id: questionId });
-  const comments = question?.comments;
-  comments.push({
-    userId,
-    userName,
-    commentBody,
-  });
+  try {
+    const { questionId, userId, userName, commentBody } = req.body;
+    const question = await Question.findOne({ _id: questionId });
+    const comments = question?.comments;
+    comments.push({
+      userId,
+      userName,
+      commentBody,
+    });
 
-  const result = await Question.findOneAndUpdate(
-    { _id: questionId },
-    { comments },
-    { new: true }
-  );
+    const result = await Question.findOneAndUpdate(
+      { _id: questionId },
+      { comments },
+      { new: true }
+    );
 
-  const new_log = new Logs({
-    logID: questionId,
-    what: "comment",
-    by: userId,
-    content: commentBody,
-  });
-  await new_log.save();
-
-  result && res.status(200).send({ success: true, comments: result?.comments });
-  !result && res.status(400).send({ success: false, message: err.message });
+    const query = `INSERT INTO stackoverflow_schema.logs (logId, what, bywhom, content, created) VALUES ('${questionId}','comment','${userId}','${commentBody}','${new Date(
+      Date.now()
+    ).toISOString()}')`;
+    mysqlConf.getConnection(async (err, connection) => {
+      try {
+        await connection.query(query);
+        result &&
+          res.status(200).send({ success: true, comments: result?.comments });
+        !result &&
+          res.status(400).send({ success: false, message: err.message });
+      } catch (err) {
+        console.log(err);
+      }
+      connection.release();
+    });
+  } catch (err) {
+    res.status(400).send({ success: false, message: err.message });
+  }
 };
+
 const getPendingQuestions = async (req, res) => {
-  console.log("in pending questions");
   const filter = { waitingForApproval: true };
   Question.find(filter, function (err, result) {
     if (err) {
@@ -376,19 +422,20 @@ const getPendingQuestions = async (req, res) => {
     }
   });
 };
+
 const aproove = async (req, res) => {
-  console.log("in aproove");
-  const id = req.params.id;
-  const filter = { _id: id };
-  Question.find(filter, { waitingForApproval: false }, function (err, result) {
-    if (err) {
-      res.status(400).send({ success: false, message: err.message });
-    } else {
-      console.log(result);
-      res.status(200).send({ success: true, data: result });
-    }
-  });
+  const _id = req.params.id;
+  try {
+    const question = await Question.findOne({ _id, waitingForApproval: true });
+    console.log(question, "question");
+    question.waitingForApproval = false;
+    result = await question.save();
+    res.status(200).send({ success: true, data: result });
+  } catch (err) {
+    res.status(400).send({ success: false, message: err.message });
+  }
 };
+
 const reject = async (req, res) => {
   console.log("in pending questions");
   const id = req.params.id;
@@ -405,8 +452,29 @@ const reject = async (req, res) => {
 
 const getHistories = async (req, res) => {
   const logID = req.params.id;
-  const logs = await Logs.find({ logID });
-  res.status(200).send({ logs });
+  const query = `SELECT * FROM stackoverflow_schema.logs WHERE logId='${logID}';`;
+  mysqlConf.getConnection((err, connection) => {
+    connection.query(query, async (err, result) => {
+      if (err) {
+        res.status(400).send("error fetching products");
+        return;
+      }
+      await Promise.all(
+        result.map(async (log) => {
+          const result = await Users.findOne(
+            {
+              _id: mongoose.Types.ObjectId(log.bywhom),
+            },
+            { name: 1, _id: 1 }
+          );
+          console.log(result);
+          log.user = result;
+        })
+      );
+      res.status(200).send(result);
+    });
+    connection.release();
+  });
 };
 
 module.exports = {
