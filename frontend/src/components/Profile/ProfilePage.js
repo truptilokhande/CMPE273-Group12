@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import { getUserSuccess } from "../../store/actions/actions";
-const ProfilePage = ({ user }) => {
 
 
 const ProfilePage = ({user}) => {
@@ -36,18 +35,19 @@ const ProfilePage = ({user}) => {
   const [receiver, setReceiverID] = useState("");
 
   const [about,setAbout]=useState("")
-  const [sender, setSenderID] = useState(user?._id);
+
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+
   console.log(loginUser);
-  useEffect(() => {
+  const [receivername, setReceiverName] = useState("");
+  const [sender,setSenderID] = useState(loginUser.payload.user._id);
+ 
    
 
-  const [receivername, setReceiverName] = useState("");
-  const [sender,setSenderID] = useState(user?._id);
+
   useEffect(() => {
-    const url = window.location.pathname;
-    const id = url.substring(url.lastIndexOf("/") + 1);
+
     setReceiverID(id)
     console.log("rec",id)
 
