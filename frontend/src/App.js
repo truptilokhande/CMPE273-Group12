@@ -34,6 +34,7 @@ import TopQuestions from "./components/Analytics/TopQuestions";
 import TopTags from "./components/Analytics/TopTags";
 import HighReputedUsers from "./components/Analytics/HighReputedUsers";
 import LowReputedUsers from "./components/Analytics/LowReputedUsers";
+import EditDetails from "./components/Profile/EditProfile";
 
 function App({ isAuthenticated }) {
   return (
@@ -66,18 +67,34 @@ function App({ isAuthenticated }) {
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/signin" exact element={<SignIn />} />
             <Route path="/edit-question" exact element={<EditQuestion />} />
-            <Route path="/userProfile" exact element={<ProfilePage/>}/>
-              <Route path="/Activities" exact element={<Activities/>}/>
-              <Route path="/Questions/Questionstab" exact element={<Questionstab/>}/>
-              <Route path="/UserTags/UserTags" exact element={<UserTags/>}/>
-              <Route path="/ActivityBadges/ActivityBadges" exact element={<ActivityBadges/>}/>
-              <Route path="/Bookmarkstab/Bookmarkstab" exact element={<Bookmarkstab/>}/>
-              <Route path="/Reputation/Reputation" exact element={<Reputation/>}/>
-              <Route path="/BasicDetails" exact element={<BasicDetails/>}/>
-              <Route path="/Addtag" exact element={<Addtag/>}/>
-              <Route path="/Aproove" exact element={<Aproove/>}/>
-              <Route path="/chat" exact element={<Chat/>}/>
-              <Route path="/allchats" exact element={<AllChats/>}/>
+            <Route path="/userProfile" exact element={<ProfilePage />} />
+            <Route path="/Activities" exact element={<Activities />} />
+            <Route
+              path="/Questions/Questionstab"
+              exact
+              element={<Questionstab />}
+            />
+            <Route path="/UserTags/UserTags" exact element={<UserTags />} />
+            <Route
+              path="/ActivityBadges/ActivityBadges"
+              exact
+              element={<ActivityBadges />}
+            />
+            <Route
+              path="/Bookmarkstab/Bookmarkstab"
+              exact
+              element={<Bookmarkstab />}
+            />
+            <Route
+              path="/Reputation/Reputation"
+              exact
+              element={<Reputation />}
+            />
+            <Route path="/BasicDetails" exact element={<BasicDetails />} />
+            <Route path="/Addtag" exact element={<Addtag />} />
+            <Route path="/Aproove" exact element={<Aproove />} />
+            <Route path="/chat" exact element={<Chat />} />
+            <Route path="/allchats" exact element={<AllChats />} />
             <Route
               path="/edit-question"
               exact
@@ -128,6 +145,7 @@ function App({ isAuthenticated }) {
               exact
               element={<LowReputedUsers />}
             ></Route>
+            <Route path="/Editdetails" exact element={<EditDetails />} />
           </Routes>
         </div>
       </main>

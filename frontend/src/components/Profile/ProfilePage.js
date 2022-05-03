@@ -9,8 +9,9 @@ import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
-const ProfilePage = ({user}) => {
+const ProfilePage = ({ user }) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
@@ -22,7 +23,7 @@ const ProfilePage = ({user}) => {
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
-  const [sender,setSenderID] = useState(user?._id);
+  const [sender, setSenderID] = useState(user?._id);
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
@@ -71,33 +72,36 @@ const ProfilePage = ({user}) => {
       });
   }, []);
   function startnewchat() {
-       console.log(receiver,"sender",sender)
-       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
-      /*    change this to sender ID from store */
-            senderID: sender,
-            receiverID:receiver,
-            message:"",
-            
-            })
-            .then(res =>{
-              console.log("%%%",res)
-            }).catch(err => {console.log(err)})
-        
-    
-      };
+    console.log(receiver, "sender", sender);
+    axios
+      .post(`${connection.connectionURL}/api/messages/sendMessage`, {
+        /*    change this to sender ID from store */
+        senderID: sender,
+        receiverID: receiver,
+        message: "",
+      })
+      .then((res) => {
+        console.log("%%%", res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   return (
     <div>
       <BasicDetails userdetails={userProfile}></BasicDetails>
       {/* start a new chat block */}
       <div>
-      <input
-          type="text" data-testid="username" 
+        <input
+          type="text"
+          data-testid="username"
           onChange={(event) => {
             setReceiverID(event.target.value);
-          }} placeholder="receiverID"
+          }}
+          placeholder="receiverID"
         ></input>
         <button onClick={startnewchat}>Start Chat</button>
-            <br></br>
+        <br></br>
       </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
         <div className="m-3">
@@ -105,7 +109,9 @@ const ProfilePage = ({user}) => {
           <div className="s-card fc-light bar-md">
             <div className="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
               <div className="flex--item md:fl-auto">
-                <div className="fs-body3 fc-dark">{userProfile?.reputation}</div>
+                <div className="fs-body3 fc-dark">
+                  {userProfile?.reputation}
+                </div>
                 reputation
               </div>
               <div className="flex--item md:fl-auto">
@@ -128,7 +134,9 @@ const ProfilePage = ({user}) => {
             <h4>About</h4>
             <div>
               <p> Python enthusiast</p>
-              <button className="editdetbutton">edit details</button>
+              <Link to="/Editdetails">
+                <button className="editdetbutton">edit details</button>
+              </Link>
             </div>
           </div>
           <div className="grid--item">
