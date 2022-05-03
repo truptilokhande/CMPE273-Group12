@@ -195,9 +195,14 @@ const getUser = asyncHandler(async (req, res) => {
       },
     },
     {
+      $match: {
+        "comments.userId": mongoose.Types.ObjectId(userid),
+      },
+    },
+    {
       $group: {
         _id: "$comments.userId",
-        count: {
+        questionCommentCount: {
           $count: {},
         },
       },
@@ -216,9 +221,14 @@ const getUser = asyncHandler(async (req, res) => {
       },
     },
     {
+      $match: {
+        "comments.userId": mongoose.Types.ObjectId(userid),
+      },
+    },
+    {
       $group: {
         _id: "$comments.userId",
-        count: {
+        answerCommentcount: {
           $count: {},
         },
       },
@@ -226,24 +236,13 @@ const getUser = asyncHandler(async (req, res) => {
   ];
 
   console.log("---------------commentsCountAgg----------------------");
-  const commentsInQuesCount = await question.aggregate(
+  const questionCommentCount = await question.aggregate(
     commentsQuestionCountAgg
   );
-  const count = commentsInQuesCount.find((x) => x._id === userid);
-  console.log(commentsInQuesCount);
 
-  const commentsInAnsCount = await answer.aggregate(commentsAnswersCountAgg);
-  // console.log(commentsInAnsCount);
-
-  const ansComments = commentsInAnsCount.filter(
-    (x) => x._id.toString() === userid
+  const answerCommentcount = await answer.aggregate(
+    commentsAnswersCountAgg
   );
-  // console.log(ansComments);
-
-  const queComments = commentsInQuesCount.filter(
-    (x) => x._id.toString() === userid
-  );
-  console.log(queComments);
 
   const user = User.findOne(filter, function (err, result) {
     if (err) {
@@ -255,6 +254,7 @@ const getUser = asyncHandler(async (req, res) => {
         qc: qc,
         ac: ac,
         views: userQuestions?.reduce((n, { views }) => n + views, 0),
+        cc: parseInt(questionCommentCount[0]?.questionCommentCount + answerCommentcount[0]?.answerCommentcount),
       });
     }
   });
