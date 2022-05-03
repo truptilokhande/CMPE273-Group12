@@ -10,9 +10,9 @@ import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
 import { Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 const ProfilePage = ({user}) => {
-  console.log(user)
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
@@ -76,8 +76,6 @@ const ProfilePage = ({user}) => {
       });
   }, []);
   function startnewchat() {
-       console.log("receiid",receiver,"sender",sender,user.name,userProfile.name,user,userProfile)
-
        axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
       /*    change this to sender ID from store */
             senderID: sender,
@@ -100,12 +98,7 @@ const ProfilePage = ({user}) => {
       <BasicDetails userdetails={userProfile}></BasicDetails>
       {/* start a new chat block */}
       <div>
-      {/* <input
-          type="text" data-testid="username" 
-          onChange={(event) => {
-            setReceiverName(event.target.value);
-          }} placeholder="receiverID"
-        ></input> */}
+    
         <button onClick={startnewchat}>Start Chat</button>
         {creatednewchat&&<Navigate to="/allchats" />} 
             <br></br>
@@ -116,7 +109,9 @@ const ProfilePage = ({user}) => {
           <div className="s-card fc-light bar-md">
             <div className="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
               <div className="flex--item md:fl-auto">
-                <div className="fs-body3 fc-dark">{userProfile?.reputation}</div>
+                <div className="fs-body3 fc-dark">
+                  {userProfile?.reputation}
+                </div>
                 reputation
               </div>
               <div className="flex--item md:fl-auto">
@@ -139,7 +134,9 @@ const ProfilePage = ({user}) => {
             <h4>About</h4>
             <div>
               <p> Python enthusiast</p>
-              <button className="editdetbutton">edit details</button>
+              <Link to="/Editdetails">
+                <button className="editdetbutton">edit details</button>
+              </Link>
             </div>
           </div>
           <div className="grid--item">
