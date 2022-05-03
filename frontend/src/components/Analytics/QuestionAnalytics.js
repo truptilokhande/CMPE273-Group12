@@ -45,10 +45,6 @@ function QuestionAnalytics() {
   return (
     <>
       <h2>Questions posted per day</h2>
-
-      <br></br>
-      {count}
-
       {questionsData && (
         <div style={{ width: "700px" }}>
           <LineChart chartData={questionsData}></LineChart>
