@@ -21,6 +21,9 @@ function EditProfile() {
   const [githublink, setGithubLink] = useState("");
   const [twitterlink, setTwitterLink] = useState("");
   const [fullname, setFullName] = useState("");
+  const url = window.location.pathname;
+  const id = url.substring(url.lastIndexOf("/") + 1);
+  console.log(id);
   // const [pic, setPic] = useState();
   useEffect(() => {
     fetchItemDetails();
@@ -29,7 +32,7 @@ function EditProfile() {
   const fetchItemDetails = (e) => {
     axios
       .get(
-        `${connection.connectionURL}/api/user/getUser/6268a41b1fe164d525851321`,
+        `${connection.connectionURL}/api/user/getUser/${id}`,
         FormData
       )
       .then((response) => {
@@ -70,7 +73,7 @@ function EditProfile() {
 
     axios
       .put(
-        `${connection.connectionURL}/api/user/editProfile/6268a41b1fe164d525851321`,
+        `${connection.connectionURL}/api/user/editProfile/${id}`,
         formData
       )
       .then((response) => {

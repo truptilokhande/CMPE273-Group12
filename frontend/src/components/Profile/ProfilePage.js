@@ -10,26 +10,31 @@ import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { getUserSuccess } from "../../store/actions/actions";
 const ProfilePage = ({ user }) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
   const [views, setViews] = useState();
-
+  const loginUser=useSelector(getUserSuccess);
   const [userTags, setUserTags] = useState([]);
 
   const [goldBadges, setGoldBadges] = useState([]);
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
+  const [about,setAbout]=useState("")
   const [sender, setSenderID] = useState(user?._id);
+  const url = window.location.pathname;
+  const id = url.substring(url.lastIndexOf("/") + 1);
+  console.log(loginUser);
   useEffect(() => {
-    const url = window.location.pathname;
-    const id = url.substring(url.lastIndexOf("/") + 1);
+   
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`)
       .then((response) => {
+        console.log(response);
         setUserProfile(response?.data?.data);
         setGoldBadges(
           response?.data?.data?.tags
@@ -42,6 +47,7 @@ const ProfilePage = ({ user }) => {
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
         setViews(response?.data?.views);
+        setAbout(response?.data.data.about);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -133,10 +139,12 @@ const ProfilePage = ({ user }) => {
           <div className="about">
             <h4>About</h4>
             <div>
-              <p> Python enthusiast</p>
-              <Link to="/Editdetails">
+              <p> {about}</p>
+          {(loginUser.payload.user._id==id)?(
+              <Link to={`/Editdetails/${id}`}>
                 <button className="editdetbutton">edit details</button>
               </Link>
+              ): <span></span>}
             </div>
           </div>
           <div className="grid--item">
@@ -314,6 +322,7 @@ const ProfilePage = ({ user }) => {
           </div>
         </div>
       </div>
+      <div className="flex--item fs-title">Top Posts</div>
       <TopPosts />
     </div>
   );
