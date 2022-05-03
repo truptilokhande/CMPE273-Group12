@@ -36,6 +36,7 @@ function ActivityBadges() {
         setCritic(response?.data?.data?.downVoteCount);
         setNotable(response?.data?.views);
         setFamous(response?.data?.views);
+        setPundit(response?.data?.cc)
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
