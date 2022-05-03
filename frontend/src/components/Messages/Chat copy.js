@@ -4,19 +4,13 @@ import { useState } from "react";
 import {Link} from 'react-router-dom';
 import "./Chats.css";
 import connection from "../../config.json";
-import { connect } from "react-redux";
-
 //var message_array=[{senderID:1,receiverID:2,message:"hi",timestamp:"123"},{senderID:2,receiverID:1,message:"hello",timestamp:"123"},{senderID:1,receiverID:2,message:"thx",timestamp:"123"}]
 
-function Chat({ user}){
+function Chat(){
     const [message_array, set_message_array] = useState([]); 
     const [message_text, setmessagetext] = useState("");    
-    const senderID = user._id
-  console.log("chat",user._id,typeof(user._id),senderID)
-
+    const senderID = localStorage.getItem("sender");
     const receiverID = localStorage.getItem("receiver");
-    const receiverName = localStorage.getItem("receivername")
-    const [trigger,setTrigger] = useState([]);
     useEffect(() => {
         axios.post(`${connection.connectionURL}/api/messages/getMessages`,{
         senderID: receiverID,
@@ -30,38 +24,26 @@ function Chat({ user}){
         
     
     },[])
-/*      window.addEventListener('click', (event) => {
-      sendnewmessage()
-      setTrigger(1)
-      window.location.reload(true);
-    });  */
 console.log(message_array)
 function sendnewmessage(e){
     e.preventDefault();
-   // setTrigger(1)
-    
-    console.log("$$$$$$$$$$$",setTrigger)
 console.log(message_text)
     axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
-        senderID: senderID,
-        receiverID:receiverID,
+        senderID: receiverID,
+        receiverID:senderID,
         message:message_text,
         
         })
         .then(res =>{
-  console.log("chat",user._id,typeof(user._id))
-          console.log("%%%",res,res.senderID,res.receiverID)
+          console.log("%%%",res)
         }).catch(err => {console.log(err)})
-        window.location.reload(true);
+    
 
     }
-   /*   message_array.map(item => (
-      console.log("SDFDFSDFSF",item.senderID==senderID)
-      )) */
   return(
       
   <div >
-  Chat Room<br></br>
+
       <br></br>
       <br></br>
       <br></br>
@@ -72,22 +54,23 @@ console.log(message_text)
 
  <div className="block col-2" >
  <div style={{justifyContent:'center', alignItems:'center'}}>
-  
+    
+
  <table class="center" >
  <tr>
         <div class="messagehead">
-         <th >{receiverName} </th>
+         <th >Chat Room</th>
          </div>
  <br></br>
  </tr>
  <div class="container">
  { message_array.map(item => (
-  <tr> 
-{item.senderID==senderID ?<div class="sender"> <td style={{textAlign: "left",}}><span  style={{
-    backgroundColor:  'dodgerblue',borderRadius: '5px',width: "900px",padding: "10px"
-  }}>{item.message}<br></br></span></td></div>  :<div class="receiver"><td style={{textAlign: "right",}}><br></br><span  style={{
-    backgroundColor:  'floralwhite',borderRadius: '5px',width: "900px",padding: "10px"
-  }}>{item.message}<br></br></span></td></div> }
+ <tr> 
+    {item.senderID=="1" ?<div class="sender"> <td style={{textAlign: "left",}}><span  style={{
+        backgroundColor:  'white',borderRadius: '5px',width: "900px",padding: "10px"
+      }}>{item.message}<br></br></span></td></div>  :<div class="receiver"><td style={{textAlign: "right",}}><br></br><span  style={{
+        backgroundColor:  'cornsilk',borderRadius: '5px',padding: "10px"
+      }}>{item.message}<br></br></span></td></div> }
 
 </tr>
 
@@ -124,8 +107,5 @@ console.log(message_text)
 </div>)
   
 }
-const mapStateToProps = (state) => ({
-  user: state.user,
-});
 
-export default connect(mapStateToProps, null) (Chat);
+export default Chat;

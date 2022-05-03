@@ -111,6 +111,9 @@ const ProfilePage = ({user}) => {
               console.log("%%%",res)
               setNewChat(true)
               console.log("%%%%%%%%%%%%%%%%%%%%%%%%%",creatednewchat)
+              localStorage.setItem("receiver",receiver)
+              localStorage.setItem("sender",sender)
+              localStorage.setItem("receivername",userProfile.name)
             }).catch(err => {console.log(err)})
         
     
@@ -121,8 +124,8 @@ const ProfilePage = ({user}) => {
       {/* start a new chat block */}
       <div>
     
-        <button onClick={startnewchat}>Start Chat</button>
-        {creatednewchat&&<Navigate to="/allchats" />} 
+        <button onClick={startnewchat} className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}}>Start Chat</button>
+        {creatednewchat&&<Navigate to="/chat" />} 
             <br></br>
       </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
