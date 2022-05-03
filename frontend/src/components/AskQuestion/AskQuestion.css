@@ -216,7 +216,7 @@ react-tags {
   height: 250px;
 }
 
-.question-content img {
+.answer-wrapper .question-content img {
   width: 250px;
   height: 250px;
 }
