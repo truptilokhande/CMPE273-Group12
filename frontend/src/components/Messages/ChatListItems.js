@@ -38,8 +38,7 @@ function ChatListItems(props){
 
     <div>
          {showchattoken && <Navigate to="/chat" />}
-         {render&&<button style={{
-        backgroundColor:  'cornsilk',}} onClick={showChatRoom}> {receivername}</button>
+         {render&&<button className="nav-signup-btn  nav-btn form-input-button" onClick={showChatRoom}> {receivername}</button>
          }
     <br></br><br></br>
     </div>

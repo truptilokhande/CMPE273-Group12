@@ -32,9 +32,7 @@ function AllChats({ user}){
       console.log(e.target.value)
   
     };
-    function dosomething(val){
-      alert(val);
-  }
+
   return(
   <div class="allchats">
 

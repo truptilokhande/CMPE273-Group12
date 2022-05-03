@@ -2,37 +2,36 @@
     width:600px;
     height:390px;
     left:300px;
-    background-color:rgb(240, 240, 240);
-    padding-top:25px;
+    padding-top:15px;
     padding-left:200px;
     margin-left: 60px;
 }
 .container {
     width:400px;
     height:390px;
-    background-color:rgb(51, 58, 51);
-    padding-top:25px;
-    padding-left:20px;
-    padding-right:25px;
-    margin-left: 150px;
+    padding-top:5px;
+    padding-left:600px;
+    padding-right:500px;
+    margin-left: 50px;
+    margin-right: 10px;
 }
 .messagebox {
-  
+   
     margin-left: 250px;
 }
 .messagehead {
-  
+    padding-top:5px;
     margin-left: 280px;
 }
-/* white is sender */
+/* blue is sender */
 .sender {
 
 
-    padding-left:6px;
+    margin-left: -650px;
     padding-top:30px;
  
 }
 .receiver {
   
-    padding-left:180px;
+    margin-left: -180px;
 }
