@@ -141,6 +141,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
               <li className="d-flex align-items-center">
                 <a href="/user" className="navbar-user-card">
                   <div className="navbar-avatar">
+                    <Link to={`/userProfile/${user._id}`}>
                     <img
                       src={user?.profilepicture}
                       alt="user avatar"
@@ -148,6 +149,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
                       height="24"
                       className="rounded"
                     />
+                    </Link>
                   </div>
                 </a>
                 <div className="user-details p-0">

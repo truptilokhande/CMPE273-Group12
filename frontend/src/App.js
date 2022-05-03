@@ -145,7 +145,7 @@ function App({ isAuthenticated }) {
               exact
               element={<LowReputedUsers />}
             ></Route>
-            <Route path="/Editdetails" exact element={<EditDetails />} />
+            <Route path="/Editdetails/:id" exact element={<EditDetails />} />
           </Routes>
         </div>
       </main>
