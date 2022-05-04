@@ -9,7 +9,6 @@ import connection from "../../config.json";
 
 import ChatListItems from './ChatListItems';
 console.log("chat")
-var my_id = "1"
 function AllChats({ user}){
   console.log("chat",user._id,typeof(user._id))
     const [allchats_array, set_allchats_array] = useState([]);    
@@ -31,13 +30,9 @@ function AllChats({ user}){
     },[])
     const showmessages = (e) => {
       e.preventDefault();
-      console.log("55555")
-      console.log(e.target.value)
   
     };
-    function dosomething(val){
-      alert(val);
-  }
+
   return(
   <div class="allchats">
 
@@ -54,7 +49,7 @@ function AllChats({ user}){
 <table class="center">
 
  { allchats_array.map(item => (
-   <ChatListItems users={item.users} senderID={my_id}/>
+   <ChatListItems users={item.users} senderID={user._id} senderName={user.name} usernames={item.usernames}/>
 ))} 
 </table>   
 </div>

@@ -19,6 +19,7 @@ function Aproove() {
           (question) => question.waitingForApproval === true
         );
         setQuestions(filteredQuestions);
+        
       })
       .catch((err) => {
         throw err;
@@ -85,7 +86,7 @@ function Aproove() {
           <div className="question-content-meta-data d-flex align-item-center justify-content-between flex-wrap">
             <div className="question-tags d-flex flex-wrap">
               {question.tags?.map((tag) => (
-                <a href="/" className="tag">
+                <a href={`/tagOverview/${tag.id}`} className="tag">
                   {tag.name}
                 </a>
               ))}

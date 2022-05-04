@@ -1,0 +1,139 @@
+.editdetails-content input {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-color: hsl(210deg 8% 90%);
+  font-family: none;
+}
+
+.editdetails-h1 {
+  border-bottom: 1px solid gray;
+  margin-bottom: 15px;
+}
+
+.editdetails-publicinfo {
+  border: 1px solid;
+  width: 90%;
+  padding-top: 20px;
+  padding-right: 10px;
+  padding-bottom: 30px;
+  padding-left: 30px;
+
+  border-top-left-radius: 5px !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
+  background-color: hsl(0deg 0% 100%);
+  border-color: hsl(210deg 8% 90%);
+}
+
+.editdetails-name {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  margin-top: 20px;
+}
+
+.editdetails-location {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  margin-top: 20px;
+}
+.editdetails-title {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  margin-top: 20px;
+}
+
+.editdetails-editor {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  width: 90%;
+  margin-top: 20px;
+}
+.editdetails-links {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  margin-top: 50px;
+}
+.editdetails-privateinfo {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: larger;
+  margin-top: 50px;
+}
+
+.editdetails-links-group {
+  border: 1px solid;
+  width: 90%;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  justify-content: space-around;
+  padding-top: 30px;
+  padding-right: 10px;
+  padding-bottom: 30px;
+  padding-left: 10px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: hsl(0deg 0% 100%);
+  border-color: hsl(210deg 8% 90%);
+}
+
+.editdetails-privateinfo-group {
+  border: 1px solid;
+  width: 90%;
+  padding-top: 30px;
+  padding-right: 10px;
+  padding-bottom: 30px;
+  padding-left: 80px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: hsl(0deg 0% 100%);
+  border-color: hsl(210deg 8% 90%);
+}
+
+.editdetails-saveinfo {
+  display: flex;
+  justify-content: center;
+  margin: 50px auto;
+}
+.editdetails-savebtn button {
+  background-color: hsl(206deg 100% 52%);
+  color: hsl(0deg 0% 100%);
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  min-height: 30px;
+  min-width: 120px;
+}
+
+.editdetails-savebtn button:hover {
+  background-color: hsl(206deg 100% 40%);
+  transition: 0.7s;
+  cursor: pointer;
+}
+
+.editdetails-cancelbtn button {
+  background-color: transparent;
+  color: hsl(206deg 100% 40%);
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  min-height: 30px;
+  min-width: 120px;
+}
+
+.editdetails-cancelbtn button:hover {
+  background-color: hsl(206deg 100% 97%);
+  transition: 0.7s;
+  cursor: pointer;
+}
+.ck-editor__editable input {
+  height: 90%;
+  width: 100%;
+  padding-bottom: 100px;
+}
