@@ -42,10 +42,10 @@ function Users() {
       <div className="d-flex align-items-end justify-content-between my-3">
         <input
           className="tags-search-input"
-          autocomplete="off"
+          autoComplete="off"
           name="tagfilter"
           type="text"
-          maxlength="35"
+          maxLength="35"
           placeholder="Filter by user"
           onChange={(e) => setSearchTerm(e.target.value)}
         />

@@ -78,7 +78,7 @@ function EditQuestion({ user, tagsFromStore, route }) {
               id="title"
               name="title"
               type="text"
-              maxlength="300"
+              maxLength="300"
               placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
               className="ask-question-input"
               defaultValue={title}

@@ -33,7 +33,7 @@ function Addtag() {
                 id="tagitle"
                 name="tagtitle"
                 type="text"
-                maxlength="300"
+                maxLength="300"
                 placeholder="Python"
                 className="tagtitle"
                 style={{ marginLeft: "20px" }}
