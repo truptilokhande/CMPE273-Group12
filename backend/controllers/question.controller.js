@@ -3,11 +3,21 @@ const Answers = require("../models/answer.model");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 const mysqlConf = require("../database/sqlconnection").mysqlpool;
+const redisClient = require("../database/redisconnection");
 
 const getQuestions = async (req, res) => {
   try {
     // fetching the questions
     // calculate answers count and send questions when results are fetched
+    const valueFromRedis = await redisClient.get("questions");
+    if (valueFromRedis) {
+      console.log("getting values from cache");
+      res.status(200).send({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
     const answerAgg = [
       {
         $lookup: {
@@ -46,6 +56,11 @@ const getQuestions = async (req, res) => {
         message: "error fetching the questions",
       });
     }
+
+    redisClient.set("questions", JSON.stringify({ questions: result, answercount }), {
+      EX: 10,
+    });
+    const value = await redisClient.get("key");
 
     res.status(200).send({
       data: { questions: result, answercount },
