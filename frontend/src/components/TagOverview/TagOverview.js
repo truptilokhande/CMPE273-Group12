@@ -8,13 +8,15 @@ function TagOverview() {
   const [questions, setQuestions] = useState();
   const [tag, setTag] = useState();
   // const [questionsCopy, setQuestionsCopy] = useState();
-
+  const token = localStorage.getItem("token");
+  
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
       .get(
-        `${connection.connectionURL}/api/tag/getAllQuestionWithSpecificTag/${id}`
+        `${connection.connectionURL}/api/tag/getAllQuestionWithSpecificTag/${id}`,
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         setQuestions(response?.data?.questions);

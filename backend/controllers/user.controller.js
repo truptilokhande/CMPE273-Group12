@@ -12,6 +12,7 @@ const mongoose = require("mongoose");
 const aws = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+const mysqlConf = require("../database/sqlconnection").mysqlpool;
 const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/28a48027ee89f30d8681f415ea164f70.png",
@@ -31,57 +32,66 @@ const s3 = new aws.S3({
 // @access  Public
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
   // Check if all mandatory inputs exists
   if (!name || !email || !password) {
     res.json({
       status: 400,
-      data: {},
       message: "Please add all fields",
     });
   }
-
-  // Check if user exists
-  const userExists = await User.findOne({ email });
-
-  if (userExists) {
-    res.json({
-      status: 400,
-      data: {},
-      message: "User already exists",
-    });
-  }
-
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
-  // Create user
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+  const findUserQuery = `SELECT * FROM stackoverflow_schema.userLogin WHERE email = '${email}'`;
+  mysqlConf.getConnection(async (err, connection) => {
+    try {
+      connection.query(findUserQuery, (err, userLoginData) => {
+        if (userLoginData.length) {
+          res.status(400).send({
+            success: true,
+            message: "User already exists"
+          });
+        } else {
+          //add user login in mySQL DB
+          const addUserQuery = `INSERT INTO stackoverflow_schema.userLogin 
+                                (email, password, created) 
+                                VALUES 
+                                ('${email}','${hashedPassword}','${new Date(Date.now()).toISOString()}')`;
+          connection.query(addUserQuery, async (err, result) => {
+            if (result) {
+              // Create user in mongo DB
+              const user = await User.create({
+                name,
+                email,
+                profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+              });
+              if (user) {
+                res.json({
+                  status: 201,
+                  data: {
+                    _id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    token: generateToken(user._id),
+                  },
+                  message: "User registered successfully",
+                });
+              } else {
+                res.json({
+                  status: 400,
+                  data: {},
+                  message: "Invalid user data",
+                });
+              }
+            }
+          });
+        }
+      });
+    }
+    catch (err) {
+      res.status(400).send({ success: false, message: err.message });
+    }
   });
-
-  if (user) {
-    res.json({
-      status: 201,
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-      },
-      message: "User registered successfully",
-    });
-  } else {
-    res.json({
-      status: 400,
-      data: {},
-      message: "Invalid user data",
-    });
-  }
 });
 
 // @desc    Authenticate a user
@@ -90,34 +100,41 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   let isAdmin = false;
-
-  // Check for user email
-  const user = await User.findOne({ email });
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    if (email == "admin@gmail.com") {
-      isAdmin = true;
+  const findUserQuery = `SELECT * FROM stackoverflow_schema.userLogin WHERE email = '${email}'`;
+  mysqlConf.getConnection(async (err, connection) => {
+    try {
+      connection.query(findUserQuery, async (err, userLoginData) => {
+        const passwordMatch = await bcrypt.compare(password, userLoginData[0].password);
+        if (userLoginData.length && passwordMatch) {
+          if (email == "admin@gmail.com") {
+            isAdmin = true;
+          }
+          const user = await User.findOne({ email });
+          res.json({
+            status: 200,
+            data: {
+              _id: user.id,
+              name: user.name,
+              email: user.email,
+              token: generateToken(user._id),
+              profilepicture: user.profilepicture,
+              isAdmin,
+              reputation: user?.reputation,
+            },
+            message: "User logged in successfully",
+          });
+        } else {
+          res.json({
+            status: 400,
+            message: "Invalid credentials",
+          });
+        }
+      });
     }
-    res.json({
-      status: 200,
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-        profilepicture: user.profilepicture,
-        isAdmin,
-        reputation: user?.reputation,
-      },
-      message: "User logged in successfully",
-    });
-  } else {
-    res.json({
-      status: 400,
-      data: {},
-      message: "Invalid credentials",
-    });
-  }
+    catch (err) {
+      res.status(400).send({ success: false, message: err.message });
+    }
+  });
 });
 
 // TODO

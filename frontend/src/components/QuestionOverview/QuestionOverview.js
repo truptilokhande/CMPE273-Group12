@@ -31,12 +31,14 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
   const [questionCommentContent, setQuestionCommentContent] = useState();
   const navigate = useNavigate();
   const editorRef = useRef(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/question/getQuestion/${id}`)
+      .get(`${connection.connectionURL}/api/question/getQuestion/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setQuestion(response?.data?.question);
         setUserdetails(response?.data?.userDetails);
@@ -135,7 +137,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       answerBody,
     };
     axios
-      .post(`${connection.connectionURL}/api/answer/add-answer`, answer)
+      .post(`${connection.connectionURL}/api/answer/add-answer`,
+      answer,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         window.location.reload(true);
       })
@@ -152,7 +156,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       commentBody: usercomment,
     };
     axios
-      .post(`${connection.connectionURL}/api/answer/add-comment`, comment)
+      .post(`${connection.connectionURL}/api/answer/add-comment`,
+      comment,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         const result = answers.map((x) => {
           const item = x?._id === id;
@@ -188,7 +194,6 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         valuetobeincrementedordecremented = isQuestionDownVoted ? 1 : 0;
       }
     }
-
     axios
       .post(
         `${connection.connectionURL}/api/question/voteQuestion?upvote=${valuetobeincrementedordecremented}`,
@@ -196,7 +201,8 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
           userId: user?._id,
           questionId: question?._id,
           title:question?.title
-        }
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         setQuestion({
@@ -266,7 +272,8 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
           userId: user?._id,
           answerId,
           title
-        }
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         const res = answers.map((i) => {
@@ -355,7 +362,8 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         userId: user?._id,
         questionId: question?._id,
         answerId: id,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setAnswers([...response?.data?.data]);
         if (markedAsRight) {
@@ -374,7 +382,8 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       .post(`${connection.connectionURL}/api/question/bookmark`, {
         questionId: question?._id,
         userId: user?._id,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUserdetails({ ...response?.data?.result });
       })
@@ -390,7 +399,8 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         userId: user?._id,
         userName: user?.name,
         commentBody: questionCommentContent,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         const comments = response?.data?.comments;
         setQuestion({ ...question, comments });

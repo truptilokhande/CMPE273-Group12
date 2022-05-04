@@ -33,6 +33,7 @@ const ProfilePage = ({user}) => {
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
+  const token = localStorage.getItem("token");
 
   const [about,setAbout]=useState("")
 
@@ -52,7 +53,8 @@ const ProfilePage = ({user}) => {
     console.log("rec",id)
 
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response);
         setUserProfile(response?.data?.data);
@@ -105,8 +107,8 @@ const ProfilePage = ({user}) => {
             receiverName:userProfile.name,
             senderName:user.name,
             message:"",
-            
-            })
+            },
+            { headers: {"Authorization" : `Bearer ${token}`} })
             .then(res =>{
               console.log("%%%",res)
               setNewChat(true)

@@ -4,9 +4,11 @@ import connection from "../../config.json";
 
 function TopQuestions() {
   const [topQuestions, setTopQuestions] = useState([]);
+  const token = localStorage.getItem("token");
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/analytics/topViewedQuestion`)
+      .get(`${connection.connectionURL}/api/analytics/topViewedQuestion`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         // console.log(response.data.data.topquestions);
         setTopQuestions(response?.data?.data?.topquestions);

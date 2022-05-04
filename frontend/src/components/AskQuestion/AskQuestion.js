@@ -88,14 +88,15 @@ function AskQuestion({ user, tagsFromStore }) {
   );
 
   const postQuestion = () => {
-    axios.defaults.headers.common.authorization = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     axios
       .post(`${connection.connectionURL}/api/question/addquestion`, {
         userId: user?._id,
         title,
         questionbody,
         tags,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         navigate(`/questionOverview/${response?.data?.data?._id}`);
       })

@@ -4,10 +4,11 @@ import connection from "../../config.json";
 
 function TopTags() {
   const [tags, setTags] = useState();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/analytics/topTags`)
+      .get(`${connection.connectionURL}/api/analytics/topTags`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response?.data);
         setTags(response?.data?.taggedQuestionsCount);
