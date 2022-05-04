@@ -12,7 +12,6 @@ function Chat({ user}){
     const [message_array, set_message_array] = useState([]); 
     const [message_text, setmessagetext] = useState("");    
     const senderID = user._id
-  console.log("chat",user._id,typeof(user._id),senderID)
 
     const receiverID = localStorage.getItem("receiver");
     const receiverName = localStorage.getItem("receivername")
@@ -24,7 +23,6 @@ function Chat({ user}){
         
         })
         .then(res =>{
-          console.log(res.data)
           set_message_array(res.data)
         }).catch(err => {console.log(err)})
         
@@ -35,13 +33,10 @@ function Chat({ user}){
       setTrigger(1)
       window.location.reload(true);
     });  */
-console.log(message_array)
 function sendnewmessage(e){
     e.preventDefault();
    // setTrigger(1)
     
-    console.log("$$$$$$$$$$$",setTrigger)
-console.log(message_text)
     axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
         senderID: senderID,
         receiverID:receiverID,
@@ -49,15 +44,12 @@ console.log(message_text)
         
         })
         .then(res =>{
-  console.log("chat",user._id,typeof(user._id))
           console.log("%%%",res,res.senderID,res.receiverID)
         }).catch(err => {console.log(err)})
         window.location.reload(true);
 
     }
-   /*   message_array.map(item => (
-      console.log("SDFDFSDFSF",item.senderID==senderID)
-      )) */
+
   return(
       
   <div >
@@ -113,7 +105,7 @@ console.log(message_text)
             setmessagetext(event.target.value);
           }}
         ></input>
-        <button onClick={sendnewmessage}>send</button>
+        <button className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}} onClick={sendnewmessage}> send </button>
 
     </form>
     <Link to="/allchats">show all my chats</Link>
