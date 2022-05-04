@@ -7,12 +7,14 @@ import RelativeTime from "@yaireo/relative-time";
 
 function TimeLine() {
   const relativeTime = new RelativeTime();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/question/getHistories/${id}`)
+      .get(`${connection.connectionURL}/api/question/getHistories/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setLogs(response?.data);
       })

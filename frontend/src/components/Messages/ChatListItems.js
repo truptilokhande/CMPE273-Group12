@@ -8,6 +8,7 @@ function ChatListItems(props){
   const [receiverID, setReceiverID] = useState("");
   const [receivername, setReceiverName] = useState("");
   const [showchattoken, setShowChat] = useState(false);
+  const token = localStorage.getItem("token");
   useEffect(() => {
     setTimeout(() => {
         {props.users[0]==props.senderID ? setReceiverID(props.users[1]) :setReceiverID(props.users[0])}
@@ -15,8 +16,8 @@ function ChatListItems(props){
     console.log(props.users,props.senderID,receiverID)
     axios.post(`${connection.connectionURL}/api/messages/getreceivernames`,{
         receiverID:receiverID,
-        
-        })
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} })
         .then(res =>{
           console.log(res.data)
           setReceiverName(res.data)

@@ -45,9 +45,11 @@ export const signin = (user) => (dispatch) => {
 };
 
 export const getTags = () => (dispatch) => {
+  const token = localStorage.getItem("token");
   axios.defaults.withCredentials = true;
   axios
-    .get(`${connection.connectionURL}/api/tag/getAlltags`)
+    .get(`${connection.connectionURL}/api/tag/getAlltags`,
+    { headers: {"Authorization" : `Bearer ${token}`} })
     .then((res) => {
       dispatch(getAllTagsSuccess(res.data.tags));
     })
@@ -57,8 +59,10 @@ export const getTags = () => (dispatch) => {
 };
 
 export const getUser=(id)=>(dispatch)=>{
+  const token = localStorage.getItem("token");
   axios.defaults.withCredentials=true;
-  axios.get(`${connection.connectionURL}/api/user/getUser`,id)
+  axios.get(`${connection.connectionURL}/api/user/getUser/${id}`,
+  { headers: {"Authorization" : `Bearer ${token}`} })
   .then((res)=>{
     dispatch(getUserSuccess(res.data.user));
   })

@@ -4,9 +4,11 @@ import connection from "../../config.json";
 
 function LowReputedUsers() {
   const [users, setUsers] = useState();
+  const token = localStorage.getItem("token");
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/analytics/reputationSortedUsers`)
+      .get(`${connection.connectionURL}/api/analytics/reputationSortedUsers`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUsers(response?.data?.data?.bottomUsers);
       })

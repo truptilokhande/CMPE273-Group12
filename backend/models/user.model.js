@@ -31,10 +31,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
+    // password: {
+    //   type: String,
+    //   required: true,
+    // },
     profilepicture: {
       type: String,
       required: false,

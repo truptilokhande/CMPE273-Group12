@@ -13,11 +13,13 @@ var my_id = "1"
 function AllChats({ user}){
   console.log("chat",user._id,typeof(user._id))
     const [allchats_array, set_allchats_array] = useState([]);    
-    const [no_chats, set_nochats] = useState("");  
+    const [no_chats, set_nochats] = useState("");
+    const token = localStorage.getItem("token");  
     useEffect(() => {
         axios.post(`${connection.connectionURL}/api/messages/getChatrooms`,{
         senderID: user._id,
-        })
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} })
         .then(res =>{
           console.log("allchats",res)
           {res.data=="No chatrooms available"?set_nochats(res.data):

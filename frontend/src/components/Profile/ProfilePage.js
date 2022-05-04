@@ -23,11 +23,14 @@ const ProfilePage = ({user}) => {
   const [bronzeBadges, setBronzeBadges] = useState([]);
   const [receiver, setReceiverID] = useState("");
   const [sender,setSenderID] = useState(user?._id);
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUserProfile(response?.data?.data);
         setGoldBadges(
@@ -77,8 +80,8 @@ const ProfilePage = ({user}) => {
             senderID: sender,
             receiverID:receiver,
             message:"",
-            
-            })
+            },
+            { headers: {"Authorization" : `Bearer ${token}`} })
             .then(res =>{
               console.log("%%%",res)
             }).catch(err => {console.log(err)})

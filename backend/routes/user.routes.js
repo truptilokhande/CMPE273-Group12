@@ -3,8 +3,8 @@ const router = Router();
 const userController = require("../controllers/user.controller");
 const { authenticateUser } = require('../middleware/authMiddleware');
 
-router.post("/register", authenticateUser, userController.register);
-router.post("/login", authenticateUser, userController.login);
+router.post("/register", userController.register);
+router.post("/login", userController.login);
 
 router.get("/getAllUsers", authenticateUser, userController.getAllUsers);
 router.get("/getUser/:id", authenticateUser, userController.getUser);

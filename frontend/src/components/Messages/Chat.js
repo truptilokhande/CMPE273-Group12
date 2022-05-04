@@ -11,12 +11,13 @@ function Chat(){
     const [message_text, setmessagetext] = useState("");    
     const senderID = localStorage.getItem("sender");
     const receiverID = localStorage.getItem("receiver");
+    const token = localStorage.getItem("token");
     useEffect(() => {
         axios.post(`${connection.connectionURL}/api/messages/getMessages`,{
         senderID: receiverID,
         receiverID:senderID,
-        
-        })
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} })
         .then(res =>{
           console.log(res.data)
           set_message_array(res.data)
@@ -33,7 +34,8 @@ console.log(message_text)
         receiverID:senderID,
         message:message_text,
         
-        })
+        },
+        { headers: {"Authorization" : `Bearer ${token}`} })
         .then(res =>{
           console.log("%%%",res)
         }).catch(err => {console.log(err)})
