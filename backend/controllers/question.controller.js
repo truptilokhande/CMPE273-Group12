@@ -11,7 +11,7 @@ const getQuestions = async (req, res) => {
     // calculate answers count and send questions when results are fetched
     const valueFromRedis = await redisClient.get("questions");
     if (valueFromRedis) {
-      console.log("getting values from cache");
+      console.log("getting question values from cache");
       res.status(200).send({
         data: JSON.parse(valueFromRedis),
         message: "fetched questions",
@@ -60,7 +60,6 @@ const getQuestions = async (req, res) => {
     redisClient.set("questions", JSON.stringify({ questions: result, answercount }), {
       EX: 10,
     });
-    const value = await redisClient.get("key");
 
     res.status(200).send({
       data: { questions: result, answercount },
