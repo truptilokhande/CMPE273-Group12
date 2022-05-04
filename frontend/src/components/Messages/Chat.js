@@ -113,7 +113,7 @@ console.log(message_text)
             setmessagetext(event.target.value);
           }}
         ></input>
-        <button onClick={sendnewmessage}>send</button>
+        <button className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}} onClick={sendnewmessage}> send </button>
 
     </form>
     <Link to="/allchats">show all my chats</Link>
