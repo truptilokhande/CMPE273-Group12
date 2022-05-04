@@ -28,8 +28,6 @@ function AllChats({ user}){
     },[])
     const showmessages = (e) => {
       e.preventDefault();
-      console.log("55555")
-      console.log(e.target.value)
   
     };
 
