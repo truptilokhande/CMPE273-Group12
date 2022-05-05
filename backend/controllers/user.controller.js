@@ -173,7 +173,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
       return;
     }
     redisClient.set("users", JSON.stringify({ success: "true", data: users }), {
-      EX: 10,
+      EX: 50,
     });
     users && res.status(200).send({ success: "true", data: users });
     !users &&

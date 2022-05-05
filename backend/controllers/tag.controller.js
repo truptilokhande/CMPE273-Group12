@@ -126,7 +126,7 @@ exports.getAllTags = async (req, res) => {
         questionsTaggedInAWeek,
       }),
       {
-        EX: 10,
+        EX: 50,
       }
     );
 
