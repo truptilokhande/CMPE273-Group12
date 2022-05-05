@@ -3,7 +3,7 @@ const router = Router();
 const questionController = require("../controllers/question.controller");
 const { authenticateUser } = require("../middleware/authMiddleware");
 
-router.get("/getQuestions", authenticateUser, questionController.getQuestions);
+router.get("/getQuestions", questionController.getQuestions);
 router.post("/addquestion", authenticateUser, questionController.addquestion);
 router.get("/getquestion/:questionId", authenticateUser, questionController.getquestion);
 router.get("/searchQuestionsByUserId/:searchkey", authenticateUser, questionController.searchQuestionsByUserId);
