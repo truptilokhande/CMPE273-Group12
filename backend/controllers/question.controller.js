@@ -475,7 +475,7 @@ const getHistories = async (req, res) => {
   mysqlConf.getConnection((err, connection) => {
     connection.query(query, async (err, result) => {
       if (err) {
-        res.status(400).send("error fetching products");
+        res.status(400).send("error fetching getHistories");
         return;
       }
       await Promise.all(
@@ -517,13 +517,9 @@ const testQuestions = async (req, res) => {
       }
     );
 
-    redisClient.set(
-      "testquestions",
-      JSON.stringify(result),
-      {
-        EX: 180,
-      }
-    );
+    redisClient.set("testquestions", JSON.stringify(result), {
+      EX: 180,
+    });
     res.status(200).send({
       data: { questions: result },
       message: "fetched questions",

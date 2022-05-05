@@ -230,7 +230,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       });
   };
 
-  const upvoteordownvoteAnswer = (answerId, upordownvotevalue,title) => {
+  const upvoteordownvoteAnswer = (answerId, upordownvotevalue, title) => {
     let valuetobeincrementedordecremented;
     if (upordownvotevalue === 1) {
       // user has clicked upvote if value is 1
@@ -667,7 +667,11 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                         : ""
                     }`}
                     onClick={() => {
-                      upvoteordownvoteAnswer(answer?._id, 1,answer?.answerBody);
+                      upvoteordownvoteAnswer(
+                        answer?._id,
+                        1,
+                        answer?.answerBody
+                      );
                     }}
                   >
                     <svg
@@ -693,7 +697,11 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                         : ""
                     }`}
                     onClick={() => {
-                      upvoteordownvoteAnswer(answer?._id, 0,answer?.answerBody);
+                      upvoteordownvoteAnswer(
+                        answer?._id,
+                        0,
+                        answer?.answerBody
+                      );
                     }}
                   >
                     <svg

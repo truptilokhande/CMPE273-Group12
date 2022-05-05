@@ -1,1 +1,3 @@
-{"connectionURL": "http://localhost:3001"}
+{
+  "connectionURL": "http://localhost:3001"
+}
