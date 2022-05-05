@@ -8,25 +8,55 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
+import { Navigate } from 'react-router-dom';
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
-const ProfilePage = () => {
+import { useSelector } from "react-redux";
+import { getUserSuccess } from "../../store/actions/actions";
+
+
+const ProfilePage = ({user}) => {
+
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
   const [views, setViews] = useState();
+
+  const loginUser=useSelector(getUserSuccess);
+
+  const [creatednewchat,setNewChat] = useState(false)
 
   const [userTags, setUserTags] = useState([]);
 
   const [goldBadges, setGoldBadges] = useState([]);
   const [silverBadges, setSilverBadges] = useState([]);
   const [bronzeBadges, setBronzeBadges] = useState([]);
+  const [receiver, setReceiverID] = useState("");
+  const token = localStorage.getItem("token");
+
+  const [about,setAbout]=useState("")
+
+  const url = window.location.pathname;
+  const id = url.substring(url.lastIndexOf("/") + 1);
+
+  console.log(loginUser);
+  const [receivername, setReceiverName] = useState("");
+  const [sender,setSenderID] = useState(loginUser.payload.user._id);
+ 
+   
+
 
   useEffect(() => {
-    const url = window.location.pathname;
-    const id = url.substring(url.lastIndexOf("/") + 1);
+
+    setReceiverID(id)
+    console.log("rec",id)
+
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
+        console.log(response);
         setUserProfile(response?.data?.data);
         setGoldBadges(
           response?.data?.data?.tags
@@ -39,6 +69,7 @@ const ProfilePage = () => {
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
         setViews(response?.data?.views);
+        setAbout(response?.data.data.about);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -68,17 +99,46 @@ const ProfilePage = () => {
         throw err;
       });
   }, []);
-
+  function startnewchat() {
+       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
+      /*    change this to sender ID from store */
+            senderID: sender,
+            receiverID:receiver,
+            receiverName:userProfile.name,
+            senderName:user.name,
+            message:"",
+            },
+            { headers: {"Authorization" : `Bearer ${token}`} })
+            .then(res =>{
+              console.log("%%%",res)
+              setNewChat(true)
+              console.log("%%%%%%%%%%%%%%%%%%%%%%%%%",creatednewchat)
+              localStorage.setItem("receiver",receiver)
+              localStorage.setItem("sender",sender)
+              localStorage.setItem("receivername",userProfile.name)
+            }).catch(err => {console.log(err)})
+        
+    
+      };
   return (
     <div>
       <BasicDetails userdetails={userProfile}></BasicDetails>
+      {/* start a new chat block */}
+      <div>
+    
+        <button onClick={startnewchat} className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}}>Start Chat</button>
+        {creatednewchat&&<Navigate to="/chat" />} 
+            <br></br>
+      </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
         <div className="m-3">
           <div className="fs-title mb8">Stats</div>
           <div className="s-card fc-light bar-md">
             <div className="d-flex flex__allitems6 gs16 fw-wrap md:jc-space-between">
               <div className="flex--item md:fl-auto">
-                <div className="fs-body3 fc-dark">{userProfile?.reputation}</div>
+                <div className="fs-body3 fc-dark">
+                  {userProfile?.reputation}
+                </div>
                 reputation
               </div>
               <div className="flex--item md:fl-auto">
@@ -100,8 +160,12 @@ const ProfilePage = () => {
           <div className="about">
             <h4>About</h4>
             <div>
-              <p> Python enthusiast</p>
-              <button className="editdetbutton">edit details</button>
+              <p> {about}</p>
+          {(loginUser.payload.user._id==id)?(
+              <Link to={`/Editdetails/${id}`}>
+                <button className="editdetbutton">edit details</button>
+              </Link>
+              ): <span></span>}
             </div>
           </div>
           <div className="grid--item">
@@ -279,9 +343,13 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      <div className="flex--item fs-title">Top Posts</div>
       <TopPosts />
     </div>
   );
 };
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
 
-export default ProfilePage;
+export default connect(mapStateToProps, null)(ProfilePage);

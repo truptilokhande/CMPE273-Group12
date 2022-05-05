@@ -2,9 +2,19 @@ const express = require("express");
 const tagsDb = require("../models/TagModel");
 const moment = require("moment");
 const QuestionsDb = require("../models/question.model");
+const redisClient = require("../database/redisconnection");
 
 exports.getAllTags = async (req, res) => {
   console.log("handling tags");
+  const valueFromRedis = await redisClient.get("tags");
+  if (valueFromRedis) {
+    console.log("getting tag values from cache");
+    res.status(200).send({
+      data: JSON.parse(valueFromRedis),
+      message: "fetched questions",
+    });
+    return;
+  }
   const name = req.body.name;
   const tagBody = req.body.tagBody;
 
@@ -105,6 +115,21 @@ exports.getAllTags = async (req, res) => {
     );
 
     const tags = await tagsDb.find({});
+
+    redisClient.set(
+      "tags",
+      JSON.stringify({
+        success: true,
+        tags,
+        taggedQuestionsCount,
+        questionsTaggedInADay,
+        questionsTaggedInAWeek,
+      }),
+      {
+        EX: 50,
+      }
+    );
+
     res.status(200).send({
       success: true,
       tags,

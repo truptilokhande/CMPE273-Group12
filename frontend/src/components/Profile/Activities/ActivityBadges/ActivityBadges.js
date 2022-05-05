@@ -22,9 +22,11 @@ function ActivityBadges() {
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+  const token = localStorage.getItem("token");
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response?.data?.data);
         setUserProfile(response?.data?.data);
@@ -36,6 +38,7 @@ function ActivityBadges() {
         setCritic(response?.data?.data?.downVoteCount);
         setNotable(response?.data?.views);
         setFamous(response?.data?.views);
+        setPundit(response?.data?.cc)
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -137,7 +140,7 @@ function ActivityBadges() {
             </div>
 
             <div className="row">
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {curious <= 2 ? <span className="badge3">●</span> : null}
                   {curious > 2 && curious < 5 ? (
@@ -148,7 +151,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {helpfulness <= 2 ? <span className="badge3">●</span> : null}
                   {helpfulness > 2 && helpfulness < 5 ? (
@@ -159,7 +162,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {popular <= 2 ? <span className="badge3">●</span> : null}
                   {popular > 2 && popular < 5 ? (
@@ -170,7 +173,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {sportsmanship <= 2 ? (
                     <span className="badge3">●</span>
@@ -185,7 +188,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {critic <= 2 ? <span className="badge3">●</span> : null}
                   {critic > 2 && critic < 5 ? (
@@ -196,7 +199,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {notable <= 2 ? <span className="badge3">●</span> : null}
                   {notable > 2 && notable < 5 ? (
@@ -209,7 +212,7 @@ function ActivityBadges() {
                 </a>
               </div>
 
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {famous > 15 ? (
                     <span className="badge1">●</span>
@@ -219,7 +222,7 @@ function ActivityBadges() {
                   Famous Question
                 </a>
               </div>
-              <div className="col-2">
+              <div className="col-2 p-2">
                 <a href="/" className="tag">
                   {pundit <= 2 ? <span className="badge3">●</span> : null}
                   {pundit > 2 && pundit < 5 ? (
@@ -229,10 +232,9 @@ function ActivityBadges() {
                   Pundit
                 </a>
               </div>
-              <div className="col-2">
-                {userTags?.map((userTag) => {
-                  return (
-                    <div className="col-2">
+              {userTags?.map((userTag) => {
+                return (
+                    <div className="col-2 p-2">
                       <a
                         href={`/tagOverview/${userTag?.tagId}`}
                         className="tag"
@@ -248,10 +250,9 @@ function ActivityBadges() {
                         ) : null}
                         <span className="ml-1">{userTag?.tagName}</span>
                       </a>
-                    </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* <div className="row"></div> */}

@@ -6,6 +6,7 @@ import connection from "../../config.json";
 
 function Tags() {
   const [searchTerm, setSearchTerm] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -21,7 +22,8 @@ function Tags() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/tag/getAllTags`)
+      .get(`${connection.connectionURL}/api/tag/getAllTags`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setTags(response?.data?.tags);
         setTagsInitial(response?.data?.tags);
@@ -84,10 +86,10 @@ function Tags() {
       <div className="d-flex align-items-end justify-content-between mb-3">
         <input
           className="tags-search-input"
-          autocomplete="off"
+          autoComplete="off"
           name="tagfilter"
           type="text"
-          maxlength="35"
+          maxLength="35"
           placeholder="Filter by tag name"
           onChange={(e) => setSearchTerm(e.target.value)}
         />

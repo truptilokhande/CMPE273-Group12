@@ -99,6 +99,13 @@ function BasicDetails({ userdetails }) {
           >
             Activity
           </a>
+          <a
+            href={`/Editdetails`}
+            class="s-navigation--item is-selected"
+            data-shortcut="V"
+          >
+            Settings
+          </a>
         </div>
         <div className="flex--item ml-auto">
           <div className="s-navigation s-navigation__muted ai-center"></div>

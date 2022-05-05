@@ -1,0 +1,37 @@
+.allchats {
+    width:600px;
+    height:390px;
+    left:300px;
+    padding-top:15px;
+    padding-left:200px;
+    margin-left: 60px;
+}
+.container {
+    width:400px;
+    height:390px;
+    padding-top:5px;
+    padding-left:600px;
+    padding-right:500px;
+    margin-left: 50px;
+    margin-right: 10px;
+}
+.messagebox {
+   
+    margin-left: 250px;
+}
+.messagehead {
+    padding-top:5px;
+    margin-left: 280px;
+}
+/* blue is sender */
+.sender {
+
+
+    margin-left: -650px;
+    padding-top:30px;
+ 
+}
+.receiver {
+  
+    margin-left: -180px;
+}

@@ -11,12 +11,14 @@ function Activities() {
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUserProfile(response?.data?.data);
       })
@@ -27,7 +29,8 @@ function Activities() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`)
+      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response);
         setAnswers(response?.data?.answerposts);

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useRef, useState, useMemo } from "react";
 import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
@@ -7,7 +8,7 @@ import axios from "axios";
 import connection from "../../config.json";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import S3FileUpload from "react-s3";
+import S3FileUpload from "react-s3"; 
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -87,14 +88,15 @@ function AskQuestion({ user, tagsFromStore }) {
   );
 
   const postQuestion = () => {
-    axios.defaults.headers.common.authorization = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     axios
       .post(`${connection.connectionURL}/api/question/addquestion`, {
         userId: user?._id,
         title,
         questionbody,
         tags,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         navigate(`/questionOverview/${response?.data?.data?._id}`);
       })
@@ -122,7 +124,7 @@ function AskQuestion({ user, tagsFromStore }) {
               id="title"
               name="title"
               type="text"
-              maxlength="300"
+              maxLength="300"
               placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
               className="ask-question-input"
               onChange={(e) => {

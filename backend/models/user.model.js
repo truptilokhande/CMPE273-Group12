@@ -15,7 +15,6 @@ const userTagSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
-    _id: false,
   },
   {
     timestamps: false,
@@ -32,10 +31,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
+    // password: {
+    //   type: String,
+    //   required: true,
+    // },
     profilepicture: {
       type: String,
       required: false,
@@ -46,6 +45,7 @@ const userSchema = mongoose.Schema(
     },
     about: {
       type: String,
+      default: "",
       required: false,
     },
     reputation: {
@@ -55,6 +55,31 @@ const userSchema = mongoose.Schema(
     },
     location: {
       type: String,
+      required: false,
+    },
+    title: {
+      type: String,
+      default: "",
+      required: false,
+    },
+    websitelink: {
+      type: String,
+      default: "",
+      required: false,
+    },
+    githublink: {
+      type: String,
+      default: "",
+      required: false,
+    },
+    twitterlink: {
+      type: String,
+      default: "",
+      required: false,
+    },
+    fullname: {
+      type: String,
+      default: "",
       required: false,
     },
     upVoteCount: {
@@ -67,7 +92,7 @@ const userSchema = mongoose.Schema(
       required: false,
       default: 0,
     },
-    
+
     tags: [userTagSchema],
     bookmarks: [mongoose.Types.ObjectId],
   },

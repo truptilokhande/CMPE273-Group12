@@ -9,6 +9,11 @@ const { query } = require("express");
 const expressAsyncHandler = require("express-async-handler");
 const QuestionDb = require("../models/question.model");
 const mongoose = require("mongoose");
+const aws = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const redisClient = require("../database/redisconnection");
+const mysqlConf = require("../database/sqlconnection").mysqlpool;
 const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/28a48027ee89f30d8681f415ea164f70.png",
@@ -17,62 +22,77 @@ const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/fd1092142390701a6e86fa5ca1282465.png",
 ];
 
+const s3 = new aws.S3({
+  accessKeyId: "AKIA2WX32KIUACMHTCOR",
+  secretAccessKey: "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",
+  region: "us-west-1",
+});
+
 // @desc    Register a user
 // @route   POST /api/users/register
 // @access  Public
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
   // Check if all mandatory inputs exists
   if (!name || !email || !password) {
     res.json({
       status: 400,
-      data: {},
       message: "Please add all fields",
     });
   }
-
-  // Check if user exists
-  const userExists = await User.findOne({ email });
-
-  if (userExists) {
-    res.json({
-      status: 400,
-      data: {},
-      message: "User already exists",
-    });
-  }
-
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
-  // Create user
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+  const findUserQuery = `SELECT * FROM stackoverflow_schema.userLogin WHERE email = '${email}'`;
+  mysqlConf.getConnection(async (err, connection) => {
+    try {
+      connection.query(findUserQuery, (err, userLoginData) => {
+        if (userLoginData.length) {
+          res.status(400).send({
+            success: true,
+            message: "User already exists"
+          });
+        } else {
+          //add user login in mySQL DB
+          const addUserQuery = `INSERT INTO stackoverflow_schema.userLogin 
+                                (email, password, created) 
+                                VALUES 
+                                ('${email}','${hashedPassword}','${new Date(Date.now()).toISOString()}')`;
+          connection.query(addUserQuery, async (err, result) => {
+            if (result) {
+              // Create user in mongo DB
+              const user = await User.create({
+                name,
+                email,
+                profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+              });
+              if (user) {
+                res.json({
+                  status: 201,
+                  data: {
+                    _id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    token: generateToken(user._id),
+                  },
+                  message: "User registered successfully",
+                });
+              } else {
+                res.json({
+                  status: 400,
+                  data: {},
+                  message: "Invalid user data",
+                });
+              }
+            }
+          });
+        }
+      });
+    }
+    catch (err) {
+      res.status(400).send({ success: false, message: err.message });
+    }
   });
-
-  if (user) {
-    res.json({
-      status: 201,
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-      },
-      message: "User registered successfully",
-    });
-  } else {
-    res.json({
-      status: 400,
-      data: {},
-      message: "Invalid user data",
-    });
-  }
 });
 
 // @desc    Authenticate a user
@@ -81,34 +101,41 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   let isAdmin = false;
-
-  // Check for user email
-  const user = await User.findOne({ email });
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    if (email == "admin@gmail.com") {
-      isAdmin = true;
+  const findUserQuery = `SELECT * FROM stackoverflow_schema.userLogin WHERE email = '${email}'`;
+  mysqlConf.getConnection(async (err, connection) => {
+    try {
+      connection.query(findUserQuery, async (err, userLoginData) => {
+        const passwordMatch = await bcrypt.compare(password, userLoginData[0].password);
+        if (userLoginData.length && passwordMatch) {
+          if (email == "admin@gmail.com") {
+            isAdmin = true;
+          }
+          const user = await User.findOne({ email });
+          res.json({
+            status: 200,
+            data: {
+              _id: user.id,
+              name: user.name,
+              email: user.email,
+              token: generateToken(user._id),
+              profilepicture: user.profilepicture,
+              isAdmin,
+              reputation: user?.reputation,
+            },
+            message: "User logged in successfully",
+          });
+        } else {
+          res.json({
+            status: 400,
+            message: "Invalid credentials",
+          });
+        }
+      });
     }
-    res.json({
-      status: 200,
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-        profilepicture: user.profilepicture,
-        isAdmin,
-        reputation: user?.reputation,
-      },
-      message: "User logged in successfully",
-    });
-  } else {
-    res.json({
-      status: 400,
-      data: {},
-      message: "Invalid credentials",
-    });
-  }
+    catch (err) {
+      res.status(400).send({ success: false, message: err.message });
+    }
+  });
 });
 
 // TODO
@@ -136,6 +163,18 @@ const signout = (req, res) => {
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find({});
+    const valueFromRedis = await redisClient.get("users");
+    if (valueFromRedis) {
+      console.log("getting user values from cache");
+      res.status(200).send({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
+    redisClient.set("users", JSON.stringify({ success: "true", data: users }), {
+      EX: 50,
+    });
     users && res.status(200).send({ success: "true", data: users });
     !users &&
       res
@@ -186,9 +225,14 @@ const getUser = asyncHandler(async (req, res) => {
       },
     },
     {
+      $match: {
+        "comments.userId": mongoose.Types.ObjectId(userid),
+      },
+    },
+    {
       $group: {
         _id: "$comments.userId",
-        count: {
+        questionCommentCount: {
           $count: {},
         },
       },
@@ -207,9 +251,14 @@ const getUser = asyncHandler(async (req, res) => {
       },
     },
     {
+      $match: {
+        "comments.userId": mongoose.Types.ObjectId(userid),
+      },
+    },
+    {
       $group: {
         _id: "$comments.userId",
-        count: {
+        answerCommentcount: {
           $count: {},
         },
       },
@@ -217,24 +266,11 @@ const getUser = asyncHandler(async (req, res) => {
   ];
 
   console.log("---------------commentsCountAgg----------------------");
-  const commentsInQuesCount = await question.aggregate(
+  const questionCommentCount = await question.aggregate(
     commentsQuestionCountAgg
   );
-  const count = commentsInQuesCount.find((x) => x._id === userid);
-  console.log(commentsInQuesCount);
 
-  const commentsInAnsCount = await answer.aggregate(commentsAnswersCountAgg);
-  // console.log(commentsInAnsCount);
-
-  const ansComments = commentsInAnsCount.filter(
-    (x) => x._id.toString() === userid
-  );
-  // console.log(ansComments);
-
-  const queComments = commentsInQuesCount.filter(
-    (x) => x._id.toString() === userid
-  );
-  console.log(queComments);
+  const answerCommentcount = await answer.aggregate(commentsAnswersCountAgg);
 
   const user = User.findOne(filter, function (err, result) {
     if (err) {
@@ -246,6 +282,10 @@ const getUser = asyncHandler(async (req, res) => {
         qc: qc,
         ac: ac,
         views: userQuestions?.reduce((n, { views }) => n + views, 0),
+        cc: parseInt(
+          questionCommentCount[0]?.questionCommentCount +
+            answerCommentcount[0]?.answerCommentcount
+        ),
       });
     }
   });
@@ -321,6 +361,83 @@ const getBookmarks = asyncHandler(async (req, res) => {
   }
 });
 
+const editProfile = (req, res) => {
+  console.log("In edit user details");
+  const userId = req.params.id;
+  console.log(userId);
+
+  const uploadSingle = upload("etsy-lab2").single("userImage");
+
+  uploadSingle(req, res, async (err) => {
+    if (err) return res.status(400).json({ message: err.message });
+    console.log(req.file);
+    console.log(req.body);
+    const userName = req.body.userName;
+    const location = req.body.location;
+    const title = req.body.title;
+    const aboutme = req.body.aboutme;
+    const websitelink = req.body.websitelink;
+    const twitterlink = req.body.twitterlink;
+    const githublink = req.body.githublink;
+    const fullname = req.body.fullname;
+
+    if (req.file) {
+      const profilepicture = req.file.location;
+      await User.findByIdAndUpdate(userId, {
+        name: userName,
+        location: location,
+        title,
+        about: aboutme,
+        websitelink,
+        twitterlink,
+        githublink,
+        profilepicture,
+        fullname,
+      })
+        .then((result) => {
+          console.log(result);
+          res.send({ success: true, result, profilepicture });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.send({ message: "user not updated", err });
+        });
+    } else {
+      await User.findByIdAndUpdate(userId, {
+        name: userName,
+        location: location,
+        title,
+        about: aboutme,
+        websitelink,
+        twitterlink,
+        githublink,
+        fullname,
+      })
+        .then((result) => {
+          console.log(result);
+          res.send({ success: true, result, profilepicture });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.send({ message: "user not updated", err });
+        });
+    }
+  });
+};
+
+const upload = (bucketName) =>
+  multer({
+    storage: multerS3({
+      s3,
+      bucket: bucketName,
+      metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: function (req, file, cb) {
+        cb(null, `image-${Date.now()}.jpeg`);
+      },
+    }),
+  });
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, config.JWT_SECRET, {
@@ -338,4 +455,5 @@ module.exports = {
   getBookmarks,
   getUser,
   signout,
+  editProfile,
 };

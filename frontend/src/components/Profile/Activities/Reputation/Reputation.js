@@ -14,12 +14,14 @@ function Reputation() {
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUserProfile(response?.data?.data);
       })
@@ -30,7 +32,8 @@ function Reputation() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/question/getHistories/${id}`)
+      .get(`${connection.connectionURL}/api/question/getHistories/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setReputation(response?.data);
       })

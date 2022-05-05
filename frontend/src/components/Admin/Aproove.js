@@ -7,16 +7,19 @@ import connection from "../../config.json";
 
 function Aproove() {
   const [questions, setQuestions] = useState();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
+    
     axios
-      .get(`${connection.connectionURL}/api/question/getQuestions`)
+      .get(`${connection.connectionURL}/api/question/getQuestions`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         // filtering out questions which are waiting for approval.
         const filteredQuestions = response?.data?.data?.questions?.filter(
           (question) => question.waitingForApproval === true
         );
         setQuestions(filteredQuestions);
+        
       })
       .catch((err) => {
         throw err;
@@ -25,7 +28,9 @@ function Aproove() {
 
   const handleAccept = (id) => {
     axios
-      .post(`${connection.connectionURL}/api/question/aproove/${id}`)
+      .post(`${connection.connectionURL}/api/question/aproove/${id}`,
+      null,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response);
         window.location.reload(false);
@@ -36,7 +41,9 @@ function Aproove() {
   };
   const handleReject = (id) => {
     axios
-      .post(`${connection.connectionURL}/api/question/reject/${id}`)
+      .post(`${connection.connectionURL}/api/question/reject/${id}`,
+      null,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response);
         window.location.reload(false);
@@ -79,7 +86,7 @@ function Aproove() {
           <div className="question-content-meta-data d-flex align-item-center justify-content-between flex-wrap">
             <div className="question-tags d-flex flex-wrap">
               {question.tags?.map((tag) => (
-                <a href="/" className="tag">
+                <a href={`/tagOverview/${tag.id}`} className="tag">
                   {tag.name}
                 </a>
               ))}

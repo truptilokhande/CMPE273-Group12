@@ -7,13 +7,14 @@ function Addtag() {
   const [tagTitle, setTagTitle] = useState();
   const [tagDescription, setTagDescription] = useState();
   const navigate = useNavigate();
-
+  const token = localStorage.getItem("token");
   const handleAddTag = () => {
     axios
       .post(`${connection.connectionURL}/api/tag/addTag`, {
         tagTitle,
         tagDescription,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(response);
         navigate("/tags");
@@ -33,7 +34,7 @@ function Addtag() {
                 id="tagitle"
                 name="tagtitle"
                 type="text"
-                maxlength="300"
+                maxLength="300"
                 placeholder="Python"
                 className="tagtitle"
                 style={{ marginLeft: "20px" }}

@@ -14,8 +14,10 @@ function Homepage({ setTagsInstore, isAuthenticated, user }) {
   const [sort, setSort] = useState();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     axios
-      .get(`${connection.connectionURL}/api/question/getQuestions`)
+      .get(`${connection.connectionURL}/api/question/getQuestions`,
+      { headers: { "Authorization": `Bearer ${token}` } })
       .then((response) => {
         // filtering out questions which are waiting for approval and not posted by current user.
         const filteredQuestions = response?.data?.data?.questions?.filter(

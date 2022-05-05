@@ -8,10 +8,12 @@ import { useNavigate } from "react-router-dom";
 
 function Navbar({ isAuthenticated, user, reputation }) {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const signout = () => {
     axios
-      .get(`${connection.connectionURL}/api/user/signout`)
+      .get(`${connection.connectionURL}/api/user/signout`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then(() => {
         localStorage.clear();
         window.location.reload(true);
@@ -24,7 +26,8 @@ function Navbar({ isAuthenticated, user, reputation }) {
   const searchUsers = (searchkey) => {
     axios
       .get(
-        `${connection.connectionURL}/api/question/searchQuestionsByUserId/${searchkey}`
+        `${connection.connectionURL}/api/question/searchQuestionsByUserId/${searchkey}`,
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         // redirect to users page
@@ -39,7 +42,8 @@ function Navbar({ isAuthenticated, user, reputation }) {
   const searchQuestionsByText = (searchkey) => {
     axios
       .get(
-        `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`
+        `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`,
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         // redirect to users page
@@ -141,6 +145,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
               <li className="d-flex align-items-center">
                 <a href="/user" className="navbar-user-card">
                   <div className="navbar-avatar">
+                    <Link to={`/userProfile/${user._id}`}>
                     <img
                       src={user?.profilepicture}
                       alt="user avatar"
@@ -148,6 +153,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
                       height="24"
                       className="rounded"
                     />
+                    </Link>
                   </div>
                 </a>
                 <div className="user-details p-0">
@@ -165,7 +171,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
                 </div>
               </li>
               <li className="mx-3 align-self-end mt-2">
-                <a href="/myMessages" className="navbar-messages">
+                <a href="/allchats" className="navbar-messages">
                   <svg
                     className="iconInbox"
                     width="20"

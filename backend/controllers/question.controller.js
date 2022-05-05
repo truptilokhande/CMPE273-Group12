@@ -3,11 +3,21 @@ const Answers = require("../models/answer.model");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 const mysqlConf = require("../database/sqlconnection").mysqlpool;
+const redisClient = require("../database/redisconnection");
 
 const getQuestions = async (req, res) => {
   try {
     // fetching the questions
     // calculate answers count and send questions when results are fetched
+    const valueFromRedis = await redisClient.get("questions");
+    if (valueFromRedis) {
+      console.log("getting question values from cache");
+      res.status(200).send({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
     const answerAgg = [
       {
         $lookup: {
@@ -47,6 +57,14 @@ const getQuestions = async (req, res) => {
       });
     }
 
+    redisClient.set(
+      "questions",
+      JSON.stringify({ questions: result, answercount }),
+      {
+        EX: 50,
+      }
+    );
+
     res.status(200).send({
       data: { questions: result, answercount },
       message: "fetched questions",
@@ -67,6 +85,7 @@ const addquestion = async (req, res) => {
   try {
     // check if it has image before saving.
     const checkQuestionBodyHasImage = questionbody.match(/<img/);
+    //const key = (userId + title).toLowerCase();
 
     const newQuestion = new Question({
       userId,
@@ -477,6 +496,48 @@ const getHistories = async (req, res) => {
   });
 };
 
+const testQuestions = async (req, res) => {
+  try {
+    const valueFromRedis = await redisClient.get("testquestions");
+    if (valueFromRedis) {
+      console.log("getting question values from cache");
+      res.status(200).send({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
+    const result = await Question.find(
+      {},
+      {
+        title: 1,
+        _id: 0,
+        votes: 1,
+        views: 1,
+      }
+    );
+
+    redisClient.set(
+      "testquestions",
+      JSON.stringify(result),
+      {
+        EX: 180,
+      }
+    );
+    res.status(200).send({
+      data: { questions: result },
+      message: "fetched questions",
+    });
+  } catch (err) {
+    console.log(err);
+    // any errors in fetching the questions
+    res.status(400).send({
+      data: {},
+      message: "error fetching the questions",
+    });
+  }
+};
+
 module.exports = {
   addquestion,
   editquestion,
@@ -491,6 +552,7 @@ module.exports = {
   aproove,
   reject,
   getHistories,
+  testQuestions,
 };
 
 /*

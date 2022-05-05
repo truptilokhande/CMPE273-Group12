@@ -9,12 +9,13 @@ function QuestionAnalytics() {
   const [dates, setDates] = useState([]);
   const [count, setCount] = useState([]);
   const [questionsData, setQuestionsData] = useState(false);
-
+  const token = localStorage.getItem("token");
   let data = [];
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/analytics/questionsPostedPerDay`)
+      .get(`${connection.connectionURL}/api/analytics/questionsPostedPerDay`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         console.log(
           "-----------------Question analytics----------------------"

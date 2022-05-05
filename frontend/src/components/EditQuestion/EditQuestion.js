@@ -50,14 +50,15 @@ function EditQuestion({ user, tagsFromStore, route }) {
   );
 
   const saveEdit = ()=>{
-    axios.defaults.headers.common.authorization = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     axios
       .post(`${connection.connectionURL}/api/question/editquestion`, {
         questionId: question?._id,
         title,
         questionbody,
         tags,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         navigate(`/questionOverview/${response?.data?.data?._id}`);
       })
@@ -78,7 +79,7 @@ function EditQuestion({ user, tagsFromStore, route }) {
               id="title"
               name="title"
               type="text"
-              maxlength="300"
+              maxLength="300"
               placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
               className="ask-question-input"
               defaultValue={title}

@@ -9,10 +9,12 @@ function UserTags() {
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setUserProfile(response?.data?.data);
       })
