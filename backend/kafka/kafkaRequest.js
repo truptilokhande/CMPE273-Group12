@@ -24,7 +24,7 @@ module.exports = class KafkaRPC {
         callback(new Error("timeout " + corr_id));
         delete this.requests[corr_id];
       },
-      8000,
+      180000,
       correlationId
     );
 

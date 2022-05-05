@@ -475,7 +475,7 @@ const getHistories = async (req, res) => {
   mysqlConf.getConnection((err, connection) => {
     connection.query(query, async (err, result) => {
       if (err) {
-        res.status(400).send("error fetching products");
+        res.status(400).send("error fetching getHistories");
         return;
       }
       await Promise.all(

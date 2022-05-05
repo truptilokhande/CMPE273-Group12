@@ -12,7 +12,7 @@ const writeRequest = (req, res, path, topic) => {
   rpc.makeRequest(topic, message, (err, results) => {
     console.log("test");
     if (err) {
-      res.status(400).send("error retriving products");
+      res.status(400).send("error retriving ");
     } else {
       if (path === "signin") {
         res.cookie("jwt_token", results.token1, {

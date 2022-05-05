@@ -6,11 +6,11 @@ const { authenticateUser } = require("../middleware/authMiddleware");
 const { writeRequest } = require("../kafka/client");
 const topic = "question";
 
-router.get("/testQuestions", authenticateUser, (req, res) => {
+router.get("/testQuestions", (req, res) => {
   writeRequest(req, res, "test-questions", topic);
 });
 
-router.get("/getQuestions", authenticateUser, (req, res) => {
+router.get("/getQuestions", (req, res) => {
   writeRequest(req, res, "get-questions", topic);
 });
 router.post("/addquestion", authenticateUser, (req, res) => {
@@ -58,7 +58,6 @@ router.post("/reject/:id", authenticateUser, (req, res) => {
 router.get("/getHistories/:id", authenticateUser, (req, res) => {
   writeRequest(req, res, "get-histories", topic);
 });
-
 // const { writeRequest } = require("../kafka/client");
 // const topic = "question";
 

@@ -531,7 +531,7 @@ const getHistories = async (req, res) => {
     mysqlConf.getConnection((err, connection) => {
       connection.query(query, async (err, result) => {
         if (err) {
-          reject("error fetching products");
+          reject("error fetching getHistories");
           return;
         }
         await Promise.all(
