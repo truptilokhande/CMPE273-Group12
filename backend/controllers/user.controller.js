@@ -12,6 +12,7 @@ const mongoose = require("mongoose");
 const aws = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+const redisClient = require("../database/redisconnection");
 const mysqlConf = require("../database/sqlconnection").mysqlpool;
 const userProfileDefaultImages = [
   "https://stackoverflowcmpe273.s3.us-west-1.amazonaws.com/261f4d1183a2a7cfd3927ca3e7895bc9.png",
@@ -162,6 +163,18 @@ const signout = (req, res) => {
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find({});
+    const valueFromRedis = await redisClient.get("users");
+    if (valueFromRedis) {
+      console.log("getting user values from cache");
+      res.status(200).send({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
+    redisClient.set("users", JSON.stringify({ success: "true", data: users }), {
+      EX: 10,
+    });
     users && res.status(200).send({ success: "true", data: users });
     !users &&
       res
@@ -257,9 +270,7 @@ const getUser = asyncHandler(async (req, res) => {
     commentsQuestionCountAgg
   );
 
-  const answerCommentcount = await answer.aggregate(
-    commentsAnswersCountAgg
-  );
+  const answerCommentcount = await answer.aggregate(commentsAnswersCountAgg);
 
   const user = User.findOne(filter, function (err, result) {
     if (err) {
@@ -271,7 +282,10 @@ const getUser = asyncHandler(async (req, res) => {
         qc: qc,
         ac: ac,
         views: userQuestions?.reduce((n, { views }) => n + views, 0),
-        cc: parseInt(questionCommentCount[0]?.questionCommentCount + answerCommentcount[0]?.answerCommentcount),
+        cc: parseInt(
+          questionCommentCount[0]?.questionCommentCount +
+            answerCommentcount[0]?.answerCommentcount
+        ),
       });
     }
   });
