@@ -10,15 +10,18 @@ function Bookmarkstab() {
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`)
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response1) => {
         setUserProfile(response1?.data?.data);
         setBookmarks(response1?.data?.data?.bookmarks);
         axios
-          .get(`${connection.connectionURL}/api/question/getQuestions`)
+          .get(`${connection.connectionURL}/api/question/getQuestions`,
+          { headers: {"Authorization" : `Bearer ${token}`} })
           .then((response) => {
             const filteredQuestions = response?.data?.data?.questions?.filter(
               (question) => response1?.data?.data?.bookmarks?.includes(question?._id)

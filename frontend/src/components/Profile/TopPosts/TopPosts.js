@@ -15,8 +15,10 @@ function TopPosts(user) {
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
+    const token = localStorage.getItem("token");
     axios
-      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`)
+      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`,
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         setAns(response?.data?.answerposts);
         setQues(response?.data?.quesposts);

@@ -81,6 +81,7 @@ const addquestion = async (req, res) => {
   try {
     // check if it has image before saving.
     const checkQuestionBodyHasImage = questionbody.match(/<img/);
+    //const key = (userId + title).toLowerCase();
 
     const newQuestion = new Question({
       userId,

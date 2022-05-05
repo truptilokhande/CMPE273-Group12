@@ -9,6 +9,7 @@ function ChatListItems(props){
   const [sendername, setSenderName] = useState(props.senderName);
   const [receivername, setReceiverName] = useState("");
   const [showchattoken, setShowChat] = useState(false);
+  const token = localStorage.getItem("token");
   const [render,setRender] = useState(false)
   console.log(props.users[0],props.users[1],"se",props.senderID,"props",props.usernames)
   useEffect(() => {

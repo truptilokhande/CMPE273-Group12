@@ -50,14 +50,15 @@ function EditQuestion({ user, tagsFromStore, route }) {
   );
 
   const saveEdit = ()=>{
-    axios.defaults.headers.common.authorization = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     axios
       .post(`${connection.connectionURL}/api/question/editquestion`, {
         questionId: question?._id,
         title,
         questionbody,
         tags,
-      })
+      },
+      { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         navigate(`/questionOverview/${response?.data?.data?._id}`);
       })
