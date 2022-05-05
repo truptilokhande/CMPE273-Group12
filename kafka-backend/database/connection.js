@@ -4,7 +4,7 @@ const connectDB = async () => {
   try {
     //mongodb connection string
     const con = await mongoose.connect(
-      "mongodb+srv://admin:admin@stackoverflow.yqtcu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+      "mongodb+srv://admin:admin@stackoverflow.yqtcu.mongodb.net/273TeamTestDB?retryWrites=true&w=majority"
     );
 
     console.log(`Mongo db connected: ${con.connection.host}`);

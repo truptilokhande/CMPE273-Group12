@@ -517,13 +517,9 @@ const testQuestions = async (req, res) => {
       }
     );
 
-    redisClient.set(
-      "testquestions",
-      JSON.stringify(result),
-      {
-        EX: 180,
-      }
-    );
+    redisClient.set("testquestions", JSON.stringify(result), {
+      EX: 180,
+    });
     res.status(200).send({
       data: { questions: result },
       message: "fetched questions",

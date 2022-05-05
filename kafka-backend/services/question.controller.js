@@ -3,12 +3,62 @@ const Answers = require("../models/answer.model");
 const Users = require("../models/user.model");
 const mongoose = require("mongoose");
 const mysqlConf = require("../database/mysqlConnection").mysqlpool;
+const redisClient = require("../database/reddisconnection");
+
+const testQuestions = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const valueFromRedis = await redisClient.get("testquestions");
+      if (valueFromRedis) {
+        console.log("getting question values from cache");
+        resolve({
+          data: JSON.parse(valueFromRedis),
+          message: "fetched questions",
+        });
+        return;
+      }
+      const result = await Question.find(
+        {},
+        {
+          title: 1,
+          _id: 0,
+          votes: 1,
+          views: 1,
+        }
+      );
+
+      redisClient.set("testquestions", JSON.stringify(result), {
+        EX: 180,
+      });
+      resolve({
+        data: { questions: result },
+        message: "fetched questions",
+      });
+    } catch (err) {
+      console.log(err);
+      // any errors in fetching the questions
+      reject({
+        data: {},
+        message: "error fetching the questions",
+      });
+    }
+  });
+};
 
 const getQuestions = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
       // fetching the questions
       // calculate answers count and send questions when results are fetched
+      const valueFromRedis = await redisClient.get("questions");
+      if (valueFromRedis) {
+        console.log("getting question values from cache");
+        resolve({
+          data: JSON.parse(valueFromRedis),
+          message: "fetched questions",
+        });
+        return;
+      }
       const answerAgg = [
         {
           $lookup: {
@@ -48,6 +98,14 @@ const getQuestions = async (req, res) => {
         });
       }
 
+      redisClient.set(
+        "questions",
+        JSON.stringify({ questions: result, answercount }),
+        {
+          EX: 50,
+        }
+      );
+
       resolve({
         data: { questions: result, answercount },
         message: "fetched questions",
@@ -55,7 +113,7 @@ const getQuestions = async (req, res) => {
     } catch (err) {
       console.log(err);
       // any errors in fetching the questions
-      res.status(400).send({
+      resolve({
         data: {},
         message: "error fetching the questions",
       });
@@ -496,7 +554,9 @@ const getHistories = async (req, res) => {
 };
 
 async function handle_request(msg) {
-  if (msg.path === "get-questions") {
+  if (msg.path === "test-questions") {
+    return await testQuestions(msg);
+  } else if (msg.path === "get-questions") {
     return await getQuestions(msg);
   } else if (msg.path === "add-question") {
     return await addquestion(msg);
