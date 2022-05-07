@@ -5,7 +5,7 @@ const User = require("../models/user.model");
 const question = require("../models/question.model");
 const answer = require("../models/answer.model");
 const config = require("../config/config.json");
-const { query, response } = require("express");
+const { query, response: resolve } = require("express");
 const expressAsyncHandler = require("express-async-handler");
 const QuestionDb = require("../models/question.model");
 const mongoose = require("mongoose");
@@ -145,7 +145,7 @@ const login = asyncHandler(async (req, res) => {
 // TODO
 const signout = (req, res) => {
     return new Promise(async (resolve, reject) => {
-  response({
+  resolve({
     status: 200,
     message: "User logged out successfully",
   });
@@ -173,7 +173,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
     const valueFromRedis = await redisClient.get("users");
     if (valueFromRedis) {
       console.log("getting user values from cache");
-      response({
+      resolve({
         data: JSON.parse(valueFromRedis),
         message: "fetched questions",
       });
@@ -182,7 +182,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
     redisClient.set("users", JSON.stringify({ success: "true", data: users }), {
       EX: 50,
     });
-   response({ success: "true", data: users });
+   resolve({ success: "true", data: users });
     !users &&
       reject({ success: "false", message: "error fetching users" });
   } catch (err) {
@@ -285,7 +285,7 @@ const getUser = asyncHandler(async (req, res) => {
     if (err) {
       reject({ success: false, message: "error fetching user" });
     } else {
-      response({
+      resolve({
         success: true,
         data: result,
         qc: qc,
