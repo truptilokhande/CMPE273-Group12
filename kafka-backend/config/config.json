@@ -6,5 +6,7 @@
     "host": "stackoverflow-divya.cw6vltzgg4cv.us-west-1.rds.amazonaws.com",
     "port": 3306,
     "dialect": "mysql"
-  }
+  },
+  "JWT_SECRET": "stackoverflow",
+    "JWT_EXPIRE_PERIOD": "30d"
 }

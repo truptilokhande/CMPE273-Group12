@@ -1,14 +1,22 @@
 const { Router } = require("express");
 const tagRoute = Router();
+const { writeRequest } = require("../kafka/client");
 const tagController = require("../controllers/tag.controller");
 const { authenticateUser } = require("../middleware/authMiddleware");
+const topic="tags";
 
-tagRoute.get("/getAlltags", authenticateUser, tagController.getAllTags);
-tagRoute.post("/addTag", authenticateUser, tagController.addTag);
+tagRoute.get("/getAlltags", authenticateUser, (req, res) => {
+  writeRequest(req, res, "get-tag", topic);
+});
+tagRoute.post("/addTag", authenticateUser, (req, res) => {
+  writeRequest(req, res, "add-tag", topic);
+});
 tagRoute.get(
   "/getAllQuestionWithSpecificTag/:tagName",
   authenticateUser,
-  tagController.getAllQuestionWithSpecificTag
+  (req, res) => {
+    writeRequest(req, res, "get-question-tag", topic);
+  }
 );
 
 module.exports = tagRoute;

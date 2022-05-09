@@ -6,6 +6,8 @@ const mysql = require("mysql");
 
 const questionController = require("./services/question.controller");
 const answerController = require("./services/answer.controller");
+const tagController = require("./services/tag.controller");
+const userController=require("./services/user.controller");
 const constants = require("./config/config.json");
 
 // var createShop = require("./services/createShop");
@@ -54,6 +56,9 @@ const handleTopicRequest = (topic_name, controller) => {
 
 handleTopicRequest("answer", answerController);
 handleTopicRequest("question", questionController);
+handleTopicRequest("tags", tagController);
+handleTopicRequest("user",userController);
+
 
 // handleTopicRequest("create_shop", createShop);
 
