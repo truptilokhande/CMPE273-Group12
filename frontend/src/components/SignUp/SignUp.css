@@ -33,3 +33,9 @@
 .sign-up-wrapper {
     margin-right: -264px;
 }
+.sign-up-error{
+  display: none;
+}
+.sign-in-error{
+  display: none;
+}

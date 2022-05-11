@@ -7,13 +7,21 @@ function SignIn({ signIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+  const [showloader, setShowLoader] = useState(false);
 
-  const login = () => {
+  const login = async () => {
     const user = {
       email,
       password,
     };
-    signIn(user);
+    try {
+      setShowLoader(true);
+      await signIn(user);
+      setShowLoader(false);
+    } catch (err) {
+      setShowLoader(false);
+      console.log(err);
+    }
   };
 
   return (
@@ -34,6 +42,9 @@ function SignIn({ signIn }) {
           <div className="sign-up-form p-4 bg-white mx-auto mt-4">
             <form className="d-flex flex-column">
               <div className="d-flex flex-column">
+                <div className="text-danger font-italic small sign-in-error">
+                  email/password incorrect!
+                </div>
                 <label className="form-label my-1">Email</label>
                 <input
                   name="display-name"
@@ -80,6 +91,13 @@ function SignIn({ signIn }) {
                     )
                   }
                 >
+                  {showloader ? (
+                    <span
+                      class="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  ) : null}
                   Log in
                 </button>
               </div>

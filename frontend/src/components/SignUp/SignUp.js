@@ -7,15 +7,23 @@ function SignUp({ signUp }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [showloader, setShowLoader] = useState(false);
   const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
-  const register = () => {
+  const register = async () => {
     const newUser = {
       email,
       name,
       password,
     };
-    signUp(newUser);
+    try {
+      setShowLoader(true);
+      await signUp(newUser);
+      setShowLoader(false);
+    } catch (err) {
+      setShowLoader(false);
+      console.log(err);
+    }
   };
 
   return (
@@ -41,6 +49,9 @@ function SignUp({ signUp }) {
           </div>
           <div className="sign-up-form p-4 mx-auto bg-white">
             <form className="d-flex flex-column">
+              <div className="text-danger font-italic small sign-up-error">
+                email/password might already exist!
+              </div>
               <div className="d-flex flex-column">
                 <label className="form-label my-1">Display name</label>
                 <input
@@ -103,6 +114,11 @@ function SignUp({ signUp }) {
                     )
                   }
                 >
+                  {
+                  showloader
+                  ? <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  : null
+                  }
                   Sign up
                 </button>
               </div>
