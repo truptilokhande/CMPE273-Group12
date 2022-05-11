@@ -12,11 +12,13 @@ function TimeLine() {
   useEffect(() => {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
+    setId(id);
     axios
       .get(`${connection.connectionURL}/api/question/getHistories/${id}`,
       { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
-        setLogs(response?.data);
+        setLogs(response?.data?.result);
+        setQuestionTitle(response?.data?.questionTitle?.title);
       })
       .catch((err) => {
         throw err;
@@ -24,16 +26,18 @@ function TimeLine() {
   }, []);
 
   const [logs, setLogs] = useState();
+  const [questiontitle, setQuestionTitle] = useState();
+  const [id, setId] = useState();
 
   return (
     <div className="timeline">
       <div className="timeline-content">
         <h1>
-          Timeline for <a href="/">question title</a>
+          Timeline for <a href={`/questionOverview/${id}`}>{questiontitle}</a>
         </h1>
       </div>
       <div className="timeline-eventFilters">
-        <h2>Event filters</h2>
+        {/* <h2>Event filters</h2> */}
       </div>
       <div className="timeline-event mb-3"> 1 event</div>
       <div className="timeline-eventTable">
