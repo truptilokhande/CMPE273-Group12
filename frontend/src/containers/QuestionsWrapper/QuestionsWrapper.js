@@ -79,7 +79,7 @@ function QuestionsWrapper({ ...props }) {
 
                     <div className="user-card-info">
                       <div className="user-link">
-                        <a href="/">{question?.user[0]?.name}</a>
+                        <a href={`/userProfile/${question?.user[0]?._id}`}>{question?.user[0]?.name}</a>
                       </div>
                     </div>
 
