@@ -25,11 +25,15 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: hsl(210,8%,25%);
+  color: hsl(210, 8%, 25%);
   font-size: 13px;
 }
 
 .tag-meta-data {
-    font-size: 12px !important;
-    color: hsl(210,8%,55%);
+  font-size: 12px !important;
+  color: hsl(210, 8%, 55%);
+}
+
+.tags-page {
+  width: -webkit-fill-available;
 }

@@ -8,10 +8,17 @@ function Tags() {
   const [searchTerm, setSearchTerm] = useState("");
   const token = localStorage.getItem("token");
 
+  const [tags, setTags] = useState();
+  const [tagsInitial, setTagsInitial] = useState();
+  const [taggedQuestionsCount, setTagsCount] = useState();
+  const [taggedQuestionsCountInAday, setTagsCountInADay] = useState();
+  const [taggedQuestionsCountInAWeek, setTagsCountInAWeek] = useState();
+
   useEffect(() => {
+    if (!searchTerm && !tagsInitial) return;
     const delayDebounceFn = setTimeout(() => {
       // if (searchTerm.length < 4) return;
-      const filteredTags = tagsInitial.filter((i) =>
+      const filteredTags = tagsInitial?.filter((i) =>
         i.name.includes(searchTerm, i)
       );
       setTags(filteredTags);
@@ -22,14 +29,15 @@ function Tags() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/tag/getAllTags`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/tag/getAllTags`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
-        setTags(response?.data?.tags);
-        setTagsInitial(response?.data?.tags);
-        setTagsCount(response?.data?.taggedQuestionsCount);
-        setTagsCountInADay(response?.data?.questionsTaggedInADay);
-        setTagsCountInAWeek(response?.data?.questionsTaggedInAWeek);
+        setTags(response?.data?.data?.tags);
+        setTagsInitial(response?.data?.data?.tags);
+        setTagsCount(response?.data?.data?.taggedQuestionsCount);
+        setTagsCountInADay(response?.data?.data?.questionsTaggedInADay);
+        setTagsCountInAWeek(response?.data?.data?.questionsTaggedInAWeek);
         sortTags("popular");
       })
       .catch((err) => {
@@ -37,17 +45,12 @@ function Tags() {
       });
   }, []);
 
-  const [tags, setTags] = useState();
-  const [tagsInitial, setTagsInitial] = useState();
-  const [taggedQuestionsCount, setTagsCount] = useState();
-  const [taggedQuestionsCountInAday, setTagsCountInADay] = useState();
-  const [taggedQuestionsCountInAWeek, setTagsCountInAWeek] = useState();
-
   const [sort, setSort] = useState("popular");
 
   const sortTags = (criteria) => {
     if (criteria === "popular") {
-      const sortedTags = tagsInitial.sort(function (a, b) {
+      if (!tagsInitial) return;
+      const sortedTags = tagsInitial?.sort(function (a, b) {
         const acount =
           taggedQuestionsCount?.find((item) => item._id === a?._id)?.count || 0;
         const bcount =
@@ -124,8 +127,8 @@ function Tags() {
         </div>
       </div>
 
-      <div className="tags">
-        <div className="tags-wrapper row no-gutters">
+      <div className="tags tags-page">
+        <div className="tags-wrapper row no-gutters pl-4">
           {/* start iterating tags  */}
           {tags?.map((tag) => (
             <div className="col-3 d-flex flex-column tag-card">
@@ -141,7 +144,7 @@ function Tags() {
                 <div className="mb-3 tag-content">{tag?.tagBody}</div>
 
                 <div className="d-flex row no-gutters justify-content-between tag-meta-data">
-                  <div className="col-6">
+                  <div className="col-6 pl-2">
                     {taggedQuestionsCount?.find((item) => item._id === tag?._id)
                       ?.count || 0}
                     &nbsp; questions
