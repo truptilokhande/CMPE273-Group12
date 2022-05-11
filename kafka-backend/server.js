@@ -9,6 +9,7 @@ const answerController = require("./services/answer.controller");
 const tagController = require("./services/tag.controller");
 const userController=require("./services/user.controller");
 const constants = require("./config/config.json");
+const messageController=require("./services/message.controller");
 
 // var createShop = require("./services/createShop");
 // var signIn = require("./services/signin");
@@ -58,6 +59,7 @@ handleTopicRequest("answer", answerController);
 handleTopicRequest("question", questionController);
 handleTopicRequest("tags", tagController);
 handleTopicRequest("user",userController);
+handleTopicRequest("message",messageController);
 
 
 // handleTopicRequest("create_shop", createShop);
