@@ -5,209 +5,223 @@ const QuestionsDb = require("../models/question.model");
 const redisClient = require("../database/reddisconnection");
 
 const getAllTags = async (req, res) => {
-    return new Promise(async (resolve, reject) => {
-  console.log("handling tags");
-  const valueFromRedis = await redisClient.get("tags");
-  if (valueFromRedis) {
-    console.log("getting tag values from cache");
-    resolve({
-      data: JSON.parse(valueFromRedis),
-      message: "fetched questions",
-    });
-    return;
-  }
-  const name = req.body.name;
-  const tagBody = req.body.tagBody;
+  return new Promise(async (resolve, reject) => {
+    console.log("handling tags");
+    const valueFromRedis = await redisClient.get("tags");
+    if (valueFromRedis) {
+      console.log("getting tag values from cache");
+      resolve({
+        data: JSON.parse(valueFromRedis),
+        message: "fetched questions",
+      });
+      return;
+    }
+    const name = req.body.name;
+    const tagBody = req.body.tagBody;
 
-  let onlyToday = new Date();
-  onlyToday.setHours(0, 0, 0, 0);
-  let today = new Date();
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    let onlyToday = new Date();
+    onlyToday.setHours(0, 0, 0, 0);
+    let today = new Date();
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  try {
-    const taggedQuestionsCountAgg = [
-      {
-        $project: {
-          tags: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$tags",
-        },
-      },
-      {
-        $group: {
-          _id: "$tags.id",
-          count: {
-            $count: {},
+    try {
+      const taggedQuestionsCountAgg = [
+        {
+          $project: {
+            tags: 1,
           },
         },
-      },
-    ];
-
-    const taggedQuestionsCountInWeekAgg = [
-      {
-        $match: {
-          createdAt: {
-            $gte: sevenDaysAgo,
-            $lte: today,
+        {
+          $unwind: {
+            path: "$tags",
           },
         },
-      },
-      {
-        $project: {
-          tags: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$tags",
-        },
-      },
-      {
-        $group: {
-          _id: "$tags.id",
-          count: {
-            $count: {},
+        {
+          $group: {
+            _id: "$tags.id",
+            count: {
+              $count: {},
+            },
           },
         },
-      },
-    ];
+      ];
 
-    const taggedQuestionsInDay = [
-      {
-        $match: {
-          createdAt: {
-            $gte: onlyToday,
+      const taggedQuestionsCountInWeekAgg = [
+        {
+          $match: {
+            createdAt: {
+              $gte: sevenDaysAgo,
+              $lte: today,
+            },
           },
         },
-      },
-      {
-        $project: {
-          tags: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$tags",
-        },
-      },
-      {
-        $group: {
-          _id: "$tags.id",
-          count: {
-            $count: {},
+        {
+          $project: {
+            tags: 1,
           },
         },
-      },
-    ];
+        {
+          $unwind: {
+            path: "$tags",
+          },
+        },
+        {
+          $group: {
+            _id: "$tags.id",
+            count: {
+              $count: {},
+            },
+          },
+        },
+      ];
 
-    const taggedQuestionsCount = await QuestionsDb.aggregate(
-      taggedQuestionsCountAgg
-    );
+      const taggedQuestionsInDay = [
+        {
+          $match: {
+            createdAt: {
+              $gte: onlyToday,
+            },
+          },
+        },
+        {
+          $project: {
+            tags: 1,
+          },
+        },
+        {
+          $unwind: {
+            path: "$tags",
+          },
+        },
+        {
+          $group: {
+            _id: "$tags.id",
+            count: {
+              $count: {},
+            },
+          },
+        },
+      ];
 
-    const questionsTaggedInAWeek = await QuestionsDb.aggregate(
-      taggedQuestionsCountInWeekAgg
-    );
+      const taggedQuestionsCount = await QuestionsDb.aggregate(
+        taggedQuestionsCountAgg
+      );
 
-    const questionsTaggedInADay = await QuestionsDb.aggregate(
-      taggedQuestionsInDay
-    );
+      const questionsTaggedInAWeek = await QuestionsDb.aggregate(
+        taggedQuestionsCountInWeekAgg
+      );
 
-    const tags = await tagsDb.find({});
+      const questionsTaggedInADay = await QuestionsDb.aggregate(
+        taggedQuestionsInDay
+      );
 
-    redisClient.set(
-      "tags",
-      JSON.stringify({
+      const tags = await tagsDb.find({});
+
+      redisClient.set(
+        "tags",
+        JSON.stringify({
+          success: true,
+          tags,
+          taggedQuestionsCount,
+          questionsTaggedInADay,
+          questionsTaggedInAWeek,
+        }),
+        {
+          EX: 50,
+        }
+      );
+
+      resolve({
         success: true,
         tags,
         taggedQuestionsCount,
         questionsTaggedInADay,
         questionsTaggedInAWeek,
-      }),
-      {
-        EX: 50,
-      }
-    );
-
-    resolve({
-      success: true,
-      tags,
-      taggedQuestionsCount,
-      questionsTaggedInADay,
-      questionsTaggedInAWeek,
-    });
-  } catch (err) {
-    reject({ message: err.message });
-  }
-});
+      });
+    } catch (err) {
+      reject({ message: err.message });
+    }
+  });
 };
 
 const addTag = (req, res) => {
-    return new Promise(async (resolve, reject) => {
-  console.log("handling add Tag");
-  const tagTitle = req.body.tagTitle;
-  const tagDescription = req.body.tagDescription;
-  console.log(tagTitle);
-  console.log(tagDescription);
+  return new Promise(async (resolve, reject) => {
+    console.log("handling add Tag");
+    const tagTitle = req.body.tagTitle;
+    const tagDescription = req.body.tagDescription;
+    console.log(tagTitle);
+    console.log(tagDescription);
 
-  const tags = new tagsDb({
-    name: tagTitle,
-    tagBody: tagDescription,
-  });
-
-  tags
-    .save(tags)
-    .then((data) => {
-      console.log(data);
-      resolve({ success: true, result: data });
-    })
-    .catch((err) => {
-      console.log(err);
-      reject({ message: "some error occured" });
+    const tags = new tagsDb({
+      name: tagTitle,
+      tagBody: tagDescription,
     });
-})
+
+    tags
+      .save(tags)
+      .then((data) => {
+        console.log(data);
+        resolve({ success: true, result: data });
+      })
+      .catch((err) => {
+        console.log(err);
+        reject({ message: "some error occured" });
+      });
+  });
 };
 
 const getAllQuestionWithSpecificTag = async (req, res) => {
-    return new Promise(async (resolve, reject) => {
-  try {
-    const id = req.params.tagName;
-    const checkQuery = [
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
+  return new Promise(async (resolve, reject) => {
+    try {
+      const id = req.params.tagName;
+      const checkQuery = [
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
         },
-      },
-      {
-        $match: {
-          "tags.id": id,
+        {
+          $match: {
+            "tags.id": id,
+          },
         },
-      },
-    ];
-    const tag = await tagsDb.findOne({ _id: id });
+      ];
+      const tag = await tagsDb.findOne({ _id: id });
 
-    const questions = await QuestionsDb.aggregate(checkQuery);
-    resolve({ questions, tag });
-  } catch (error) {
-    reject(error.message);
-  }
-})
+      const questions = await QuestionsDb.aggregate(checkQuery);
+      resolve({ questions, tag });
+    } catch (error) {
+      reject(error.message);
+    }
+  });
 };
+
+const getTagId = (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    const searchKey = req.params.tagName;
+    const result = await tagsDb.findOne({
+      name: { $regex: new RegExp(searchKey, "i") },
+    });
+    result && resolve(result);
+    !result && reject("error searching products");
+  });
+};
+
 async function handle_request(msg) {
-    if (msg.path === "get-tag") {
-      return await getAllTags(msg);
-    } else if (msg.path === "add-tag") {
-      return await addTag(msg);
-    } else if (msg.path === "get-question-tag") {
-      return await getAllQuestionWithSpecificTag(msg);
-    } 
+  if (msg.path === "get-tag") {
+    return await getAllTags(msg);
+  } else if (msg.path === "add-tag") {
+    return await addTag(msg);
+  } else if (msg.path === "get-question-tag") {
+    return await getAllQuestionWithSpecificTag(msg);
+  } else if (msg.path === "get-tag-id") {
+    return await getTagId(msg);
   }
-  
-  module.exports = {
-    handle_request,
-  };
+}
+
+module.exports = {
+  handle_request,
+};

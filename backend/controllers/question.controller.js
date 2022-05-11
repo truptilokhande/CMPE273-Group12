@@ -225,7 +225,7 @@ const voteQuestion = async (req, res) => {
       );
       await Users.findOneAndUpdate(
         { _id: userId },
-        { $dec: { reputation: 10 } }
+        { $inc: { reputation: -10 } }
       );
       result = await Question.findOneAndUpdate(
         { _id: questionId },
@@ -486,11 +486,11 @@ const getHistories = async (req, res) => {
             },
             { name: 1, _id: 1 }
           );
-          console.log(result);
           log.user = result;
         })
       );
-      res.status(200).send(result);
+      const questionTitle = await Question.findOne({ _id: logID });
+      res.status(200).send({ result, questionTitle });
     });
     connection.release();
   });

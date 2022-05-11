@@ -18,5 +18,8 @@ tagRoute.get(
     writeRequest(req, res, "get-question-tag", topic);
   }
 );
+tagRoute.get("/getTagId/:tagName", authenticateUser, (req, res) => {
+  writeRequest(req, res, "get-tag-id", topic);
+});
 
 module.exports = tagRoute;

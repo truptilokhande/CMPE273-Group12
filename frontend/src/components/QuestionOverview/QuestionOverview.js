@@ -14,9 +14,15 @@ import S3FileUpload from "react-s3";
 import {
   increasereputation,
   decrementreputation,
+  setUser,
 } from "../../store/actions/actions";
 
-function QuestionOverview({ user, incrementReputation, decrementReputation }) {
+function QuestionOverview({
+  user,
+  incrementReputation,
+  decrementReputation,
+  setUserdetailsInStore,
+}) {
   const relativeTime = new RelativeTime();
   const [question, setQuestion] = useState();
   const [usercomment, setComment] = useState();
@@ -37,8 +43,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/question/getQuestion/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/question/getQuestion/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setQuestion(response?.data?.question);
         setUserdetails(response?.data?.userDetails);
@@ -137,9 +144,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       answerBody,
     };
     axios
-      .post(`${connection.connectionURL}/api/answer/add-answer`,
-      answer,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(`${connection.connectionURL}/api/answer/add-answer`, answer, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         window.location.reload(true);
       })
@@ -156,9 +163,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
       commentBody: usercomment,
     };
     axios
-      .post(`${connection.connectionURL}/api/answer/add-comment`,
-      comment,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(`${connection.connectionURL}/api/answer/add-comment`, comment, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         const result = answers.map((x) => {
           const item = x?._id === id;
@@ -200,9 +207,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         {
           userId: user?._id,
           questionId: question?._id,
-          title:question?.title
+          title: question?.title,
         },
-        { headers: {"Authorization" : `Bearer ${token}`} }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         setQuestion({
@@ -271,9 +278,9 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
         {
           userId: user?._id,
           answerId,
-          title
+          title,
         },
-        { headers: {"Authorization" : `Bearer ${token}`} }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         const res = answers.map((i) => {
@@ -358,12 +365,15 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
 
   const markAnswerAsAsRight = (id, markedAsRight) => {
     axios
-      .post(`${connection.connectionURL}/api/answer/set-best-answer`, {
-        userId: user?._id,
-        questionId: question?._id,
-        answerId: id,
-      },
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(
+        `${connection.connectionURL}/api/answer/set-best-answer`,
+        {
+          userId: user?._id,
+          questionId: question?._id,
+          answerId: id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         setAnswers([...response?.data?.data]);
         if (markedAsRight) {
@@ -379,13 +389,16 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
 
   const bookmarkQuestion = () => {
     axios
-      .post(`${connection.connectionURL}/api/question/bookmark`, {
-        questionId: question?._id,
-        userId: user?._id,
-      },
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(
+        `${connection.connectionURL}/api/question/bookmark`,
+        {
+          questionId: question?._id,
+          userId: user?._id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
-        setUserdetails({ ...response?.data?.result });
+        setUserdetailsInStore({ ...response?.data?.result });
       })
       .catch((err) => {
         throw err;
@@ -394,13 +407,16 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
 
   const addCommentToQuestion = () => {
     axios
-      .post(`${connection.connectionURL}/api/question/addComment`, {
-        questionId: question?._id,
-        userId: user?._id,
-        userName: user?.name,
-        commentBody: questionCommentContent,
-      },
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(
+        `${connection.connectionURL}/api/question/addComment`,
+        {
+          questionId: question?._id,
+          userId: user?._id,
+          userName: user?.name,
+          commentBody: questionCommentContent,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         const comments = response?.data?.comments;
         setQuestion({ ...question, comments });
@@ -479,7 +495,6 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                   <path d="M2 11h32L18 27 2 11Z"></path>
                 </svg>
               </button>
-
               <button
                 className="bookmark-button voting-container-button"
                 onClick={() => {
@@ -496,7 +511,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                   <path
                     d="M6 1a2 2 0 0 0-2 2v14l5-4 5 4V3a2 2 0 0 0-2-2H6Zm3.9 3.83h2.9l-2.35 1.7.9 2.77L9 7.59l-2.35 1.7.9-2.76-2.35-1.7h2.9L9 2.06l.9 2.77Z"
                     fill={
-                      userdetails?.bookmarks?.includes(question?._id)
+                      user?.bookmarks?.includes(question?._id)
                         ? "#CEA71C"
                         : "#BABFC3"
                     }
@@ -567,9 +582,11 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                 />
               </div>
               <div className="user-details">
-                <a href="/">{userdetails?.name}</a>
+                <a href={`/userProfile/${userdetails?._id}`}>{userdetails?.name}</a>
                 <div className="reputation-wrapper">
-                  <span className="reputation-score">753</span>
+                  <span className="reputation-score">
+                    {userdetails?.reputation}
+                  </span>
                   <span>
                     <span className="badge2">●</span>
                     <span className="badgecount">3</span>
@@ -594,7 +611,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
 
                     <div className="d-inline-flex align-items-center">
                       &nbsp;–&nbsp;
-                      <a href="/" className="comment-user">
+                      <a href={`/userProfile/${comment?.userId}`} className="comment-user">
                         {comment?.userName}
                       </a>
                     </div>
@@ -779,9 +796,11 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
                     />
                   </div>
                   <div className="user-details">
-                    <a href="/">{answer?.user[0]?.name}</a>
+                    <a href={`/userProfile/${answer?.user[0]?._id}`}>{answer?.user[0]?.name}</a>
                     <div className="reputation-wrapper">
-                      <span className="reputation-score">753</span>
+                      <span className="reputation-score">
+                        {answer?.user[0]?.reputation}
+                      </span>
                       <span>
                         <span className="badge2">●</span>
                         <span className="badgecount">3</span>
@@ -808,7 +827,7 @@ function QuestionOverview({ user, incrementReputation, decrementReputation }) {
 
                         <div className="d-inline-flex align-items-center">
                           &nbsp;–&nbsp;
-                          <a href="/" className="comment-user">
+                          <a href={`/userProfile/${comment?.userId}`} className="comment-user">
                             {comment?.userName}
                           </a>
                         </div>
@@ -904,6 +923,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   incrementReputation: (val) => dispatch(increasereputation(val)),
   decrementReputation: (val) => dispatch(decrementreputation(val)),
+  setUserdetailsInStore: (val) => dispatch(setUser(val)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuestionOverview);
