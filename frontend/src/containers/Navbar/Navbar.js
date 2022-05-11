@@ -12,8 +12,9 @@ function Navbar({ isAuthenticated, user, reputation }) {
 
   const signout = () => {
     axios
-      .get(`${connection.connectionURL}/api/user/signout`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/signout`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then(() => {
         localStorage.clear();
         window.location.reload(true);
@@ -27,7 +28,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
     axios
       .get(
         `${connection.connectionURL}/api/question/searchQuestionsByUserId/${searchkey}`,
-        { headers: {"Authorization" : `Bearer ${token}`} }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         // redirect to users page
@@ -43,7 +44,7 @@ function Navbar({ isAuthenticated, user, reputation }) {
     axios
       .get(
         `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`,
-        { headers: {"Authorization" : `Bearer ${token}`} }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
         // redirect to users page
@@ -55,13 +56,45 @@ function Navbar({ isAuthenticated, user, reputation }) {
       });
   };
 
-  const onSearch = (e) => {
+  // const getAcceptedQuestions = (searchkey) => {
+  //   axios
+  //     .get(
+  //       `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     )
+  //     .then((response) => {
+  //       // redirect to users page
+  //       navigate("/search", { state: { questions: response?.data?.data } });
+  //       window.location.reload(true);
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     });
+  // };
+
+  const getTagResults = (searchkey) => {
+    axios
+      .get(`${connection.connectionURL}/api/tag/getTagId/${searchkey}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        // redirect to users page
+        navigate(`/tagOverview/${response?.data?._id}`);
+        window.location.reload(true);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
+  const onSearch = async (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const searchkey = e.target.value;
       // check for [ ] and then its tag search and redirect to tag overview page
       if (/^\[.*\]$/.test(searchkey)) {
         // redirect to tags page
+        getTagResults(searchkey.match(/(?<=\[)[^\][]*(?=])/g));
       } else if (/^user:.*$/.test(searchkey)) {
         // split the search key and get search key value and call the api for results
         searchUsers(searchkey.split(":")[1]);
@@ -120,13 +153,17 @@ function Navbar({ isAuthenticated, user, reputation }) {
                 </div>
                 <div className="mb12">
                   <span className="search-criteria mr-2">"words here"</span>
-                  <span className="search-criteria-description">exact phrase</span>
+                  <span className="search-criteria-description">
+                    exact phrase
+                  </span>
                 </div>
               </div>
               <div className="flex-grow-1">
                 <div className="mb-3">
                   <span className="search-criteria mr-2">is:question</span>
-                  <span className="search-criteria-description">type of post</span>
+                  <span className="search-criteria-description">
+                    type of post
+                  </span>
                 </div>
                 <div className="">
                   <span className="search-criteria mr-2">isaccepted:yes</span>
@@ -143,19 +180,19 @@ function Navbar({ isAuthenticated, user, reputation }) {
           {isAuthenticated ? (
             <ol className="d-flex list-unstyled m-0 align-items-center">
               <li className="d-flex align-items-center">
-                <a href="/user" className="navbar-user-card">
+                <span className="navbar-user-card">
                   <div className="navbar-avatar">
                     <Link to={`/userProfile/${user._id}`}>
-                    <img
-                      src={user?.profilepicture}
-                      alt="user avatar"
-                      width="24"
-                      height="24"
-                      className="rounded"
-                    />
+                      <img
+                        src={user?.profilepicture}
+                        alt="user avatar"
+                        width="24"
+                        height="24"
+                        className="rounded"
+                      />
                     </Link>
                   </div>
-                </a>
+                </span>
                 <div className="user-details p-0">
                   <div className="reputation-wrapper pl-2">
                     <span className="reputation-score">{reputation}</span>
