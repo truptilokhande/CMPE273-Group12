@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const questionController = require("./services/question.controller");
 const answerController = require("./services/answer.controller");
 const tagController = require("./services/tag.controller");
-const userController=require("./services/user.controller");
+const userController = require("./services/user.controller");
 const constants = require("./config/config.json");
 const messageController=require("./services/message.controller");
 
@@ -30,25 +30,28 @@ const handleTopicRequest = (topic_name, controller) => {
     const data = JSON.parse(message.value);
 
     console.log("service method called to process request");
-    const resultAfterExecutingService = await controller.handle_request(
-      data.data
-    );
+    try {
+      const resultAfterExecutingService = await controller.handle_request(
+        data.data
+      );
+      const payloads = [
+        {
+          topic: data.replyTo,
+          messages: JSON.stringify({
+            correlationId: data.correlationId,
+            data: resultAfterExecutingService,
+          }),
+          partition: 0,
+        },
+      ];
 
-    const payloads = [
-      {
-        topic: data.replyTo,
-        messages: JSON.stringify({
-          correlationId: data.correlationId,
-          data: resultAfterExecutingService,
-        }),
-        partition: 0,
-      },
-    ];
-
-    producer.send(payloads, (err, data) => {
-      console.log("sending response / writing response on topic", payloads);
-      console.log(data);
-    });
+      producer.send(payloads, (err, data) => {
+        console.log("sending response / writing response on topic", payloads);
+        console.log(data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
   });
 };
 // Add your TOPICs here
@@ -58,10 +61,5 @@ const handleTopicRequest = (topic_name, controller) => {
 handleTopicRequest("answer", answerController);
 handleTopicRequest("question", questionController);
 handleTopicRequest("tags", tagController);
-handleTopicRequest("user",userController);
+handleTopicRequest("user", userController);
 handleTopicRequest("message",messageController);
-
-
-// handleTopicRequest("create_shop", createShop);
-
-// handleTopicRequest("add_user", signIn);
