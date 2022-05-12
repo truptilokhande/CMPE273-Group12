@@ -2,6 +2,7 @@ const answersDb = require("../models/answer.model");
 const commentDb = require("../models/commentModel");
 const Users = require("../models/user.model");
 const mysqlConf = require("../database/mysqlConnection").mysqlpool;
+const mongoose = require("mongoose");
 
 const addAnswer = async (req, res) => {
   return new Promise(async (resolve, reject) => {
