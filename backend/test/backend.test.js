@@ -1,8 +1,9 @@
 const assert = require("assert");
 const axios = require("axios");
-const API = 'http://localhost:3001';
+const API = "http://localhost:3001";
 
 describe("Array", () => {
+  let token;
   it("/signin", (done) => {
     axios
       .post(API + "/api/user/login", {
@@ -14,6 +15,7 @@ describe("Array", () => {
         assert.equal(response.data.data.name, "test");
         assert.equal(response.data.data.email, "test@gmail.com");
         assert.notEqual(response.data.data.password, "test");
+        token = response.data.data.token;
         done();
       })
       .catch((err) => {
@@ -37,11 +39,15 @@ describe("Array", () => {
 
   it("/vote-answer", (done) => {
     axios
-      .post(API + "/api/answer/vote-answer?upvote=1", {
-        userId: '62675bd87312f57514b2f8cb',
-        answerId:'62675ded7312f57514b2f8e4',
-        title:"test"
-      })
+      .post(
+        API + "/api/answer/vote-answer?upvote=1",
+        {
+          userId: "62675bd87312f57514b2f8cb",
+          answerId: "62675ded7312f57514b2f8e4",
+          title: "test",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         assert.equal(response.data.message, "Updated successfully");
         assert.equal(response.status, 200);
@@ -54,10 +60,13 @@ describe("Array", () => {
 
   it("/getAlltags", (done) => {
     axios
-      .get(API + "/api/tag/getAllTags")
+      .get(API + "/api/tag/getAllTags", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
-        assert.equal(response.data.tags.length > 0, true);
-        assert.equal(response.data.taggedQuestionsCount.length > 0, true);
+        console.log(response.data.data);
+        assert.equal(response.data.data.tags.length > 0, true);
+        assert.equal(response.data.data.taggedQuestionsCount.length > 0, true);
         assert.equal(response.status, 200);
         done();
       })
@@ -68,10 +77,12 @@ describe("Array", () => {
 
   it("/topTags", (done) => {
     axios
-      .get(API + "/api/analytics/topTags")
+      .get(API + "/api/analytics/topTags", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         assert.equal(response.status, 200);
-        assert.equal(response.data.taggedQuestionsCount.length>0, true);
+        assert.equal(response.data.taggedQuestionsCount.length > 0, true);
         done();
       })
       .catch((err) => {
