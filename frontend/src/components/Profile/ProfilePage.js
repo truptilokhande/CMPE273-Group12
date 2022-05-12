@@ -52,7 +52,6 @@ const ProfilePage = ({ user }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        console.log(response);
         setUserProfile(response?.data?.data);
 
         // setGoldBadges(
@@ -62,11 +61,32 @@ const ProfilePage = ({ user }) => {
         //     })
         //     .slice(0, 6)
         // );
-        // if (response?.data?.data?.tags?.length > 6) {
-        //   setUserTags(response?.data?.data?.tags?.slice(0, 6));
-        // } else {
-        //   setUserTags(response?.data?.data?.tags);
-        // }
+        if (response?.data?.data?.tags?.length > 6) {
+          const userTags = response?.data?.data?.tags;
+          userTags.map((tag) => {
+            const scores = response?.data?.tagScores;
+            const matchtag = scores?.find((t) => t._id === tag.tagId);
+            tag.score = matchtag?.score || 0;
+            return tag;
+          });
+          const sortedTags = userTags?.sort(function (a, b) {
+            return b?.score - a?.score;
+          });
+          const tags = sortedTags.slice(0, 6);
+          setUserTags(tags);
+        } else {
+          const userTags = response?.data?.data?.tags;
+          userTags.map((tag) => {
+            const scores = response?.data?.tagScores;
+            const matchtag = scores?.find((tag) => tag._id === tag.tagId);
+            tag.score = matchtag?.score || 0;
+            return tag;
+          });
+          const sortedTags = userTags?.sort(function (a, b) {
+            return b?.score - a?.score;
+          });
+          setUserTags(sortedTags);
+        }
 
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
@@ -342,7 +362,7 @@ const ProfilePage = ({ user }) => {
           </a>
         </div>
         <div className="s-card bar-md p0 w-100">
-          {userTags.map((tag) => (
+          {userTags?.map((tag) => (
             <div className="p12 bb bc-black-075">
               <div className="d-flex ai-center gs12 fw-wrap">
                 <div className="flex--item ws-nowrap">
