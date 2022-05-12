@@ -19,7 +19,7 @@ function Tags() {
     const delayDebounceFn = setTimeout(() => {
       // if (searchTerm.length < 4) return;
       const filteredTags = tagsInitial?.filter((i) =>
-        i.name.includes(searchTerm, i)
+        i.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setTags(filteredTags);
     }, 1000);

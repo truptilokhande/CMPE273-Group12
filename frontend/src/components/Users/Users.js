@@ -14,7 +14,7 @@ function Users() {
     const delayDebounceFn = setTimeout(() => {
       // if (searchTerm.length < 4) return;
       const filteredTags = usersInitial.filter((i) =>
-        i.name.includes(searchTerm, i)
+        i.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setUsers(filteredTags);
     }, 1000);
