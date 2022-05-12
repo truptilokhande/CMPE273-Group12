@@ -153,7 +153,7 @@ function Questionstab() {
                     <div className="s-post-summary--content">
                       <h3 className="s-post-summary--content-title">
                         <a
-                          href="/questions/53781634/aggregation-in-pandas"
+                          href={`/questionOverview/${q?._id}`}
                           className="s-link"
                         >
                           {q.title}
@@ -161,14 +161,14 @@ function Questionstab() {
                       </h3>
                       {
                       q?.waitingForApproval
-                      ? <p>waiting for approval</p>
+                      ? <p className="waiting-for-approval">waiting for approval</p>
                       : null
                       }
                       <div className="s-post-summary--meta">
                         {q.tags.map((tag) => (
                           <div className="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
                             <a
-                              href="/questions/tagged/python"
+                              href={`/tagOverview/${tag.id}`}
                               className="post-tag flex--item mt0 js-tagname-python"
                               title="show questions tagged 'python'"
                               rel="tag"

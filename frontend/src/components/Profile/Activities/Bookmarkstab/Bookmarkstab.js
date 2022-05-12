@@ -156,22 +156,22 @@ function Bookmarkstab() {
                     <div className="s-post-summary--content">
                       <h3 className="s-post-summary--content-title">
                         <a
-                          href="/questions/53781634/aggregation-in-pandas"
+                          href={`/questionOverview/${q?._id}`}
                           className="s-link"
                         >
-                          {q.title}
+                          {q?.title}
                         </a>
                       </h3>
                       <div className="s-post-summary--meta">
                         {q.tags.map((tag) => (
                           <div className="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
                             <a
-                              href="/questions/tagged/python"
+                             href={`/tagOverview/${tag.id}`}
                               className="post-tag flex--item mt0 js-tagname-python"
                               title="show questions tagged 'python'"
                               rel="tag"
                             >
-                              {tag.name}
+                              {tag?.name}
                             </a>
                           </div>
                         ))}
@@ -187,7 +187,7 @@ function Bookmarkstab() {
                               title="2018-12-14 14:30:27Z"
                               className="relativetime"
                             >
-                              {q.createdAt}
+                              {q?.createdAt}
                             </span>
                           </time>
                         </div>

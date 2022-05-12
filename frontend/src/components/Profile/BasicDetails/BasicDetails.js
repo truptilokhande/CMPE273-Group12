@@ -8,19 +8,17 @@ function BasicDetails({ userdetails }) {
   return (
     <div>
       <div className="d-flex ai-center fw-wrap gs16 mb16">
-        <a className="flex--item" href="/users/2930622/g-rafael">
-          <div className="md:d-none js-usermini-avatar-container">
-            <div className="bar-md bs-sm">
-              <img
-                src={userdetails?.profilepicture}
-                alt="user avatar"
-                width="128"
-                height="128"
-                className="bar-sm bar-md d-block"
-              ></img>
-            </div>
+        <div className="md:d-none js-usermini-avatar-container">
+          <div className="bar-md bs-sm">
+            <img
+              src={userdetails?.profilepicture}
+              alt="user avatar"
+              width="128"
+              height="128"
+              className="bar-sm bar-md d-block"
+            ></img>
           </div>
-        </a>
+        </div>
         <div className="flex--item">
           <div className="d-flex ai-center fw-wrap gs8 wmx4">
             <div className="flex--item mb12 fs-headline2 lh-xs">
@@ -78,7 +76,16 @@ function BasicDetails({ userdetails }) {
           </ul>
           {userdetails?.location && (
             <>
-              location: <p>{userdetails?.location}</p>
+              <svg
+                aria-hidden="true"
+                class="mrn2 svg-icon iconLocation"
+                width="17"
+                height="18"
+                viewBox="0 0 17 18"
+              >
+                <path d="M2 6.38C2 9.91 8.1 17.7 8.1 17.7c.22.29.58.29.8 0 0 0 6.1-7.8 6.1-11.32A6.44 6.44 0 0 0 8.5 0 6.44 6.44 0 0 0 2 6.38Zm9.25.12a2.75 2.75 0 1 1-5.5 0 2.75 2.75 0 0 1 5.5 0Z"></path>
+              </svg>{" "}
+              <>{userdetails?.location}</>
             </>
           )}
         </div>
@@ -99,7 +106,6 @@ function BasicDetails({ userdetails }) {
           >
             Activity
           </a>
-          
         </div>
         <div className="flex--item ml-auto">
           <div className="s-navigation s-navigation__muted ai-center"></div>

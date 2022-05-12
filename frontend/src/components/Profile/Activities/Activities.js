@@ -17,8 +17,9 @@ function Activities() {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setUserProfile(response?.data?.data);
       })
@@ -29,8 +30,9 @@ function Activities() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         console.log(response);
         setAnswers(response?.data?.answerposts);
@@ -132,25 +134,22 @@ function Activities() {
                   <div className="s-post-summary s-post-summary__minimal js-post-summary">
                     <div className="s-post-summary--stats js-post-summary-stats">
                       <div className="s-post-summary--stats-item s-post-summary--stats-item__emphasized">
-                        <span className="s-post-summary--stats-item-number">
-                        </span>
+                        <span className="s-post-summary--stats-item-number"></span>
                         <div className="d-flex flex-column">
                           <span className="s-post-summary--stats-item-unit">
-                          {ans?.question[0]?.votes}
+                            {ans?.question[0]?.votes}
                             <span className="ml-1">votes</span>
                           </span>
-                          {
-                          ans?.markedAsRight
-                          ? <div>marked as right</div>
-                          : null
-                          }
+                          {ans?.markedAsRight ? (
+                            <div>marked as right</div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
                     <div className="s-post-summary--content">
                       <h3 className="s-post-summary--content-title">
                         <a
-                          href="/questions/123198/how-to-copy-files/30359308#30359308"
+                          href={`/questionOverview/${ans?.question[0]?._id}`}
                           className="answer-hyperlink "
                         >
                           {ans?.question[0]?.title}
@@ -160,7 +159,7 @@ function Activities() {
                         {ans?.question[0]?.tags?.map((tag) => (
                           <div className="s-post-summary--meta-tags tags js-tags t-python t-file t-copy t-filesystems t-file-copying">
                             <a
-                              href="/questions/tagged/python"
+                              href={`/tagOverview/${tag.id}`}
                               className="post-tag flex--item mt0 js-tagname-python"
                               title="show questions tagged 'python'"
                               rel="tag"

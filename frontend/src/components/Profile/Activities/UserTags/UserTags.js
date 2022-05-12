@@ -6,28 +6,37 @@ import connection from "../../../../config.json";
 
 function UserTags() {
   const [userProfile, setUserProfile] = useState();
+  const [tagScores, setTagScores] = useState();
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
   const token = localStorage.getItem("token");
 
+
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setUserProfile(response?.data?.data);
+        setTagScores(response?.data?.tagScores);
       })
       .catch((err) => {
         throw err;
       });
   }, []);
 
+  const getTagScore = (id) => {
+    const tag = tagScores?.find((tag) => tag._id === id);
+    return tag?.score || 0;
+  };
+
   return (
     <div>
       <BasicDetails userdetails={userProfile} />
       <div className="d-flex mb48">
-      <nav
+        <nav
           className="flex--item fl-shrink0 mr32 wmn1 md:d-none js-settings-nav"
           role="navigation"
         >
@@ -114,7 +123,7 @@ function UserTags() {
                   <div className="d-flex ai-center jc-space-between gs16 fw-wrap">
                     <div className="flex--item ws-nowrap">
                       <a
-                        href={`/tagOverview/${tag?.tagId}`}
+                        href={`/tagOverview/${tag?.tagId}?userId=${userProfile?._id}`}
                         className="post-tag js-gps-track"
                       >
                         {tag?.tagName}
@@ -123,8 +132,14 @@ function UserTags() {
                     <div className="flex--item">
                       <div className="d-flex gsx gs16">
                         <div className="flex--item d-flex ai-center mr-2">
+                          <div className="fs-body3 mr4">
+                            {getTagScore(tag?.tagId)}
+                          </div>
+                          <div className="fc-light tt-lowercase">score</div>
+                        </div>
+                        <div className="flex--item d-flex ai-center mr-2">
                           <div className="fs-body3 mr4">{tag?.tagCount}</div>
-                          <div className="fc-light tt-lowercase">Score</div>
+                          <div className="fc-light tt-lowercase">posts</div>
                         </div>
                       </div>
                     </div>

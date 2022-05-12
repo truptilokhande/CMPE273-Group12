@@ -17,8 +17,9 @@ function TopPosts(user) {
     const id = url.substring(url.lastIndexOf("/") + 1);
     const token = localStorage.getItem("token");
     axios
-      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setAns(response?.data?.answerposts);
         setQues(response?.data?.quesposts);
@@ -67,9 +68,9 @@ function TopPosts(user) {
       <div className="d-flex flex-row">
         <section className="flex--item fl-grow1 wmx100">
           <div id="user-tab-answers" className="js-user-tab">
-            <div className="row flex jc-space-between flex-row">
+            <div className="row flex jc-space-between flex-row no-gutters">
               <div
-                className="d-flex flex-row filter-btn-wrappers my-3 ml-3"
+                className="d-flex flex-row filter-btn-wrappers my-3 ml-3 px-0"
                 style={{ width: "fit-content" }}
               >
                 <div
@@ -105,7 +106,7 @@ function TopPosts(user) {
                 </div>
               </div>
               <div
-                className="d-flex flex-row filter-btn-wrappers my-3 mr-3"
+                className="d-flex flex-row filter-btn-wrappers my-3 mr-3 px-0"
                 style={{ width: "fit-content" }}
               >
                 <div

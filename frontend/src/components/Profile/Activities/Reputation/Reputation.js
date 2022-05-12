@@ -35,7 +35,7 @@ function Reputation() {
       .get(`${connection.connectionURL}/api/question/getHistories/${id}`,
       { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
-        setReputation(response?.data);
+        setReputation(response?.data?.result);
       })
       .catch((err) => {
         throw err;
