@@ -16,20 +16,27 @@ function TopPosts(user) {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     const token = localStorage.getItem("token");
-   
+
     axios
       .get(`${connection.connectionURL}/api/user/getTopposts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        setAns(response?.data?.answerposts);
-        setQues(response?.data?.quesposts);
-        
-        setQuestions([
-          ...response?.data?.answerposts,
-          ...response?.data?.quesposts,
-        ]);
-       
+        const answers = response?.data?.answerposts;
+        const quesions = response?.data?.quesposts;
+        const answersunique = answers?.filter(
+          (v, i, a) =>
+            a.findIndex(
+              (v2) => v?.question?.[0]?._id === v2?.question?.[0]?._id
+            ) === i
+        );
+        const questionsynique = quesions?.filter(
+          (v, i, a) => a.findIndex((v2) => v?._id === v2?._id) === i
+        );
+        setAns(answersunique);
+        setQues(questionsynique);
+
+        setQuestions([...answersunique, ...questionsynique]);
       })
       .catch((err) => {
         throw err;
@@ -150,13 +157,12 @@ function TopPosts(user) {
                     </div>
                     <div className="s-post-summary--content">
                       <h3 className="s-post-summary--content-title">
-                       <a
+                        <a
                           href={`/questionOverview/${post?.question?.[0]?._id}`}
                           className="answer-hyperlink "
                         >
                           {post?.title || post?.question?.[0]?.title}
                         </a>
-                     
                       </h3>
                     </div>
                   </div>
