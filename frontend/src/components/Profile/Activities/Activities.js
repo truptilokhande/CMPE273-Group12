@@ -8,6 +8,7 @@ import moment from "moment";
 function Activities() {
   const [userProfile, setUserProfile] = useState();
   const [answers, setAnswers] = useState([]);
+  const [allanswers, setAllAnswers] = useState([]);
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
@@ -34,13 +35,29 @@ function Activities() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        console.log(response);
-        setAnswers(response?.data?.answerposts);
+        const answers = response?.data?.answerposts?.filter(
+          (v, i, a) =>
+            a.findIndex(
+              (v2) => v?.question?.[0]?._id === v2?.question?.[0]?._id
+            ) === i
+        );
+        setAnswers(answers);
+        setAllAnswers(response?.data?.answerposts);
       })
       .catch((err) => {
         throw err;
       });
   }, []);
+
+  const checkIfUsersAnswerIsRight = (id) => {
+    const filteredanswers = allanswers.filter(
+      (answer) => answer?.question[0]?._id === id
+    );
+    const checkRightAnswer = filteredanswers.filter(
+      (answer) => answer?.markedAsRight === true
+    );
+    return checkRightAnswer.length > 0;
+  };
 
   return (
     <div>
@@ -140,9 +157,6 @@ function Activities() {
                             {ans?.question[0]?.votes}
                             <span className="ml-1">votes</span>
                           </span>
-                          {ans?.markedAsRight ? (
-                            <div>marked as right</div>
-                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -155,6 +169,13 @@ function Activities() {
                           {ans?.question[0]?.title}
                         </a>
                       </h3>
+                      {checkIfUsersAnswerIsRight(ans?.question[0]?._id) ? (
+                        <p className="right-answer">
+                          Right answer
+                        </p>
+                      ) : (
+                        <></>
+                      )}
                       <div className="s-post-summary--meta">
                         {ans?.question[0]?.tags?.map((tag) => (
                           <div className="s-post-summary--meta-tags tags js-tags t-python t-file t-copy t-filesystems t-file-copying">
