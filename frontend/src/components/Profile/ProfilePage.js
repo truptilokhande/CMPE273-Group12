@@ -41,10 +41,12 @@ const ProfilePage = ({ user }) => {
   const [receivername, setReceiverName] = useState("");
   const [sender, setSenderID] = useState(loginUser.payload.user._id);
   const [tagScores, setTagScores] = useState();
+  const [goldCount, setGoldCount] = useState([]);
+  const [silverCount, setSilverCount] = useState([]);
+  const [bronzeCount, setBronzeCount] = useState([]);
 
   useEffect(() => {
     setReceiverID(id);
-
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -52,18 +54,20 @@ const ProfilePage = ({ user }) => {
       .then((response) => {
         console.log(response);
         setUserProfile(response?.data?.data);
-        setGoldBadges(
-          response?.data?.data?.tags
-            ?.sort(function (a, b) {
-              return b.tagCount - a.tagCount;
-            })
-            .slice(0, 6)
-        );
-        if (response?.data?.data?.tags?.length > 6) {
-          setUserTags(response?.data?.data?.tags?.slice(0, 6));
-        } else {
-          setUserTags(response?.data?.data?.tags);
-        }
+
+        // setGoldBadges(
+        //   response?.data?.data?.tags
+        //     ?.sort(function (a, b) {
+        //       return b.tagCount - a.tagCount;
+        //     })
+        //     .slice(0, 6)
+        // );
+        // if (response?.data?.data?.tags?.length > 6) {
+        //   setUserTags(response?.data?.data?.tags?.slice(0, 6));
+        // } else {
+        //   setUserTags(response?.data?.data?.tags);
+        // }
+
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
         setViews(response?.data?.views);
@@ -73,6 +77,8 @@ const ProfilePage = ({ user }) => {
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
         );
+        setGoldCount(filteredGoldTags);
+
         filteredGoldTags.sort(function (a, b) {
           return b.tagCount - a.tagCount;
         });
@@ -81,6 +87,8 @@ const ProfilePage = ({ user }) => {
         const filteredSilverTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
         );
+        setSilverCount(filteredSilverTags);
+
         filteredSilverTags.sort(function (a, b) {
           return b.tagCount - a.tagCount;
         });
@@ -89,6 +97,8 @@ const ProfilePage = ({ user }) => {
         const filteredBronzeTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount <= 10
         );
+        setBronzeCount(filteredBronzeTags);
+
         filteredBronzeTags.sort(function (a, b) {
           return b.tagCount - a.tagCount;
         });
@@ -211,7 +221,7 @@ const ProfilePage = ({ user }) => {
                     </div>
                     <div className="flex--item fl1">
                       <div className="fs-title fw-bold fc-black-800">
-                        {goldBadges.length}
+                        {goldCount.length}
                       </div>
                       <div className="fs-caption">gold badges</div>
                     </div>
@@ -251,7 +261,7 @@ const ProfilePage = ({ user }) => {
                     </div>
                     <div className="flex--item fl1">
                       <div className="fs-title fw-bold fc-black-800">
-                        {silverBadges.length}
+                        {silverCount.length}
                       </div>
                       <div className="fs-caption">silver badges</div>
                     </div>
@@ -291,7 +301,7 @@ const ProfilePage = ({ user }) => {
                     </div>
                     <div className="flex--item fl1">
                       <div className="fs-title fw-bold fc-black-800">
-                        {bronzeBadges.length}
+                        {bronzeCount.length}
                       </div>
                       <div className="fs-caption">bronze badges</div>
                     </div>
