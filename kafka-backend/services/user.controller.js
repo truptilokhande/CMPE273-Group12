@@ -130,6 +130,15 @@ const login = asyncHandler(async (req, res) => {
               isAdmin = true;
             }
             const user = await User.findOne({ email });
+            const date=new Date();
+            User.updateOne({email},{lastLoginDate:date},
+              function(res,err){
+                if(res){
+                  resolve(res);
+                }else if(err){
+                  reject(res);
+                }
+              })
             resolve({
               status: 200,
               data: {

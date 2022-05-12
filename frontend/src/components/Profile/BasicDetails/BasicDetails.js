@@ -68,8 +68,8 @@ function BasicDetails({ userdetails }) {
                   </svg>
                 </div>
                 <div className="flex--item ml-1">
-                  Last seen : {moment(new Date()).format("MMMM DD,YYYY")} at{" "}
-                  {moment(new Date()).format("h:mm")}
+                  Last seen : {moment(userdetails?.lastLoginDate).format("MMMM DD,YYYY")} at{" "}
+                  {moment(userdetails?.lastLoginDate).format("h:mm")}
                 </div>
               </div>
             </li>
