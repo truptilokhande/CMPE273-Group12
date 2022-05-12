@@ -11,14 +11,16 @@ function Aproove() {
   useEffect(() => {
     
     axios
-      .get(`${connection.connectionURL}/api/question/getQuestions`,
+      .get(`${connection.connectionURL}/api/question/getPendingQuestions`,
       { headers: {"Authorization" : `Bearer ${token}`} })
       .then((response) => {
         // filtering out questions which are waiting for approval.
-        const filteredQuestions = response?.data?.data?.questions?.filter(
-          (question) => question.waitingForApproval === true
-        );
-        setQuestions(filteredQuestions);
+        // const filteredQuestions = response?.data?.data?.questions?.filter(
+        //   (question) => question.waitingForApproval === true
+        // );
+        // setQuestions(filteredQuestions);
+        console.log(response);
+        setQuestions(response?.data?.data)
         
       })
       .catch((err) => {

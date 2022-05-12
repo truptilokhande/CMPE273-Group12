@@ -516,7 +516,7 @@ const addComment = async (req, res) => {
 
 const getPendingQuestions = async (req, res) => {
   return new Promise(async (resolve, reject) => {
-    const filter = { waitingForApproval: true };
+    const filter = { waitingForApproval: "true" };
     Question.find(filter, function (err, result) {
       if (err) {
         reject({ success: false, message: err.message });
