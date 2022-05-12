@@ -38,13 +38,12 @@ const ProfilePage = ({ user }) => {
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
 
-  console.log(loginUser);
   const [receivername, setReceiverName] = useState("");
   const [sender, setSenderID] = useState(loginUser.payload.user._id);
+  const [tagScores, setTagScores] = useState();
 
   useEffect(() => {
     setReceiverID(id);
-    console.log("rec", id);
 
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
@@ -69,6 +68,7 @@ const ProfilePage = ({ user }) => {
         setAnswerCount(response?.data?.ac);
         setViews(response?.data?.views);
         setAbout(response?.data.data.about);
+        setTagScores(response?.data?.tagScores);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -98,6 +98,12 @@ const ProfilePage = ({ user }) => {
         throw err;
       });
   }, []);
+
+  const getTagScore = (id) => {
+    const tag = tagScores?.find((tag) => tag._id === id);
+    return tag?.score || 0;
+  };
+
   function startnewchat() {
     axios
       .post(
@@ -345,9 +351,15 @@ const ProfilePage = ({ user }) => {
                 </div>
                 <div className="flex--item ml-auto">
                   <div className="d-flex gsx gs16">
-                    <div className="flex--item d-flex ai-center">
+                    <div className="flex--item d-flex ai-center mr-2">
+                      <div className="fs-body3 mr4">
+                        {getTagScore(tag?.tagId)}
+                      </div>
+                      <div className="fc-light tt-lowercase">score</div>
+                    </div>
+                    <div className="flex--item d-flex ai-center mr-2">
                       <div className="fs-body3 mr4">{tag?.tagCount}</div>
-                      <div className="fc-light tt-lowercase">Score</div>
+                      <div className="fc-light tt-lowercase">posts</div>
                     </div>
                   </div>
                 </div>
