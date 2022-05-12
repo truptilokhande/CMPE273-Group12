@@ -8,24 +8,22 @@ import axios from "axios";
 import TopPosts from "./TopPosts/TopPosts.js";
 import BasicDetails from "./BasicDetails/BasicDetails";
 import connection from "../../config.json";
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import { getUserSuccess } from "../../store/actions/actions";
 
-
-const ProfilePage = ({user}) => {
-
+const ProfilePage = ({ user }) => {
   const [userProfile, setUserProfile] = useState();
   const [questionscount, setQuestionscount] = useState();
   const [answerCount, setAnswerCount] = useState();
   const [views, setViews] = useState();
 
-  const loginUser=useSelector(getUserSuccess);
+  const loginUser = useSelector(getUserSuccess);
 
-  const [creatednewchat,setNewChat] = useState(false)
+  const [creatednewchat, setNewChat] = useState(false);
 
   const [userTags, setUserTags] = useState([]);
 
@@ -35,26 +33,23 @@ const ProfilePage = ({user}) => {
   const [receiver, setReceiverID] = useState("");
   const token = localStorage.getItem("token");
 
-  const [about,setAbout]=useState("")
+  const [about, setAbout] = useState("");
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
 
   console.log(loginUser);
   const [receivername, setReceiverName] = useState("");
-  const [sender,setSenderID] = useState(loginUser.payload.user._id);
- 
-   
-
+  const [sender, setSenderID] = useState(loginUser.payload.user._id);
 
   useEffect(() => {
-
-    setReceiverID(id)
-    console.log("rec",id)
+    setReceiverID(id);
+    console.log("rec", id);
 
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         console.log(response);
         setUserProfile(response?.data?.data);
@@ -65,7 +60,11 @@ const ProfilePage = ({user}) => {
             })
             .slice(0, 6)
         );
-        setUserTags(response?.data?.data?.tags);
+        if (response?.data?.data?.tags?.length > 6) {
+          setUserTags(response?.data?.data?.tags?.slice(0, 6));
+        } else {
+          setUserTags(response?.data?.data?.tags);
+        }
         setQuestionscount(response?.data?.qc);
         setAnswerCount(response?.data?.ac);
         setViews(response?.data?.views);
@@ -100,35 +99,59 @@ const ProfilePage = ({user}) => {
       });
   }, []);
   function startnewchat() {
-       axios.post(`${connection.connectionURL}/api/messages/sendMessage`,{
-      /*    change this to sender ID from store */
-            senderID: sender,
-            receiverID:receiver,
-            receiverName:userProfile.name,
-            senderName:user.name,
-            message:"",
-            },
-            { headers: {"Authorization" : `Bearer ${token}`} })
-            .then(res =>{
-              console.log("%%%",res)
-              setNewChat(true)
-              console.log("%%%%%%%%%%%%%%%%%%%%%%%%%",creatednewchat)
-              localStorage.setItem("receiver",receiver)
-              localStorage.setItem("sender",sender)
-              localStorage.setItem("receivername",userProfile.name)
-            }).catch(err => {console.log(err)})
-        
-    
-      };
+    axios
+      .post(
+        `${connection.connectionURL}/api/messages/sendMessage`,
+        {
+          /*    change this to sender ID from store */
+          senderID: sender,
+          receiverID: receiver,
+          receiverName: userProfile.name,
+          senderName: user.name,
+          message: "",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((res) => {
+        console.log("%%%", res);
+        setNewChat(true);
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%", creatednewchat);
+        localStorage.setItem("receiver", receiver);
+        localStorage.setItem("sender", sender);
+        localStorage.setItem("receivername", userProfile.name);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   return (
     <div>
       <BasicDetails userdetails={userProfile}></BasicDetails>
-      {/* start a new chat block */}
       <div>
-    
-        <button onClick={startnewchat} className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}}>Start Chat</button>
-        {creatednewchat&&<Navigate to="/chat" />} 
-            <br></br>
+        <div className="about">
+          About:<i> {about}</i>
+          <br />
+          <span>
+            {loginUser.payload.user._id === id ? (
+              <Link to={`/Editdetails/${id}`}>
+                <button className="nav-signup-btn  nav-btn mx-2">
+                  edit details
+                </button>
+              </Link>
+            ) : (
+              <span></span>
+            )}
+          </span>
+          <button
+            onClick={startnewchat}
+            className="nav-signup-btn  nav-btn form-input-button"
+            style={{ width: "100px" }}
+          >
+            Start Chat
+          </button>
+          {creatednewchat && <Navigate to="/chat" />}
+          <br />
+        </div>
       </div>
       <div id="mainbar" className="d-flex flex-col user-main-bar pl24 pt24">
         <div className="m-3">
@@ -157,22 +180,11 @@ const ProfilePage = ({user}) => {
           </div>
         </div>
         <div className="profile-all-dets m-3">
-          <div className="about">
-            <h4>About</h4>
-            <div>
-              <p> {about}</p>
-          {(loginUser.payload.user._id==id)?(
-              <Link to={`/Editdetails/${id}`}>
-                <button className="editdetbutton">edit details</button>
-              </Link>
-              ): <span></span>}
-            </div>
-          </div>
           <div className="grid--item">
             <div className="d-flex ai-center jc-space-between mb8">
               <div className="flex--item fs-title">Badges</div>
               <a
-                href="/users/8690857/drew-reese?tab=badges"
+                href={`/ActivityBadges/${id}`}
                 className="s-link s-link__muted flex--item js-gps-track"
                 data-gps-track="profile_link.click({ target: 1, type: 2 })"
               >
@@ -187,6 +199,7 @@ const ProfilePage = ({user}) => {
                     <div className="flex--item mr12">
                       <img
                         src={goldTag}
+                        alt=""
                         style={{ height: "48px", width: "48px" }}
                       ></img>
                     </div>
@@ -303,44 +316,44 @@ const ProfilePage = ({user}) => {
               </div>
             </div>
           </div>
-          <div id="top-tags" className="top-tags grid--item">
-            <div className="d-flex ai-center jc-space-between mb8">
-              <div className="flex--item fs-title">Top tags</div>
-              <a href="/tags" className="s-link s-link__muted js-gps-track">
-                View all tags
-              </a>
-            </div>
-            <div className="s-card bar-md p0 w-100">
-              {userTags.map((tag) => (
-                <div className="p12 bb bc-black-075">
-                  <div className="d-flex ai-center gs12 fw-wrap">
-                    <div className="flex--item ws-nowrap">
-                      <a
-                        href={`/tagOverview/${tag?.tagId}`}
-                        className="s-tag js-gps-track"
-                      >
-                        {tag?.tagName}
-                      </a>
-                      <a
-                        href="/help/badges/5357/reactjs"
-                        className="badge-tag bg-transparent bc-transparent m0"
-                      >
-                        <span className="badge1"></span>
-                      </a>
-                    </div>
-                    <div className="flex--item ml-auto">
-                      <div className="d-flex gsx gs16">
-                        <div className="flex--item d-flex ai-center">
-                          <div className="fs-body3 mr4">{tag?.tagCount}</div>
-                          <div className="fc-light tt-lowercase">Score</div>
-                        </div>
-                      </div>
+        </div>
+      </div>
+      <div id="top-tags" className="top-tags grid--item">
+        <div className="d-flex ai-center jc-space-between mb8">
+          <div className="flex--item fs-title">Top tags</div>
+          <a href="/tags" className="s-link s-link__muted js-gps-track">
+            View all tags
+          </a>
+        </div>
+        <div className="s-card bar-md p0 w-100">
+          {userTags.map((tag) => (
+            <div className="p12 bb bc-black-075">
+              <div className="d-flex ai-center gs12 fw-wrap">
+                <div className="flex--item ws-nowrap">
+                  <a
+                    href={`/tagOverview/${tag?.tagId}`}
+                    className="s-tag js-gps-track"
+                  >
+                    {tag?.tagName}
+                  </a>
+                  <a
+                    href="/help/badges/5357/reactjs"
+                    className="badge-tag bg-transparent bc-transparent m0"
+                  >
+                    <span className="badge1"></span>
+                  </a>
+                </div>
+                <div className="flex--item ml-auto">
+                  <div className="d-flex gsx gs16">
+                    <div className="flex--item d-flex ai-center">
+                      <div className="fs-body3 mr4">{tag?.tagCount}</div>
+                      <div className="fc-light tt-lowercase">Score</div>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
       <div className="flex--item fs-title">Top Posts</div>

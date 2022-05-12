@@ -30,19 +30,15 @@ function EditProfile() {
   }, []);
 
   const fetchItemDetails = (e) => {
+    const token = localStorage.getItem("token");
     axios
       .get(
         `${connection.connectionURL}/api/user/getUser/${id}`,
-        FormData
+        { headers: {"Authorization" : `Bearer ${token}`} }
       )
       .then((response) => {
         setUserProfile(response?.data?.data);
-        console.log(response);
         if (response.data.success === true) {
-          console.log("In get of profile form");
-
-          console.log(response.data.data);
-
           setUserName(response.data.data["name"]);
           setUserImage(response.data.data["profilepicture"]);
           setLocation(response.data.data["location"]);
@@ -69,8 +65,6 @@ function EditProfile() {
     formData.append("githublink", githublink);
     formData.append("twitterlink", twitterlink);
     formData.append("fullname", fullname);
-    console.log(userImage);
-
     axios
       .put(
         `${connection.connectionURL}/api/user/editProfile/${id}`,
@@ -95,15 +89,13 @@ function EditProfile() {
 
   return (
     <div>
-      {/* <BasicDetails userdetails={userProfile} /> */}
       <div className="editdetails-content">
         <div className="editdetails-heading">
           <div className="editdetails-h1">
-            <h1>Edit your profile</h1>
+            <h2>Edit your profile</h2>
           </div>
         </div>
         <div className="editdetails-h2">
-          <h2>Public information</h2>
           <div className="editdetails-publicinfo">
             <div className="editdetails-profileimg">
               <h4>Profile image</h4>
