@@ -4,7 +4,7 @@ import "./TopPosts.css";
 import { Link } from "react-router-dom";
 import connection from "../../../config.json";
 import moment from "moment";
-
+import { useNavigate } from "react-router";
 function TopPosts(user) {
   const [ques, setQues] = useState([]);
   const [ans, setAns] = useState([]);
@@ -16,6 +16,7 @@ function TopPosts(user) {
     const url = window.location.pathname;
     const id = url.substring(url.lastIndexOf("/") + 1);
     const token = localStorage.getItem("token");
+   
     axios
       .get(`${connection.connectionURL}/api/user/getTopposts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -23,10 +24,12 @@ function TopPosts(user) {
       .then((response) => {
         setAns(response?.data?.answerposts);
         setQues(response?.data?.quesposts);
+        
         setQuestions([
           ...response?.data?.answerposts,
           ...response?.data?.quesposts,
         ]);
+       
       })
       .catch((err) => {
         throw err;
@@ -147,12 +150,13 @@ function TopPosts(user) {
                     </div>
                     <div className="s-post-summary--content">
                       <h3 className="s-post-summary--content-title">
-                        <a
-                          href="/questions/123198/how-to-copy-files/30359308#30359308"
+                       <a
+                          href={`/questionOverview/${post?.question?.[0]?._id}`}
                           className="answer-hyperlink "
                         >
                           {post?.title || post?.question?.[0]?.title}
                         </a>
+                     
                       </h3>
                     </div>
                   </div>
