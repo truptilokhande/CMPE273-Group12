@@ -1,7 +1,7 @@
 .accept {
 	font-size: 14px;
 	color: hsl(210, 16%, 7%);
-	background-color: hsl(205, 46%, 92%);
+	background-color: hsl(107, 46%, 92%);
 	border-color: transparent;
 	display: inline-block;
 	padding: 0.4em 0.5em;
@@ -19,7 +19,7 @@
 .reject {
 	font-size: 14px;
 	color: hsl(210, 16%, 7%);
-	background-color: hsl(205, 46%, 92%);
+	background-color: hsl(0, 46%, 92%);
 	border-color: transparent;
 	display: inline-block;
 	padding: 0.4em 0.5em;
