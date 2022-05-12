@@ -68,7 +68,7 @@ function QuestionsWrapper({ ...props }) {
                     <a href="/" className="user-avatar">
                       <div className="avatar-wrapper">
                         <img
-                          src={question?.user[0]?.profilepicture}
+                          src={question?.user?.[0]?.profilepicture}
                           alt="user avatar"
                           width="16"
                           height="16"
@@ -79,7 +79,7 @@ function QuestionsWrapper({ ...props }) {
 
                     <div className="user-card-info">
                       <div className="user-link">
-                        <a href={`/userProfile/${question?.user[0]?._id}`}>{question?.user[0]?.name}</a>
+                        <a href={`/userProfile/${question?.user?.[0]?._id}`}>{question?.user?.[0]?.name}</a>
                       </div>
                     </div>
 

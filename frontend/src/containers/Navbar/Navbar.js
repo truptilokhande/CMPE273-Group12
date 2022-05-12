@@ -56,21 +56,21 @@ function Navbar({ isAuthenticated, user, reputation }) {
       });
   };
 
-  // const getAcceptedQuestions = (searchkey) => {
-  //   axios
-  //     .get(
-  //       `${connection.connectionURL}/api/question/searchQuestionsByText/${searchkey}`,
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     )
-  //     .then((response) => {
-  //       // redirect to users page
-  //       navigate("/search", { state: { questions: response?.data?.data } });
-  //       window.location.reload(true);
-  //     })
-  //     .catch((err) => {
-  //       throw err;
-  //     });
-  // };
+  const getAcceptedQuestions = (searchkey) => {
+    axios
+      .get(
+        `${connection.connectionURL}/api/question/searchQuestionByStatus/${searchkey}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((response) => {
+        // redirect to users page
+        navigate("/search", { state: { questions: response?.data?.result } });
+        window.location.reload(true);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
 
   const getTagResults = (searchkey) => {
     axios
@@ -105,7 +105,8 @@ function Navbar({ isAuthenticated, user, reputation }) {
         searchQuestionsByText(searchkey.split('"')[1]);
       } else if (/^is:question.*$/.test(searchkey)) {
         navigate("/homepage");
-      } else if (/^is:accepted.*$/.test(searchkey)) {
+      } else if (/^isaccepted.*$/.test(searchkey)) {
+        getAcceptedQuestions(searchkey.split(":")[1]);
       }
     }
   };

@@ -34,6 +34,13 @@ router.get(
     writeRequest(req, res, "search-question-by-key", topic);
   }
 );
+router.get(
+  "/searchQuestionByStatus/:searchkey",
+  authenticateUser,
+  (req, res) => {
+    writeRequest(req, res, "searchQuestionByStatus", topic);
+  }
+);
 router.post("/voteQuestion", authenticateUser, (req, res) => {
   writeRequest(req, res, "vote-question", topic);
 });

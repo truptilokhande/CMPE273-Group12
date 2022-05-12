@@ -403,6 +403,44 @@ const searchQuestionsByUserId = async (req, res) => {
   });
 };
 
+const searchQuestionByStatus = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    const searchkey = req.params.searchkey === "yes" ? true : false;
+    const searchQuestionAgg = [
+      {
+        $lookup: {
+          from: "answers",
+          localField: "_id",
+          foreignField: "questionId",
+          as: "answers",
+        },
+      },
+      {
+        $unwind: {
+          path: "$answers",
+        },
+      },
+      {
+        $match: {
+          "answers.markedAsRight": searchkey,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ];
+    const result = await Question.aggregate(searchQuestionAgg);
+
+    result && resolve({ success: true, result });
+    !result && reject({ success: false, message: "failed to search users" });
+  });
+};
+
 const searchQuestionsByText = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     const searchkey = req.params.searchkey;
@@ -589,6 +627,8 @@ async function handle_request(msg) {
     return await reject(msg);
   } else if (msg.path === "get-histories") {
     return await getHistories(msg);
+  } else if (msg.path === "searchQuestionByStatus") {
+    return await searchQuestionByStatus(msg);
   }
 }
 
