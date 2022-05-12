@@ -61,6 +61,7 @@ function Search() {
       <div className="d-flex justify-content-between">
         <h1 className="fs-headline1">Search results</h1>
       </div>
+      {questions.length === 0 ? <div>No Results!</div> : null}
 
       <div className="d-flex align-items-end justify-content-between mb-3">
         <div className="">{questionsCopy.length} questions</div>
@@ -83,7 +84,9 @@ function Search() {
             Hot
           </div>
           <div
-            className={`filter-btn fliter-btn-last ${sort === "score" ? "active" : ""}`}
+            className={`filter-btn fliter-btn-last ${
+              sort === "score" ? "active" : ""
+            }`}
             onClick={() => {
               sortQuestions("score");
             }}

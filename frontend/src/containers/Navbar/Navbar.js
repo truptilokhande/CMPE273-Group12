@@ -108,6 +108,9 @@ function Navbar({ isAuthenticated, user, reputation }) {
       } else if (/^isaccepted.*$/.test(searchkey)) {
         getAcceptedQuestions(searchkey.split(":")[1]);
       }
+      else{
+        navigate("/search", { state: { questions: [] } })
+      }
     }
   };
 
