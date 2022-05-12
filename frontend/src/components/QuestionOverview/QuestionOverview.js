@@ -35,6 +35,7 @@ function QuestionOverview({
   const [isAnswerupvoted, setAnswerupvoted] = useState([]);
   const [isAnswerdownvoted, setAnswerdownvoted] = useState([]);
   const [questionCommentContent, setQuestionCommentContent] = useState();
+
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const token = localStorage.getItem("token");
@@ -452,6 +453,50 @@ function QuestionOverview({
       });
   };
 
+  const getGoldBadges = (tags) => {
+    const filteredGoldTags = tags?.filter((tag) => tag?.tagCount > 20);
+
+    return filteredGoldTags?.length;
+  };
+
+  const getSilverBadges = (tags) => {
+    const filteredSilverTags = tags?.filter(
+      (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
+    );
+
+    return filteredSilverTags?.length;
+  };
+
+  const getBronzeBadges = (tags) => {
+    const filteredBronzeTags = tags?.filter((tag) => tag?.tagCount <= 10);
+
+    return filteredBronzeTags?.length;
+  };
+
+  const getQuestionGoldBadges = () => {
+    const filteredGoldTags = userdetails?.tags?.filter(
+      (tag) => tag?.tagCount > 20
+    );
+
+    return filteredGoldTags?.length;
+  };
+
+  const getQuestionSilverBadges = () => {
+    const filteredSilverTags = userdetails?.tags?.filter(
+      (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
+    );
+
+    return filteredSilverTags?.length;
+  };
+
+  const getQuestionBronzeBadges = () => {
+    const filteredBronzeTags = userdetails?.tags?.filter(
+      (tag) => tag?.tagCount <= 10
+    );
+
+    return filteredBronzeTags?.length;
+  };
+
   return (
     <>
       <div className="question">
@@ -615,12 +660,22 @@ function QuestionOverview({
                     {userdetails?.reputation}
                   </span>
                   <span>
+                    <span className="badge1">●</span>
+                    <span className="badgecount">
+                      {getQuestionGoldBadges()}
+                    </span>
+                  </span>
+                  <span>
                     <span className="badge2">●</span>
-                    <span className="badgecount">3</span>
+                    <span className="badgecount">
+                      {getQuestionSilverBadges()}
+                    </span>
                   </span>
                   <span>
                     <span className="badge3">●</span>
-                    <span className="badgecount">11</span>
+                    <span className="badgecount">
+                      {getQuestionBronzeBadges()}
+                    </span>
                   </span>
                 </div>
               </div>
@@ -837,12 +892,22 @@ function QuestionOverview({
                         {answer?.user[0]?.reputation}
                       </span>
                       <span>
+                        <span className="badge1">●</span>
+                        <span className="badgecount">
+                          {getGoldBadges(answer?.user[0]?.tags)}
+                        </span>
+                      </span>
+                      <span>
                         <span className="badge2">●</span>
-                        <span className="badgecount">3</span>
+                        <span className="badgecount">
+                          {getSilverBadges(answer?.user[0]?.tags)}
+                        </span>
                       </span>
                       <span>
                         <span className="badge3">●</span>
-                        <span className="badgecount">11</span>
+                        <span className="badgecount">
+                          {getBronzeBadges(answer?.user[0]?.tags)}
+                        </span>
                       </span>
                     </div>
                   </div>
