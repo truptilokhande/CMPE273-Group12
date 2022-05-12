@@ -290,21 +290,49 @@ const getUser = asyncHandler(async (req, res) => {
         },
       },
     ];
+    const tagScoreAgg = [
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(userid),
+        },
+      },
+      {
+        $project: {
+          tags: 1,
+          votes: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$tags",
+        },
+      },
+      {
+        $group: {
+          _id: "$tags.id",
+          score: {
+            $sum: "$votes",
+          },
+        },
+      },
+    ];
 
-    console.log("---------------commentsCountAgg----------------------");
     const questionCommentCount = await question.aggregate(
       commentsQuestionCountAgg
     );
 
     const answerCommentcount = await answer.aggregate(commentsAnswersCountAgg);
 
-    const user = User.findOne(filter, function (err, result) {
+    const tagScores = await question.aggregate(tagScoreAgg);
+
+    User.findOne(filter, function (err, result) {
       if (err) {
         reject({ success: false, message: "error fetching user" });
       } else {
         resolve({
           success: true,
           data: result,
+          tagScores,
           qc: qc,
           ac: ac,
           views: userQuestions?.reduce((n, { views }) => n + views, 0),
@@ -342,11 +370,8 @@ const getTopposts = asyncHandler(async (req, res) => {
             markedAsRight: 1,
           },
         },
-        {
-          $limit: 3,
-        },
       ];
-      const quesposts = await QuestionDb.find({ userId: userid }).limit(3);
+      const quesposts = await QuestionDb.find({ userId: userid });
       const answerposts = await answer.aggregate(answersagg);
       resolve({ quesposts, answerposts });
     } catch (err) {

@@ -118,12 +118,6 @@ const voteAnswer = async (req, res) => {
               message: "Updated successfully",
               votes: result?.votes,
             });
-
-            // res.status(200).send({
-            //   success: true,
-            //   message: "Updated successfully",
-            //   votes: result?.votes,
-            // });
           } catch (err) {
             console.log(err);
           }
