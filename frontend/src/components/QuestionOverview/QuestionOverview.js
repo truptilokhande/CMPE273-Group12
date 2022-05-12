@@ -218,18 +218,26 @@ function QuestionOverview({
         });
         if (upordownvotevalue === 1) {
           setQuestionUpVoted(!isQuestionUpvoted);
-          incrementReputation(10);
+          if (question?.userId === user?._id) {
+            incrementReputation(10);
+          }
         } else {
           setQuestionDownVoted(!isQuestionDownVoted);
-          decrementReputation(10);
+          if (question?.userId === user?._id) {
+            decrementReputation(10);
+          }
         }
         if (valuetobeincrementedordecremented === 2) {
           setQuestionUpVoted(!isQuestionUpvoted);
-          incrementReputation(10);
+          if (question?.userId === user?._id) {
+            incrementReputation(10);
+          }
         }
         if (valuetobeincrementedordecremented === 3) {
           setQuestionDownVoted(!isQuestionDownVoted);
-          decrementReputation(10);
+          if (question?.userId === user?._id) {
+            decrementReputation(10);
+          }
         }
       })
       .catch((err) => {
@@ -237,7 +245,12 @@ function QuestionOverview({
       });
   };
 
-  const upvoteordownvoteAnswer = (answerId, upordownvotevalue, title) => {
+  const upvoteordownvoteAnswer = (
+    answerId,
+    upordownvotevalue,
+    title,
+    userId
+  ) => {
     let valuetobeincrementedordecremented;
     if (upordownvotevalue === 1) {
       // user has clicked upvote if value is 1
@@ -296,7 +309,9 @@ function QuestionOverview({
           upordownvotevalue === 1
         ) {
           setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
-          incrementReputation(5);
+          if (userId === user?._id) {
+            incrementReputation(5);
+          }
         }
         // upvote is active and downvote button is not active and upvote is clicked
         else if (
@@ -308,7 +323,9 @@ function QuestionOverview({
             isAnswerupvoted.splice(index, 1);
           }
           setAnswerupvoted([...isAnswerupvoted]);
-          decrementReputation(5);
+          if (userId === user?._id) {
+            decrementReputation(5);
+          }
         }
         // upvote is active and downvote button is not active and downvote is clicked
         else if (
@@ -321,7 +338,9 @@ function QuestionOverview({
           }
           setAnswerupvoted(isAnswerupvoted);
           setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
-          decrementReputation(5);
+          if (userId === user?._id) {
+            decrementReputation(5);
+          }
         }
         // upvote and downvote button are not active and down is clicked
         else if (
@@ -329,7 +348,9 @@ function QuestionOverview({
           upordownvotevalue === 0
         ) {
           setAnswerdownvoted([...[...isAnswerdownvoted, String(answerId)]]);
-          decrementReputation(5);
+          if (userId === user?._id) {
+            decrementReputation(5);
+          }
         }
         // upvote is active and downvote button is not active and downvote is clicked
         else if (
@@ -343,7 +364,9 @@ function QuestionOverview({
             isAnswerdownvoted.splice(index, 1);
           }
           setAnswerdownvoted([...isAnswerdownvoted]);
-          decrementReputation(5);
+          if (userId === user?._id) {
+            decrementReputation(5);
+          }
         }
         // upvote is not active and downvote button is active and upvote is clicked
         else {
@@ -355,7 +378,9 @@ function QuestionOverview({
           }
           setAnswerdownvoted(isAnswerdownvoted);
           setAnswerupvoted([...[...isAnswerupvoted, String(answerId)]]);
-          incrementReputation(5);
+          if (userId === user?._id) {
+            incrementReputation(5);
+          }
         }
       })
       .catch((err) => {
@@ -376,11 +401,11 @@ function QuestionOverview({
       )
       .then((response) => {
         setAnswers([...response?.data?.data]);
-        if (markedAsRight) {
-          decrementReputation(15);
-        } else {
-          incrementReputation(15);
-        }
+        // if (markedAsRight) {
+        //   decrementReputation(15);
+        // } else {
+        //   incrementReputation(15);
+        // }
       })
       .catch((err) => {
         throw err;
@@ -582,7 +607,9 @@ function QuestionOverview({
                 />
               </div>
               <div className="user-details">
-                <a href={`/userProfile/${userdetails?._id}`}>{userdetails?.name}</a>
+                <a href={`/userProfile/${userdetails?._id}`}>
+                  {userdetails?.name}
+                </a>
                 <div className="reputation-wrapper">
                   <span className="reputation-score">
                     {userdetails?.reputation}
@@ -611,7 +638,10 @@ function QuestionOverview({
 
                     <div className="d-inline-flex align-items-center">
                       &nbsp;–&nbsp;
-                      <a href={`/userProfile/${comment?.userId}`} className="comment-user">
+                      <a
+                        href={`/userProfile/${comment?.userId}`}
+                        className="comment-user"
+                      >
                         {comment?.userName}
                       </a>
                     </div>
@@ -687,9 +717,11 @@ function QuestionOverview({
                       upvoteordownvoteAnswer(
                         answer?._id,
                         1,
-                        answer?.answerBody
+                        answer?.answerBody,
+                        answer?.userId
                       );
                     }}
+                    // disabled={user?._id === answer?.userId}
                   >
                     <svg
                       className="svg-icon iconArrowUpLg"
@@ -717,7 +749,8 @@ function QuestionOverview({
                       upvoteordownvoteAnswer(
                         answer?._id,
                         0,
-                        answer?.answerBody
+                        answer?.answerBody,
+                        answer?.userId
                       );
                     }}
                   >
@@ -796,7 +829,9 @@ function QuestionOverview({
                     />
                   </div>
                   <div className="user-details">
-                    <a href={`/userProfile/${answer?.user[0]?._id}`}>{answer?.user[0]?.name}</a>
+                    <a href={`/userProfile/${answer?.user[0]?._id}`}>
+                      {answer?.user[0]?.name}
+                    </a>
                     <div className="reputation-wrapper">
                       <span className="reputation-score">
                         {answer?.user[0]?.reputation}
@@ -827,7 +862,10 @@ function QuestionOverview({
 
                         <div className="d-inline-flex align-items-center">
                           &nbsp;–&nbsp;
-                          <a href={`/userProfile/${comment?.userId}`} className="comment-user">
+                          <a
+                            href={`/userProfile/${comment?.userId}`}
+                            className="comment-user"
+                          >
                             {comment?.userName}
                           </a>
                         </div>
