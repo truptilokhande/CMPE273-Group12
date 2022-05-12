@@ -105,7 +105,7 @@ function App({ isAuthenticated }) {
             <Route
               path="/Questions/Questionstab"
               exact
-              element={<Questionstab />}
+              element={isAuthenticated ? <Questionstab /> : <SignIn />}
             />
             <Route
               path="/UserTags/UserTags"
@@ -170,7 +170,7 @@ function App({ isAuthenticated }) {
             <Route
               path="/Questions/Questionstab/:id"
               exact
-              element={<Questionstab />}
+              element={isAuthenticated ? <Questionstab /> : <SignIn />}
             />
             <Route
               path="/UserTags/:id"
@@ -185,7 +185,7 @@ function App({ isAuthenticated }) {
             <Route
               path="/Bookmarkstab/Bookmarkstab/:id"
               exact
-              element={<Bookmarkstab />}
+              element={isAuthenticated ? <Bookmarkstab /> : <SignIn />}
             />
             <Route
               path="/Reputation/:id"
