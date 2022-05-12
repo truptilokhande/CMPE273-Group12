@@ -140,7 +140,7 @@ const ProfilePage = ({ user }) => {
           <span>
             {loginUser.payload.user._id === id ? (
               <Link to={`/Editdetails/${id}`}>
-                <button className="nav-signup-btn  nav-btn mx-2">
+                <button className="nav-signup-btn nav-btn mx-2">
                   edit details
                 </button>
               </Link>

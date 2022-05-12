@@ -12,7 +12,6 @@ function UserTags() {
   const id = url.substring(url.lastIndexOf("/") + 1);
   const token = localStorage.getItem("token");
 
-
   useEffect(() => {
     axios
       .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
