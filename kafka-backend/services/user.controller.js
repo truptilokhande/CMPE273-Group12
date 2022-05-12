@@ -371,9 +371,30 @@ const getTopposts = asyncHandler(async (req, res) => {
           },
         },
       ];
+      const markedasrightagg = [
+        {
+          $lookup: {
+            from: "answers",
+            localField: "_id",
+            foreignField: "questionId",
+            as: "answer",
+          },
+        },
+        {
+          $match: {
+            userId: mongoose.Types.ObjectId(userid),
+          },
+        },
+        {
+          $project: {
+            answer: 1,
+          },
+        },
+      ];
+      const bestAnswer = await QuestionDb.aggregate(markedasrightagg);
       const quesposts = await QuestionDb.find({ userId: userid });
       const answerposts = await answer.aggregate(answersagg);
-      resolve({ quesposts, answerposts });
+      resolve({ quesposts, answerposts, bestAnswer });
     } catch (err) {
       reject("error retriving user questions and answers");
     }

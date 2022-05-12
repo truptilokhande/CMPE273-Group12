@@ -8,6 +8,7 @@ import moment from "moment";
 function Questionstab() {
   const [userProfile, setUserProfile] = useState();
   const [questions, setQuestions] = useState([]);
+  const [allanswers, setAllAnswers] = useState([]);
 
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("/") + 1);
@@ -15,8 +16,9 @@ function Questionstab() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setUserProfile(response?.data?.data);
       })
@@ -27,16 +29,26 @@ function Questionstab() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getTopposts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         console.log(response);
         setQuestions(response?.data?.quesposts);
+        setAllAnswers(response?.data?.bestAnswer);
       })
       .catch((err) => {
         throw err;
       });
   }, []);
+
+  const checkIfUsersAnswerIsRight = (id) => {
+    const filteredquestions = allanswers.filter((answer) => answer?._id === id);
+    const checkRightAnswer = filteredquestions?.[0]?.answer?.filter(
+      (answer) => answer?.markedAsRight === true
+    );
+    return checkRightAnswer?.length > 0;
+  };
 
   return (
     <div>
@@ -159,11 +171,16 @@ function Questionstab() {
                           {q.title}
                         </a>
                       </h3>
-                      {
-                      q?.waitingForApproval
-                      ? <p className="waiting-for-approval">waiting for approval</p>
-                      : null
-                      }
+                      {q?.waitingForApproval ? (
+                        <p className="waiting-for-approval">
+                          waiting for approval
+                        </p>
+                      ) : null}
+                      {checkIfUsersAnswerIsRight(q?._id) ? (
+                        <p className="right-answer">Right answer</p>
+                      ) : (
+                        <></>
+                      )}
                       <div className="s-post-summary--meta">
                         {q.tags.map((tag) => (
                           <div className="s-post-summary--meta-tags tags js-tags t-python t-pandas t-dataframe t-pandas-groupby t-aggregation">
@@ -185,9 +202,7 @@ function Questionstab() {
 
                           <time className="s-user-card--time">
                             asked{" "}
-                            <span
-                              className="relativetime"
-                            >
+                            <span className="relativetime">
                               {moment(q?.question?.[0]?.createdAt).format(
                                 "MMMM DD,YYYY"
                               )}{" "}

@@ -56,7 +56,7 @@ function Activities() {
     const checkRightAnswer = filteredanswers.filter(
       (answer) => answer?.markedAsRight === true
     );
-    return checkRightAnswer.length > 0;
+    return checkRightAnswer?.length > 0;
   };
 
   return (
