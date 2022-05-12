@@ -14,15 +14,11 @@ function QuestionAnalytics() {
 
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/analytics/questionsPostedPerDay`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/analytics/questionsPostedPerDay`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
-        console.log(
-          "-----------------Question analytics----------------------"
-        );
-
         data = response?.data?.data?.result;
-        console.log(data);
         setQuestionsPerDay(response?.data?.data?.result);
 
         setQuestionsData({

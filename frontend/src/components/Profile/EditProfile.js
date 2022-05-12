@@ -32,10 +32,9 @@ function EditProfile() {
   const fetchItemDetails = (e) => {
     const token = localStorage.getItem("token");
     axios
-      .get(
-        `${connection.connectionURL}/api/user/getUser/${id}`,
-        { headers: {"Authorization" : `Bearer ${token}`} }
-      )
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setUserProfile(response?.data?.data);
         if (response.data.success === true) {
@@ -65,11 +64,9 @@ function EditProfile() {
     formData.append("githublink", githublink);
     formData.append("twitterlink", twitterlink);
     formData.append("fullname", fullname);
+    console.log(formData);
     axios
-      .put(
-        `${connection.connectionURL}/api/user/editProfile/${id}`,
-        formData
-      )
+      .put(`${connection.connectionURL}/api/user/editProfile/${id}`, formData)
       .then((response) => {
         console.log(response.data.data);
         if (response.data.success === true) {
@@ -84,7 +81,7 @@ function EditProfile() {
           setUserImage(response.data.profilepicture);
         }
       });
-    window.location.pathname = "/Editdetails";
+    // window.location.pathname = "/Editdetails";
   };
 
   return (

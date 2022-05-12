@@ -25,8 +25,9 @@ function ActivityBadges() {
   const token = localStorage.getItem("token");
   useEffect(() => {
     axios
-      .get(`${connection.connectionURL}/api/user/getUser/${id}`,
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .get(`${connection.connectionURL}/api/user/getUser/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         console.log(response?.data?.data);
         setUserProfile(response?.data?.data);
@@ -38,7 +39,7 @@ function ActivityBadges() {
         setCritic(response?.data?.data?.downVoteCount);
         setNotable(response?.data?.views);
         setFamous(response?.data?.views);
-        setPundit(response?.data?.cc)
+        setPundit(response?.data?.cc);
 
         const filteredGoldTags = response?.data?.data?.tags?.filter(
           (tag) => tag?.tagCount > 20
@@ -234,22 +235,19 @@ function ActivityBadges() {
               </div>
               {userTags?.map((userTag) => {
                 return (
-                    <div className="col-2 p-2">
-                      <a
-                        href={`/tagOverview/${userTag?.tagId}`}
-                        className="tag"
-                      >
-                        {userTag?.tagCount <= 10 ? (
-                          <span className="badge3">●</span>
-                        ) : null}
-                        {userTag?.tagCount >= 10 && userTag?.tagCount <= 15 ? (
-                          <span className="badge2">●</span>
-                        ) : null}
-                        {userTag?.tagCount > 20 ? (
-                          <span className="badge1">●</span>
-                        ) : null}
-                        <span className="ml-1">{userTag?.tagName}</span>
-                      </a>
+                  <div className="col-2 p-2">
+                    <a href={`/tagOverview/${userTag?.tagId}`} className="tag">
+                      {userTag?.tagCount <= 10 ? (
+                        <span className="badge3">●</span>
+                      ) : null}
+                      {userTag?.tagCount >= 10 && userTag?.tagCount <= 15 ? (
+                        <span className="badge2">●</span>
+                      ) : null}
+                      {userTag?.tagCount > 20 ? (
+                        <span className="badge1">●</span>
+                      ) : null}
+                      <span className="ml-1">{userTag?.tagName}</span>
+                    </a>
                   </div>
                 );
               })}

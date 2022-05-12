@@ -114,11 +114,13 @@ function SignUp({ signUp }) {
                     )
                   }
                 >
-                  {
-                  showloader
-                  ? <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  : null
-                  }
+                  {showloader ? (
+                    <span
+                      class="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  ) : null}
                   Sign up
                 </button>
               </div>

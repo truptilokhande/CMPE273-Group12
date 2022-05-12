@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -9,6 +9,55 @@ import { useNavigate } from "react-router-dom";
 function Navbar({ isAuthenticated, user, reputation }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [userProfile, setUserProfile] = useState();
+  const [userTags, setUserTags] = useState([]);
+  const [goldBadges, setGoldBadges] = useState(0);
+  const [silverBadges, setSilverBadges] = useState(0);
+  const [bronzeBadges, setBronzeBadges] = useState(0);
+
+  // const filteredGoldTags = user?.tags?.filter((tag) => tag?.tagCount > 20);
+  // setGoldBadges(filteredGoldTags.length);
+
+  // const filteredSilverTags = user?.tags?.filter(
+  //   (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
+  // );
+  // setSilverBadges(filteredSilverTags.length);
+
+  // const filteredBronzeTags = user?.tags?.filter((tag) => tag?.tagCount <= 10);
+  // setBronzeBadges(filteredBronzeTags.length);
+
+  useEffect(() => {
+    if (user !== null) {
+      axios
+        .get(`${connection.connectionURL}/api/user/getUser/${user._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          console.log("=================in axios call ------------------");
+          console.log(response?.data?.data);
+          setUserProfile(response?.data?.data);
+          setUserTags(response?.data?.data?.tags);
+
+          const filteredGoldTags = response?.data?.data?.tags?.filter(
+            (tag) => tag?.tagCount > 20
+          );
+          setGoldBadges(filteredGoldTags.length);
+
+          const filteredSilverTags = response?.data?.data?.tags?.filter(
+            (tag) => tag?.tagCount <= 15 && tag?.tagCount > 10
+          );
+          setSilverBadges(filteredSilverTags.length);
+
+          const filteredBronzeTags = response?.data?.data?.tags?.filter(
+            (tag) => tag?.tagCount <= 10
+          );
+          setBronzeBadges(filteredBronzeTags.length);
+        })
+        .catch((err) => {
+          throw err;
+        });
+    }
+  }, []);
 
   const signout = () => {
     axios
@@ -107,9 +156,8 @@ function Navbar({ isAuthenticated, user, reputation }) {
         navigate("/homepage");
       } else if (/^isaccepted.*$/.test(searchkey)) {
         getAcceptedQuestions(searchkey.split(":")[1]);
-      }
-      else{
-        navigate("/search", { state: { questions: [] } })
+      } else {
+        navigate("/search", { state: { questions: [] } });
       }
     }
   };
@@ -202,11 +250,15 @@ function Navbar({ isAuthenticated, user, reputation }) {
                     <span className="reputation-score">{reputation}</span>
                     <span>
                       <span className="badge2">●</span>
-                      <span className="badgecount">3</span>
+                      <span className="badgecount">{silverBadges}</span>
+                    </span>
+                    <span>
+                      <span className="badge1">●</span>
+                      <span className="badgecount">{goldBadges}</span>
                     </span>
                     <span>
                       <span className="badge3">●</span>
-                      <span className="badgecount">11</span>
+                      <span className="badgecount">{bronzeBadges}</span>
                     </span>
                   </div>
                 </div>
