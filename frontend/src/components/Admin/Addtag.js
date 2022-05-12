@@ -10,18 +10,36 @@ function Addtag() {
   const token = localStorage.getItem("token");
   const handleAddTag = () => {
     axios
-      .post(`${connection.connectionURL}/api/tag/addTag`, {
-        tagTitle,
-        tagDescription,
-      },
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(
+        `${connection.connectionURL}/api/tag/addTag`,
+        {
+          tagTitle,
+          tagDescription,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         console.log(response);
-        navigate("/tags");
+        // navigate("/tags");
+        const alert = document.querySelector(".add-tag-success");
+        if (alert) {
+          alert.style.display = "block";
+        }
+        document.querySelector('.tagtitle').value=""
+        document.querySelector('.tagdescription').value=""
+        setTimeout(() => {
+          if (alert) {
+            alert.style.display = "none";
+          }
+        }, 5000);
       });
   };
+  // document?.forms['search-form']?.reset();
   return (
     <div>
+      <div class="alert alert-success add-tag-success" role="alert" style={{ display: "none" }}>
+        Tag added!
+      </div>
       <h2>Add a Tag</h2>
       <table>
         <tbody>
@@ -66,7 +84,7 @@ function Addtag() {
             <button
               onClick={handleAddTag}
               type="submit"
-              className="addtag"
+              className="addtag nav-login-btn nav-btn"
               style={{ borderRadius: "5px" }}
             >
               submit
