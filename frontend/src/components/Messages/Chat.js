@@ -55,11 +55,9 @@ function sendnewmessage(e){
   return(
       
   <div >
-  Chat Room<br></br>
-      <br></br>
-      <br></br>
-      <br></br>
-    <form >
+  <p>Chat Room | <Link to="/allchats">show all my chats</Link> </p>
+
+    <form className='chat-room'>
     <ul className='list-group mb-4'>
  
 
@@ -107,10 +105,9 @@ function sendnewmessage(e){
             setmessagetext(event.target.value);
           }}
         ></input>
-        <button className="nav-signup-btn  nav-btn form-input-button" style={{width: "100px",}} onClick={sendnewmessage}> send </button>
+        <button className="nav-signup-btn  nav-btn form-input-button ml-2" style={{width: "100px",}} onClick={sendnewmessage}> send </button>
 
     </form>
-    <Link to="/allchats">show all my chats</Link>
    </div>
     
 </form>  
