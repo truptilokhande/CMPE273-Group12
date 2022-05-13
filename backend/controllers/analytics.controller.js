@@ -60,17 +60,17 @@ exports.questionsPostedPerDay = async (req, res) => {
       pastWeekDates.push(singleDate);
     }
 
-    for (let i = 0; i < result.length; i++) {
-      let questionDate = new Date(result[i].createdAt)
-        .toISOString()
-        .slice(0, 10);
+    result.map((ques) => {
+      console.log(ques.createdAt);
+      if (!ques.createdAt) return;
+      let questionDate = new Date(ques?.createdAt)?.toISOString()?.slice(0, 10);
       for (let k = 0; k < pastWeekDates.length; k++) {
         if (pastWeekDates[k].date == questionDate) {
           pastWeekDates[k].count += 1;
           break;
         }
       }
-    }
+    });
     res.status(200).send({
       data: { result: pastWeekDates },
       message: "fetched questions",
