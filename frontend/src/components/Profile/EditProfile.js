@@ -167,7 +167,7 @@ function EditProfile() {
                 <div className="label">Website link</div>
                 <input
                   type="text"
-                  value={websitelink}
+                  value={websitelink === "undefined" ? "" : websitelink}
                   onChange={(e) => setWebsiteLink(e.target.value)}
                 />
               </div>
@@ -176,7 +176,7 @@ function EditProfile() {
                 <div className="label">Twitter link or username</div>
                 <input
                   type="text"
-                  value={twitterlink}
+                  value={twitterlink === "undefined" ? "" : twitterlink}
                   onChange={(e) => setTwitterLink(e.target.value)}
                 />
               </div>
@@ -185,7 +185,7 @@ function EditProfile() {
                 <div className="label">GitHub link or username</div>
                 <input
                   type="text"
-                  value={githublink}
+                  value={githublink === "undefined" ? "" : githublink}
                   onChange={(e) => setGithubLink(e.target.value)}
                 />
               </div>
@@ -199,7 +199,7 @@ function EditProfile() {
               <input
                 type="text"
                 placeholder="Enter Name"
-                value={fullname}
+                value={fullname === "undefined" ? "" : fullname}
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
