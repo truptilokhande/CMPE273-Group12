@@ -1,6 +1,6 @@
 const assert = require("assert");
 const axios = require("axios");
-const API = "http://34.222.220.70:3001";
+const API = "http://52.201.233.203:3001";
 
 describe("Array", () => {
   it("/signin", (done) => {
