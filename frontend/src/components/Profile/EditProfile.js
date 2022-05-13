@@ -70,18 +70,19 @@ function EditProfile() {
       .then((response) => {
         console.log(response.data.data);
         if (response.data.success === true) {
-          setUserName(response.data.data["name"]);
-          setLocation(response.data.data["location"]);
-          setAbout(response.data.data["about"]);
-          setTitle(response.data.data["title"]);
-          setWebsiteLink(response.data.data["websitelink"]);
-          setGithubLink(response.data.data["githublink"]);
-          setTwitterLink(response.data.data["twitterlink"]);
-          setFullName(response.data.data["fullname"]);
-          setUserImage(response.data.profilepicture);
+          console.log(response?.data?.data);
+          // setUserName(response.data.data["name"]);
+          // setLocation(response.data.data["location"]);
+          // setAbout(response.data.data["about"]);
+          // setTitle(response.data.data["title"]);
+          // setWebsiteLink(response.data.data["websitelink"]);
+          // setGithubLink(response.data.data["githublink"]);
+          // setTwitterLink(response.data.data["twitterlink"]);
+          // setFullName(response.data.data["fullname"]);
+          // setUserImage(response.data.profilepicture);
         }
       });
-    // window.location.pathname = "/Editdetails";
+    window.location.pathname = "/Editdetails";
   };
 
   return (
@@ -92,129 +93,131 @@ function EditProfile() {
             <h2>Edit your profile</h2>
           </div>
         </div>
-        <div className="editdetails-h2">
-          <div className="editdetails-publicinfo">
-            <div className="editdetails-profileimg">
-              <h4>Profile image</h4>
-              <img
-                src={userImage}
-                alt="userimage"
-                style={{ width: "100px", borderRadius: "50%" }}
-              />
+        <form encType="multipart/form-data">
+          <div className="editdetails-h2">
+            <div className="editdetails-publicinfo">
+              <div className="editdetails-profileimg">
+                <h4>Profile image</h4>
+                <img
+                  src={userImage}
+                  alt="userimage"
+                  style={{ width: "100px", borderRadius: "50%" }}
+                />
 
-              <input
-                type="file"
-                name="userImage"
-                id="profile-picture"
-                onChange={(event) => {
-                  setUserImage(event.target.files[0]);
-                }}
-                style={{
-                  marginLeft: "40px",
-                  backgroundColor: "transperant",
-                  width: "110px",
-                  padding: "15px",
-                }}
-              />
-            </div>
+                <input
+                  type="file"
+                  name="userImage"
+                  id="profile-picture"
+                  onChange={(event) => {
+                    setUserImage(event.target.files[0]);
+                  }}
+                  style={{
+                    marginLeft: "40px",
+                    backgroundColor: "transperant",
+                    width: "110px",
+                    padding: "15px",
+                  }}
+                />
+              </div>
 
-            <div className="editdetails-name">
-              <div className="label">Display Name</div>
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-            </div>
-            <div className="editdetails-location">
-              <div className="label">Location</div>
-              <input
-                type="text"
-                placeholder="Enter Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-            <div className="editdetails-title">
-              <div className="label">Title</div>
-              <input
-                type="text"
-                placeholder="Enter Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-
-            <div className="editdetails-editor">
-              <div className="label">About me</div>
-              <div className="ck-editor__editable">
+              <div className="editdetails-name">
+                <div className="label">Display Name</div>
                 <input
                   type="text"
-                  value={aboutme}
-                  onChange={(e) => setAbout(e.target.value)}
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+              </div>
+              <div className="editdetails-location">
+                <div className="label">Location</div>
+                <input
+                  type="text"
+                  placeholder="Enter Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
+              <div className="editdetails-title">
+                <div className="label">Title</div>
+                <input
+                  type="text"
+                  placeholder="Enter Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+
+              <div className="editdetails-editor">
+                <div className="label">About me</div>
+                <div className="ck-editor__editable">
+                  <input
+                    type="text"
+                    value={aboutme}
+                    onChange={(e) => setAbout(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="editdetails-links">
+            <div className="label">Links</div>
+            <div className="editdetails-links-group">
+              <div className="editdetails-editlabel-weblink">
+                <div className="label">Website link</div>
+                <input
+                  type="text"
+                  value={websitelink}
+                  onChange={(e) => setWebsiteLink(e.target.value)}
+                />
+              </div>
+
+              <div className="editdetails-editlabel-twitterlink">
+                <div className="label">Twitter link or username</div>
+                <input
+                  type="text"
+                  value={twitterlink}
+                  onChange={(e) => setTwitterLink(e.target.value)}
+                />
+              </div>
+
+              <div className="editdetails-editlabel-githublink">
+                <div className="label">GitHub link or username</div>
+                <input
+                  type="text"
+                  value={githublink}
+                  onChange={(e) => setGithubLink(e.target.value)}
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="editdetails-links">
-          <div className="label">Links</div>
-          <div className="editdetails-links-group">
-            <div className="editdetails-editlabel-weblink">
-              <div className="label">Website link</div>
+          <div className="editdetails-privateinfo">
+            <div className="label">Private information</div>
+            <div className="editdetails-privateinfo-group">
+              <div className="label">full name</div>
               <input
                 type="text"
-                value={websitelink}
-                onChange={(e) => setWebsiteLink(e.target.value)}
-              />
-            </div>
-
-            <div className="editdetails-editlabel-twitterlink">
-              <div className="label">Twitter link or username</div>
-              <input
-                type="text"
-                value={twitterlink}
-                onChange={(e) => setTwitterLink(e.target.value)}
-              />
-            </div>
-
-            <div className="editdetails-editlabel-githublink">
-              <div className="label">GitHub link or username</div>
-              <input
-                type="text"
-                value={githublink}
-                onChange={(e) => setGithubLink(e.target.value)}
+                placeholder="Enter Name"
+                value={fullname}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
           </div>
-        </div>
 
-        <div className="editdetails-privateinfo">
-          <div className="label">Private information</div>
-          <div className="editdetails-privateinfo-group">
-            <div className="label">full name</div>
-            <input
-              type="text"
-              placeholder="Enter Name"
-              value={fullname}
-              onChange={(e) => setFullName(e.target.value)}
-            />
+          <div className="editdetails-saveinfo">
+            <div className="editdetails-savebtn">
+              <button onClick={updateProfile} type="button" class="button">
+                Save profile
+              </button>
+            </div>
+            <div className="editdetails-cancelbtn">
+              <button type="button" class="button">
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="editdetails-saveinfo">
-          <div className="editdetails-savebtn">
-            <button onClick={updateProfile} type="button" class="button">
-              Save profile
-            </button>
-          </div>
-          <div className="editdetails-cancelbtn">
-            <button type="button" class="button">
-              Cancel
-            </button>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   );
