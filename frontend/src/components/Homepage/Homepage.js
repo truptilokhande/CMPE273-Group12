@@ -27,6 +27,7 @@ function Homepage({ setTagsInstore, isAuthenticated, user }) {
               question?.user[0]?._id !== user?._id
             )
         );
+        setTagsInstore();
         setQuestions(filteredQuestions);
         setQuestionsCopy(filteredQuestions);
         setAnswerCount(response?.data?.data?.answercount);
