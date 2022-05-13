@@ -11,6 +11,10 @@ const chatRoomSchema = new Schema({
         type: String,
         required: true
     }],
+    usernames: [{
+        type: String,
+        required: true
+    }],
 }
 );
 
