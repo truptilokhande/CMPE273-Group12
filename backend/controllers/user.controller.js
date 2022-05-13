@@ -50,21 +50,24 @@ const register = asyncHandler(async (req, res) => {
         if (userLoginData.length) {
           res.status(400).send({
             success: true,
-            message: "User already exists"
+            message: "User already exists",
           });
         } else {
           //add user login in mySQL DB
           const addUserQuery = `INSERT INTO stackoverflow_schema.userLogin 
                                 (email, password, created) 
                                 VALUES 
-                                ('${email}','${hashedPassword}','${new Date(Date.now()).toISOString()}')`;
+                                ('${email}','${hashedPassword}','${new Date(
+            Date.now()
+          ).toISOString()}')`;
           connection.query(addUserQuery, async (err, result) => {
             if (result) {
               // Create user in mongo DB
               const user = await User.create({
                 name,
                 email,
-                profilepicture: userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
+                profilepicture:
+                  userProfileDefaultImages[Math.floor(Math.random() * 5 + 1)],
               });
               if (user) {
                 res.json({
@@ -88,8 +91,7 @@ const register = asyncHandler(async (req, res) => {
           });
         }
       });
-    }
-    catch (err) {
+    } catch (err) {
       res.status(400).send({ success: false, message: err.message });
     }
   });
@@ -105,7 +107,10 @@ const login = asyncHandler(async (req, res) => {
   mysqlConf.getConnection(async (err, connection) => {
     try {
       connection.query(findUserQuery, async (err, userLoginData) => {
-        const passwordMatch = await bcrypt.compare(password, userLoginData[0].password);
+        const passwordMatch = await bcrypt.compare(
+          password,
+          userLoginData[0].password
+        );
         if (userLoginData.length && passwordMatch) {
           if (email == "admin@gmail.com") {
             isAdmin = true;
@@ -131,8 +136,7 @@ const login = asyncHandler(async (req, res) => {
           });
         }
       });
-    }
-    catch (err) {
+    } catch (err) {
       res.status(400).send({ success: false, message: err.message });
     }
   });
@@ -362,7 +366,7 @@ const getBookmarks = asyncHandler(async (req, res) => {
 });
 
 const editProfile = (req, res) => {
-  console.log("In edit user details");
+  console.log("---------------------- In edit user details -------------");
   const userId = req.params.id;
   console.log(userId);
 
