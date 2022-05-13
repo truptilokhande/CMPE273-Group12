@@ -34,7 +34,7 @@ app.use(
 //Allow Access Control
 app.use(function (req, res, next) {
   // res.setHeader("Access-Control-Allow-Origin", config.frontEndUrl);
-  // res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,HEAD,OPTIONS,POST,PUT,DELETE"
