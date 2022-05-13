@@ -3,9 +3,9 @@ const tagRoute = Router();
 const { writeRequest } = require("../kafka/client");
 const tagController = require("../controllers/tag.controller");
 const { authenticateUser } = require("../middleware/authMiddleware");
-const topic="tags";
+const topic = "tags";
 
-tagRoute.get("/getAlltags", authenticateUser, (req, res) => {
+tagRoute.get("/getAlltags", (req, res) => {
   writeRequest(req, res, "get-tag", topic);
 });
 tagRoute.post("/addTag", authenticateUser, (req, res) => {
