@@ -60,7 +60,7 @@ export const getTags = () => (dispatch) => {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
-      dispatch(getAllTagsSuccess(res.data.tags));
+      dispatch(getAllTagsSuccess(res?.data?.tags || res?.data?.data?.tags));
     })
     .catch((err) => {
       throw err;
