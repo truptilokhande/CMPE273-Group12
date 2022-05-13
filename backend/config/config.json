@@ -1,7 +1,7 @@
 {
   "PORT": 3001,
   "MONGO_URL": "mongodb://18.205.194.38:27017/stackoverflow",
-  "frontEndUrl": "http://18.205.194.38:3000",
+  "frontEndUrl": "http://g12-1904681574.us-east-1.elb.amazonaws.com:3000/",
 
   "JWT_SECRET": "stackoverflow",
   "JWT_EXPIRE_PERIOD": "30d"
