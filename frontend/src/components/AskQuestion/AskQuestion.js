@@ -67,12 +67,14 @@ function AskQuestion({ user, tagsFromStore, setTagsInstore }) {
     }),
     []
   );
+
+  const [allTags, setAllTags] = useState();
   const reactTags = useRef();
   const [title, setTitle] = useState();
   const [questionbody, setQuestionBody] = useState();
   const [tags, setTags] = useState([]);
   const [suggestions] = useState(
-    tagsFromStore?.map((tag) => {
+    allTags?.map((tag) => {
       return {
         id: tag._id,
         name: tag.name,
@@ -116,9 +118,22 @@ function AskQuestion({ user, tagsFromStore, setTagsInstore }) {
   };
 
   useEffect(() => {
-    if (!tagsFromStore) {
-      setTagsInstore();
-    }
+    // if (!tagsFromStore) {
+    //   setTagsInstore();
+    // }
+    const token = localStorage.getItem("token");
+    axios.defaults.withCredentials = true;
+    axios
+      .get(`${connection.connectionURL}/api/tag/getAlltags`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setAllTags(res?.data?.tags);
+        // dispatch(getAllTagsSuccess(res.data.tags));
+      })
+      .catch((err) => {
+        throw err;
+      });
   });
 
   return (
