@@ -1,5 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useRef, useState, useMemo } from "react";
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import "./AskQuestion.css";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -8,11 +14,12 @@ import axios from "axios";
 import connection from "../../config.json";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import S3FileUpload from "react-s3"; 
+import S3FileUpload from "react-s3";
+import { getTags } from "../../store/thunk/thunk";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
-function AskQuestion({ user, tagsFromStore }) {
+function AskQuestion({ user, tagsFromStore, setTagsInstore }) {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const saveToServer = (file) => {
@@ -90,13 +97,16 @@ function AskQuestion({ user, tagsFromStore }) {
   const postQuestion = () => {
     const token = localStorage.getItem("token");
     axios
-      .post(`${connection.connectionURL}/api/question/addquestion`, {
-        userId: user?._id,
-        title,
-        questionbody,
-        tags,
-      },
-      { headers: {"Authorization" : `Bearer ${token}`} })
+      .post(
+        `${connection.connectionURL}/api/question/addquestion`,
+        {
+          userId: user?._id,
+          title,
+          questionbody,
+          tags,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         navigate(`/questionOverview/${response?.data?.data?._id}`);
       })
@@ -104,6 +114,12 @@ function AskQuestion({ user, tagsFromStore }) {
         throw err;
       });
   };
+
+  useEffect(() => {
+    if (!tagsFromStore) {
+      setTagsInstore();
+    }
+  });
 
   return (
     <>
@@ -205,4 +221,8 @@ const mapStateToProps = (state) => ({
   tagsFromStore: state.tags,
 });
 
-export default connect(mapStateToProps, null)(AskQuestion);
+const mapDispatchToProps = (dispatch) => ({
+  setTagsInstore: (val) => dispatch(getTags(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AskQuestion);
