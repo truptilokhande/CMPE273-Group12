@@ -1,8 +1,8 @@
 {
-    "PORT": 3001,
-    "MONGO_URL": "mongodb://localhost:27017/stackoverflow",
-    "frontEndUrl": "http://localhost:3000",
+  "PORT": 3001,
+  "MONGO_URL": "mongodb://34.222.220.70:27017/stackoverflow",
+  "frontEndUrl": "http://34.222.220.70:3000",
 
-    "JWT_SECRET": "stackoverflow",
-    "JWT_EXPIRE_PERIOD": "30d"
-  }
+  "JWT_SECRET": "stackoverflow",
+  "JWT_EXPIRE_PERIOD": "30d"
+}

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const axios = require("axios");
-const API = 'http://localhost:3001';
+const API = "http://34.222.220.70:3001";
 
 describe("Array", () => {
   it("/signin", (done) => {
@@ -38,9 +38,9 @@ describe("Array", () => {
   it("/vote-answer", (done) => {
     axios
       .post(API + "/api/answer/vote-answer?upvote=1", {
-        userId: '62675bd87312f57514b2f8cb',
-        answerId:'62675ded7312f57514b2f8e4',
-        title:"test"
+        userId: "62675bd87312f57514b2f8cb",
+        answerId: "62675ded7312f57514b2f8e4",
+        title: "test",
       })
       .then((response) => {
         assert.equal(response.data.message, "Updated successfully");
@@ -71,7 +71,7 @@ describe("Array", () => {
       .get(API + "/api/analytics/topTags")
       .then((response) => {
         assert.equal(response.status, 200);
-        assert.equal(response.data.taggedQuestionsCount.length>0, true);
+        assert.equal(response.data.taggedQuestionsCount.length > 0, true);
         done();
       })
       .catch((err) => {

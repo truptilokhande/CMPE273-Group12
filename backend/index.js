@@ -63,7 +63,7 @@ app.use("/api/analytics/", analyticsRoute);
 
 // starting the server
 app.listen(PORT, () => {
-  console.log("server is running!");
+  console.log("server is running!" + PORT);
 });
 
 // module.exports = app;
