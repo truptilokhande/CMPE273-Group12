@@ -1,6 +1,6 @@
 const assert = require("assert");
 const axios = require("axios");
-const API = "http://localhost:3001";
+const API = "http://g12-1904681574.us-east-1.elb.amazonaws.com:3001";
 
 describe("Array", () => {
   let token;
