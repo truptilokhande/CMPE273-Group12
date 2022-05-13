@@ -82,7 +82,7 @@ function EditProfile() {
           // setUserImage(response.data.profilepicture);
         }
       });
-    window.location.pathname = "/Editdetails";
+    window.location.pathname = `/Editdetails/${id}`;
   };
 
   return (
