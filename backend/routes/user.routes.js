@@ -29,7 +29,7 @@ router.get("/getAnswers/:id", authenticateUser, (req, res) => {
 router.get("/getBookmarks/:id", authenticateUser, (req, res) => {
   writeRequest(req, res, "get-bookmarks", topic);
 });
-router.get("/signout", authenticateUser, (req, res) => {
+router.get("/signout", (req, res) => {
   writeRequest(req, res, "user-signout", topic);
 });
 
