@@ -15,7 +15,10 @@ const messageRoutes = require("./routes/message.routes");
 const analyticsRoute = require("./routes/analytics.routes");
 
 //set up cors
-app.use(cors({ origin: config.frontEndUrl, credentials: true }));
+app.use(
+  cors()
+  // {origin: config.frontEndUrl, credentials: true }
+);
 
 const PORT = config.PORT || 4001;
 
@@ -30,8 +33,8 @@ app.use(
 
 //Allow Access Control
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", config.frontEndUrl);
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+  // res.setHeader("Access-Control-Allow-Origin", config.frontEndUrl);
+  // res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,HEAD,OPTIONS,POST,PUT,DELETE"
