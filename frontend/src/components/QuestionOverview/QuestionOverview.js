@@ -93,8 +93,8 @@ function QuestionOverview({
 
   const saveToServer = (file) => {
     const config = {
-      accessKeyId: "AKIA2WX32KIUACMHTCOR",
-      secretAccessKey: "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",
+      accessKeyId: "",
+      secretAccessKey: "",
       region: "us-west-1",
       bucketName: "etsy-lab2",
     };
